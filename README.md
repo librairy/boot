@@ -1,0 +1,2 @@
+# boot
+Librairy Boot makes it easy to create extensions for our system.
