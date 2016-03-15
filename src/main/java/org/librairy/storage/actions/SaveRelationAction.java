@@ -1,5 +1,10 @@
 package org.librairy.storage.actions;
 
+import org.librairy.model.Event;
+import org.librairy.model.domain.relations.Relation;
+import org.librairy.model.domain.resources.Resource;
+import org.librairy.model.modules.RoutingKey;
+import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.Helper;
 import org.librairy.storage.executor.QueryTask;
 import org.librairy.storage.session.UnifiedTransaction;
@@ -16,7 +21,7 @@ public class SaveRelationAction {
     private static final Logger LOG = LoggerFactory.getLogger(SaveRelationAction.class);
 
 
-    public SaveRelationAction(Helper helper, org.librairy.model.domain.relations.Relation relation){
+    public SaveRelationAction(Helper helper, Relation relation){
 
         // initialize URI
         if (!relation.hasUri()){
@@ -42,8 +47,9 @@ public class SaveRelationAction {
                 transaction.commit();
 
                 LOG.debug("Relation Saved: " + relation);
+
                 //Publish the event
-                helper.getEventBus().post(org.librairy.model.Event.from(relation), org.librairy.model.modules.RoutingKey.of(relation.getType(), org.librairy.model.domain.relations.Relation.State.CREATED));
+                helper.getEventBus().post(Event.from(ResourceUtils.map(relation,Relation.class)), RoutingKey.of(relation.getType(), Relation.State.CREATED));
             }catch (Exception e){
                 LOG.error("Unexpected error while saving relation: "+relation,e);
             }

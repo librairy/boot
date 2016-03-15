@@ -12,7 +12,7 @@ public class GuavaCondition implements Condition {
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
 
-        String eventBusUri = conditionContext.getEnvironment().getProperty("librairy.eventbus.protocol");
+        String eventBusUri = conditionContext.getEnvironment().getProperty("librairy.eventbus.host");
 
         return Strings.isNullOrEmpty(eventBusUri) || eventBusUri.startsWith("local");
     }

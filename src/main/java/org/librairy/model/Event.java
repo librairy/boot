@@ -1,6 +1,8 @@
 package org.librairy.model;
 
 import lombok.Data;
+import org.librairy.model.domain.LinkableElement;
+import org.librairy.model.utils.ResourceUtils;
 
 import java.io.*;
 
@@ -50,4 +52,5 @@ public class Event {
             throw new RuntimeException(e);
         }
     }
+
 }

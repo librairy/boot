@@ -35,7 +35,8 @@ import java.util.stream.IntStream;
         "librairy.elasticsearch.port = 5021",
         "librairy.neo4j.contactpoints = wiig.dia.fi.upm.es",
         "librairy.neo4j.port = 5030",
-        "librairy.eventbus.host = wiig.dia.fi.upm.es"})
+        "librairy.eventbus.host = wiig.dia.fi.upm.es"
+})
 public class ConsistencyTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConsistencyTest.class);

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.librairy</groupId>
     <artifactId>librairy-boot</artifactId>
-    <version>0.1</version>
+    <version>0.2</version>
     <packaging>jar</packaging>
     <name>Librairy-Boot</name>
     <description>Extended Library System equipped with Artificial Intelligence Techniques</description>
@@ -853,7 +853,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Unit tests -->
@@ -895,6 +894,11 @@
         </dependency>
 
         <!-- Spring Data Libraries -->
+        <!-- Spring Web -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-cassandra</artifactId>
@@ -1079,12 +1083,6 @@
             <url>http://maven.restlet.org</url>
         </repository>
 
-        <!-- UPF Repository -->
-        <repository>
-            <id>backingdata-repo</id>
-            <name>Backingdata repository</name>
-            <url>http://backingdata.org/dri/library/mavenRepo/</url>
-        </repository>
     </repositories>
 
     <distributionManagement>

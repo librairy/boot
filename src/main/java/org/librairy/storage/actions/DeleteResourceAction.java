@@ -1,5 +1,8 @@
 package org.librairy.storage.actions;
 
+import org.librairy.model.Event;
+import org.librairy.model.domain.resources.Resource;
+import org.librairy.model.modules.RoutingKey;
 import org.librairy.storage.Helper;
 import org.librairy.storage.exception.RepositoryNotFound;
 import org.librairy.storage.session.UnifiedTransaction;
@@ -74,9 +77,7 @@ public class DeleteResourceAction {
             LOG.debug("Deleted: "+type.name()+"[" + uri+"]");
 
             //Publish the event
-
-            //TODO
-            //helper.getEventBus().post(Event.from(resource), RoutingKey.of(type, Resource.State.DELETED));
+            helper.getEventBus().post(Event.from(uri), RoutingKey.of(type, Resource.State.DELETED));
 
         }catch (Exception e){
             LOG.error("Unexpected error during delete of '"+uri,e);

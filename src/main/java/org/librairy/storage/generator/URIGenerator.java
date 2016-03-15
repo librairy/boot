@@ -52,6 +52,10 @@ public class URIGenerator {
         return from(type,df.format(new Date())+"-"+getMD5(getUUID())).toString();
     }
 
+    public static String retrieveId(String uri){
+        return StringUtils.substringAfterLast(uri,"/");
+    }
+
     private String getUUID(){
         return UUID.randomUUID().toString();
     }

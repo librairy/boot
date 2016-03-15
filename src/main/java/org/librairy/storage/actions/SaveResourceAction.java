@@ -1,5 +1,9 @@
 package org.librairy.storage.actions;
 
+import org.librairy.model.Event;
+import org.librairy.model.domain.resources.Resource;
+import org.librairy.model.modules.RoutingKey;
+import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.Helper;
 import org.librairy.storage.executor.QueryTask;
 import org.librairy.storage.session.UnifiedTransaction;
@@ -44,8 +48,9 @@ public class SaveResourceAction {
                 transaction.commit();
 
                 LOG.debug("Resource Saved: " + resource);
+
                 //Publish the event
-                helper.getEventBus().post(org.librairy.model.Event.from(resource), org.librairy.model.modules.RoutingKey.of(resource.getResourceType(), org.librairy.model.domain.resources.Resource.State.CREATED));
+                helper.getEventBus().post(Event.from(ResourceUtils.map(resource, Resource.class)), RoutingKey.of(resource.getResourceType(), Resource.State.CREATED));
             }catch (Exception e){
                 LOG.error("Unexpected error while saving resource: "+resource,e);
             }

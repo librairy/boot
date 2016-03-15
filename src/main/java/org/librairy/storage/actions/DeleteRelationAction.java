@@ -79,19 +79,15 @@ public class DeleteRelationAction {
             }else{
                 Iterable<Relation> pairs = helper.getUnifiedEdgeGraphRepository().findFrom(type,refType, uri);
                 if (pairs != null){
-                    // TODO Check this
                     StreamSupport.stream(pairs.spliterator(), false).parallel().forEach(pair -> {
                         helper.getUnifiedEdgeGraphRepository().delete(type,pair.getUri());
-                        helper.getEventBus().post(Event.from(pair.getUri()), org.librairy.model.modules.RoutingKey.of(type, Relation.State.DELETED));
                         LOG.debug("Deleted: "+type.name()+"[" + uri+"]");
                     });
-    //                for (Relation pair : pairs) {
-    //                    helper.getUnifiedEdgeGraphRepository().delete(type,pair.getUri());
-    //                    helper.getEventBus().post(Event.from(pair.getUri()), RoutingKey.of(type, Relation.State.DELETED));
-    //                }
                 }
             }
 
+            //Publish the event
+            //TODO
 
             transaction.commit();
 

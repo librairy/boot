@@ -31,8 +31,8 @@ import java.util.concurrent.atomic.AtomicInteger;
         "librairy.eventbus.port=5041",
         "librairy.eventbus.user=librairy",
         "librairy.eventbus.password=drinventor",
-        "librairy.eventbus.keyspace=drinventor",
-        "librairy.eventbus.protocol = amqp" })
+        "librairy.eventbus.keyspace=drinventor"
+})
 public class RabbitMQEventBusTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQEventBusTest.class);

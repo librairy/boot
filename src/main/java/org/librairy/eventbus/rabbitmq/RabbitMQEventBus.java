@@ -45,9 +45,6 @@ public class RabbitMQEventBus implements EventBus {
     @Value("${librairy.eventbus.keyspace}")
     private String keyspace;
 
-    @Value("${librairy.eventbus.protocol}")
-    private String protocol;
-
     private Channel channel;
 
     private org.librairy.eventbus.rabbitmq.RabbitMQClient client;
@@ -56,7 +53,7 @@ public class RabbitMQEventBus implements EventBus {
     public void init() {
         try {
             String uri = new StringBuilder().
-                    append(protocol).append("://").append(user).append(":").append(pwd).
+                    append("amqp://").append(user).append(":").append(pwd).
                     append("@").append(host).append(":").append(port).
                     append("/").append(keyspace).toString();
             LOG.info("Initializing RabbitMQ Event-Bus in: " + uri);
