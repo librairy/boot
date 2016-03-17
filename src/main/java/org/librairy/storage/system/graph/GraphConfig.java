@@ -39,6 +39,7 @@ public class GraphConfig extends Neo4jConfiguration {
                 .driverConfiguration()
                 .setDriverClassName("org.neo4j.ogm.drivers.http.driver.HttpDriver")
                 .setURI("http://"+hosts+":"+port);
+        LOG.info("Initialized Neo4j connection to: " + hosts + " " + port);
         return config;
     }
 

@@ -49,6 +49,7 @@ public class DocumentConfig {
         TransportClient client = new TransportClient(settings);
         TransportAddress address = new InetSocketTransportAddress(hosts,port);
         client.addTransportAddress(address);
+
         LOG.info("Initialized Elasticsearch connection to: " + hosts + " " + port);
         return client;
     }
