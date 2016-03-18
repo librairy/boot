@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = EventBusConfig.class)
-@TestPropertySource(properties = {
-        "librairy.eventbus.host = localhost"
-})
+//@TestPropertySource(properties = {
+//        "librairy.eventbus.host = localhost"
+//})
 public class GuavaEventBusTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(GuavaEventBus.class);

@@ -6,9 +6,11 @@ import org.librairy.model.domain.LinkableElement;
 
 @ToString(callSuper = true)
 @EqualsAndHashCode(of={"uri"}, callSuper = true)
-public abstract class Resource extends LinkableElement {
+public class Resource extends LinkableElement {
 
-	public abstract Type getResourceType();
+	public Type getResourceType(){
+		return Type.ANY;
+	}
 
 	public enum Type{
 		SOURCE("source","sources"),

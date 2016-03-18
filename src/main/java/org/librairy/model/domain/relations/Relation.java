@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.librairy.model.domain.LinkableElement;
+import org.librairy.model.domain.resources.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(of={"uri"}, exclude = {"startUri","endUri","weight"},callSuper = true)
-public abstract class Relation extends LinkableElement {
+public class Relation extends LinkableElement {
 
     private static final Logger LOG = LoggerFactory.getLogger(Relation.class);
 
@@ -36,11 +37,17 @@ public abstract class Relation extends LinkableElement {
         this.endUri = end.getUri();
     }
 
-    public abstract org.librairy.model.domain.resources.Resource.Type getStartType();
+    public org.librairy.model.domain.resources.Resource.Type getStartType(){
+        return Resource.Type.ANY;
+    }
 
-    public abstract org.librairy.model.domain.resources.Resource.Type getEndType();
+    public org.librairy.model.domain.resources.Resource.Type getEndType(){
+        return Resource.Type.ANY;
+    }
 
-    public abstract Type getType();
+    public Type getType(){
+        return Type.ANY;
+    }
 
     public enum Type{
         PROVIDES("provides","provisions"),

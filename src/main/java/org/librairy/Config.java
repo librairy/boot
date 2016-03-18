@@ -14,6 +14,8 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 @PropertySource({"classpath:storage.properties","classpath:eventbus.properties"})
 public class Config {
 
+    public static final String EVENT_HOST = "MESSAGE_BROKER_HOST";
+
     //To resolve ${} in @Value
     @Bean
     public static PropertySourcesPlaceholderConfigurer placeHolderConfigurer() {
