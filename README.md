@@ -39,7 +39,7 @@ If you are not using Maven or simply prefer to directly add the jar library, dow
 https://github.com/librairy/boot/tree/mvn-repo/org/librairy/librairy-boot
 ```
 
-## Get Start!
+## Get Started!
 
 In our opinion, the best documentation are samples, take a look at some address samples:
 
