@@ -1,4 +1,4 @@
-# Librairy-Boot  [![Release Status](https://travis-ci.org/librairy/boot.svg?branch=master)](https://travis-ci.org/librairy/boot) [![Dev Status](https://travis-ci.org/librairy/boot.svg?branch=develop)](https://travis-ci.org/librairy/boot) ![Doc](https://raw.githubusercontent.com/librairy/resources/master/figures/interface.png)
+# Librairy-Boot  [![Release Status](https://travis-ci.org/librairy/boot.svg?branch=master)](https://travis-ci.org/librairy/boot) [![Dev Status](https://travis-ci.org/librairy/boot.svg?branch=develop)](https://travis-ci.org/librairy/boot) [![Doc](https://raw.githubusercontent.com/librairy/resources/master/figures/interface.png)](https://rawgit.com/librairy/boot/doc/report/index.html)
 
 
 Librairy-Boot makes it easy to create **librairy-powered** applications and services with minimum fuss. It takes the UDM (Unified Data Model) view of **librairy** so that new and existing users can quickly get to the features they need.
