@@ -8,7 +8,7 @@
     <version>0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Librairy-Boot</name>
-    <description>Extended Library System equipped with Artificial Intelligence Techniques</description>
+    <description>It makes easy to create librairy-powered applications and services with minimum fuss.</description>
     <url>https://github.com/librairy/boot</url>
     <organization>
         <name>Ontology Engineering Group</name>
@@ -1129,6 +1129,14 @@
     <!-- Report -->
     <reporting>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                </configuration>
+            </plugin>
             <!-- Provides static analysis on source files -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
