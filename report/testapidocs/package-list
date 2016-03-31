@@ -1,0 +1,12 @@
+org.librairy
+org.librairy.eventbus
+org.librairy.eventbus.guava
+org.librairy.eventbus.rabbitmq
+org.librairy.storage
+org.librairy.storage.documents
+org.librairy.storage.model
+org.librairy.storage.system.column
+org.librairy.storage.system.document
+org.librairy.storage.system.graph
+org.librairy.storage.system.graph.edge
+org.librairy.storage.system.graph.node
