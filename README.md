@@ -36,5 +36,3 @@ If you are not using Maven or simply prefer to directly add the jar library, dow
 
 And that's all!!
 
-In our opinion, the best documentation are samples, take a look at some address samples:
-
