@@ -1,4 +1,9 @@
-# Librairy-Boot  [![Release Status](https://travis-ci.org/librairy/boot.svg?branch=master)](https://travis-ci.org/librairy/boot) [![Dev Status](https://travis-ci.org/librairy/boot.svg?branch=develop)](https://travis-ci.org/librairy/boot) [![Coverage Status](https://coveralls.io/repos/github/librairy/boot/badge.svg?branch=master)](https://coveralls.io/github/librairy/boot?branch=master) [![Doc](https://raw.githubusercontent.com/librairy/resources/master/figures/interface.png)](https://rawgit.com/librairy/boot/doc/report/index.html)
+# Librairy-Boot
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/e21317a6efac486fb23ecdd2a0c3b741)](https://www.codacy.com/app/cbadenes/boot)
+[![Release Status](https://travis-ci.org/librairy/boot.svg?branch=master)](https://travis-ci.org/librairy/boot)
+[![Dev Status](https://travis-ci.org/librairy/boot.svg?branch=develop)](https://travis-ci.org/librairy/boot)
+[![Coverage Status](https://coveralls.io/repos/github/librairy/boot/badge.svg?branch=master)](https://coveralls.io/github/librairy/boot?branch=master)
+[![Doc](https://raw.githubusercontent.com/librairy/resources/master/figures/interface.png)](https://rawgit.com/librairy/boot/doc/report/index.html)
 
 
 Librairy-Boot makes it easy to create **librairy-powered** applications and services with minimum fuss. It takes the *Unified Data Model* (UDM) view of **librairy** so that new and existing users can quickly get to the features they need.
