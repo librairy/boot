@@ -33,7 +33,11 @@ public class DeleteRelationAction {
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-            helper.getUnifiedEdgeGraphRepository().deleteAll(type);
+            if (helper.getTemplateFactory().handle(type)){
+                helper.getTemplateFactory().of(type).deleteAll();
+            }else{
+                helper.getUnifiedEdgeGraphRepository().deleteAll(type);
+            }
 
             transaction.commit();
 
@@ -42,7 +46,7 @@ public class DeleteRelationAction {
             //Publish the event
             // TODO
         }catch (Exception e){
-            LOG.error("Unexpected error during delete all '"+type,e);
+            throw new RuntimeException("Unexpected error during delete all '"+type,e);
         }
     }
 
@@ -65,7 +69,7 @@ public class DeleteRelationAction {
             //TODO
 
         }catch (Exception e){
-            LOG.error("Unexpected error during delete of '"+uri,e);
+            throw new RuntimeException("Unexpected error during delete of '"+uri,e);
         }
     }
 
@@ -93,7 +97,7 @@ public class DeleteRelationAction {
 
             LOG.debug("Deleted: "+type.name()+" in " + refType + "[" + uri+"]");
         }catch (Exception e){
-            LOG.error("Unexpected error during delete of relations '"+ type + " in " + refType +" by uri "+uri,e);
+            throw new RuntimeException("Unexpected error during delete of relations '"+ type + " in " + refType +" by uri "+uri,e);
         }
     }
 

@@ -25,7 +25,7 @@ public class SaveResourceAction {
             resource.setUri(helper.getUriGenerator().newFor(resource.getResourceType()));
         }
 
-        helper.getQueryExecutor().execute(new QueryTask(() -> {
+//        helper.getQueryExecutor().execute(new QueryTask(() -> {
             try{
                 helper.getSession().clean();
                 UnifiedTransaction transaction = helper.getSession().beginTransaction();
@@ -33,10 +33,10 @@ public class SaveResourceAction {
                 LOG.debug("trying to save: " + resource);
 
                 // Checking if exists
-                if (helper.getUnifiedColumnRepository().exists(resource.getResourceType(),resource.getUri())){
-                    LOG.warn("Resource already exists: " + resource);
-                    return;
-                }
+//                if (helper.getUnifiedColumnRepository().exists(resource.getResourceType(),resource.getUri())){
+//                    LOG.warn("Resource already exists: " + resource);
+//                    return;
+//                }
 
                 // column
                 helper.getUnifiedColumnRepository().save(resource);
@@ -52,9 +52,9 @@ public class SaveResourceAction {
                 //Publish the event
                 helper.getEventBus().post(Event.from(ResourceUtils.map(resource, Resource.class)), RoutingKey.of(resource.getResourceType(), Resource.State.CREATED));
             }catch (Exception e){
-                LOG.error("Unexpected error while saving resource: "+resource,e);
+                throw new RuntimeException("Unexpected error while saving resource: "+resource.getUri(),e);
             }
-        }, 0, 0L));
+//        }, 0, 0L));
     }
 
 }

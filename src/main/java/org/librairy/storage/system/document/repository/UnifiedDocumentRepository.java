@@ -27,6 +27,11 @@ public class UnifiedDocumentRepository implements Repository<Resource,Resource.T
     private static final Logger LOG = LoggerFactory.getLogger(UnifiedDocumentRepository.class);
 
     @Override
+    public long count(Resource.Type type){
+        return factory.repositoryOf(type).count();
+    }
+
+    @Override
     public void save(org.librairy.model.domain.resources.Resource resource){
         try {
             factory.repositoryOf(resource.getResourceType()).save(ResourceUtils.map(resource, factory.mappingOf(resource.getResourceType())));

@@ -41,7 +41,14 @@ public class DeleteResourceAction {
                 try{
                     helper.getUnifiedColumnRepository().deleteAll(t);
                     helper.getUnifiedDocumentRepository().deleteAll(t);
-                    helper.getUnifiedNodeGraphRepository().deleteAll(t);
+
+
+                    if (helper.getTemplateFactory().handle(t)){
+                        helper.getTemplateFactory().of(t).deleteAll();
+                    }else{
+                        helper.getUnifiedNodeGraphRepository().deleteAll(t);
+                    }
+
                 }catch (RepositoryNotFound e){
                     LOG.warn("" + e.getMessage());
                 }

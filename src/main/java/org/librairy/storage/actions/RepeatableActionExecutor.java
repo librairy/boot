@@ -50,7 +50,7 @@ public abstract class RepeatableActionExecutor {
                 return performRetries(++retries,id,function);
             }
         }catch (RepositoryNotFound e){
-            LOG.debug(e.getMessage());
+            LOG.warn(e.getMessage());
             return Optional.empty();
         }catch (Exception e){
             LOG.error("Error on operation: " + id, e);

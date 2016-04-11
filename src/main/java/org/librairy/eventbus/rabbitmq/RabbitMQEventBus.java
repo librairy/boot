@@ -58,7 +58,8 @@ public class RabbitMQEventBus implements EventBus {
                     append("/").append(keyspace).toString();
             LOG.info("Initializing RabbitMQ Event-Bus in: " + uri);
             this.client = new org.librairy.eventbus.rabbitmq.RabbitMQClient();
-            this.client.connect(uri);
+//            this.client.connect(uri);
+            this.client.connect(user,pwd, host, Integer.valueOf(port), keyspace);
             this.channel = this.client.newChannel(EXCHANGE);
             LOG.info("RabbitMQ Event-Bus initialized successfully");
         } catch (IOException | TimeoutException | NoSuchAlgorithmException | KeyManagementException | URISyntaxException e) {

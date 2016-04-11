@@ -27,6 +27,12 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
     private static final Logger LOG = LoggerFactory.getLogger(UnifiedColumnRepository.class);
 
     @Override
+    public long count(Resource.Type type){
+        return factory.repositoryOf(type).count();
+    }
+
+
+    @Override
     public void save(Resource resource){
         try{
             factory.repositoryOf(resource.getResourceType()).save(ResourceUtils.map(resource, factory.mappingOf(resource.getResourceType())));

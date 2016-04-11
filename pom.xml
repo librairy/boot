@@ -205,6 +205,7 @@
                 <version>${camel.version}</version>
             </dependency>
 
+
             <!-- Cassandra Libraries -->
             <dependency>
                 <groupId>org.hectorclient</groupId>

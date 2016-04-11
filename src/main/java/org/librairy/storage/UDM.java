@@ -1,6 +1,7 @@
 package org.librairy.storage;
 
 import org.librairy.model.domain.relations.Relation;
+import org.librairy.model.domain.resources.Resource;
 import org.librairy.storage.actions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,14 +89,14 @@ public class UDM {
         return new SearchRelationAction(helper,type);
     }
 
-//    /**
-//     * Count 'type' resources
-//     * @param type
-//     * @return uris
-//     */
-//    public CountResourceAction count(Resource.Type type){
-//        return new CountResourceAction(helper,type);
-//    }
+    /**
+     * Count 'type' resources
+     * @param type
+     * @return uris
+     */
+    public CountResourceAction count(Resource.Type type){
+        return new CountResourceAction(helper,type);
+    }
 
     /**
      * Count 'type' relations
@@ -105,9 +106,6 @@ public class UDM {
     public CountRelationAction count(Relation.Type type){
         return new CountRelationAction(helper,type);
     }
-
-
-
 
     /**
      * Delete 'type' resources

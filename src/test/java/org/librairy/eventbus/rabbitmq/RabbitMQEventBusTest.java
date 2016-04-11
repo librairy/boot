@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = EventBusConfig.class)
 @TestPropertySource(properties = {
-        "librairy.eventbus.host=drinventor.dia.fi.upm.es",
+        "librairy.eventbus.host=wiig.dia.fi.upm.es",
         "librairy.eventbus.port=5041",
         "librairy.eventbus.user=librairy",
         "librairy.eventbus.password=drinventor",

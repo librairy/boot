@@ -23,7 +23,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
         "librairy.elasticsearch.port = 5021",
         "librairy.neo4j.contactpoints = wiig.dia.fi.upm.es",
         "librairy.neo4j.port = 5030",
-        "librairy.eventbus.host = wiig.dia.fi.upm.es"
+        "librairy.eventbus.host = wiig.dia.fi.upm.es",
+        "librairy.eventbus.port = 5041"
 })
 public class DeployTest {
 

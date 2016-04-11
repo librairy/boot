@@ -28,8 +28,8 @@ public class SaveRelationAction {
             relation.setUri(helper.getUriGenerator().newFor(relation.getType()));
         }
 
-        Random random = new Random();
-        helper.getQueryExecutor().execute(new QueryTask(() -> {
+//        Random random = new Random();
+//        helper.getQueryExecutor().execute(new QueryTask(() -> {
             try{
                 LOG.debug("trying to save :" + relation);
 
@@ -43,6 +43,8 @@ public class SaveRelationAction {
                 }else{
                     helper.getUnifiedEdgeGraphRepository().save(relation);
                 }
+//                Thread.sleep(500);
+//                helper.getUnifiedEdgeGraphRepository().save(relation);
 
                 transaction.commit();
 
@@ -51,11 +53,9 @@ public class SaveRelationAction {
                 //Publish the event
                 helper.getEventBus().post(Event.from(ResourceUtils.map(relation,Relation.class)), RoutingKey.of(relation.getType(), Relation.State.CREATED));
             }catch (Exception e){
-                LOG.error("Unexpected error while saving relation: "+relation,e);
+                throw new RuntimeException("Unexpected error while saving relation: "+relation,e);
             }
-        }, 10, 50L + random.nextInt(100)));
-
-
+//        }, 10, 50L + random.nextInt(100)));
 
     }
 

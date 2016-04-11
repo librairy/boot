@@ -66,4 +66,10 @@ public class TemplateExecutor extends RepeatableActionExecutor{
         return (QueryStatistics) result.get();
     }
 
+
+    public void deleteAll(Class<Object> type){
+        template.deleteAll(type);
+    }
+
+
 }

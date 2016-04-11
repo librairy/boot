@@ -26,7 +26,7 @@ public class File extends Resource {
     public static final String DOMAIN="domain";
     private String domain = "";
 
-    public static final String METAINFORMATION="metainformation";
-    private MetaInformation metainformation;
+    public static final String AGGREGATEDFROM="aggregatedFrom";
+    private String aggregatedFrom;
 
 }

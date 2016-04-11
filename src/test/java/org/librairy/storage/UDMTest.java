@@ -5,9 +5,12 @@ import org.librairy.Config;
 import org.librairy.model.Event;
 import org.librairy.model.domain.relations.HypernymOf;
 import org.librairy.model.domain.relations.Relation;
+import org.librairy.model.domain.resources.Document;
+import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.modules.BindingKey;
 import org.librairy.model.modules.EventBus;
 import org.librairy.model.modules.EventBusSubscriber;
+import org.librairy.storage.actions.CountResourceAction;
 import org.librairy.storage.generator.URIGenerator;
 import org.librairy.storage.system.document.domain.WordDocument;
 import org.librairy.storage.system.document.repository.WordDocumentRepository;
@@ -40,14 +43,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
 @TestPropertySource(properties = {
-        "librairy.cassandra.contactpoints = drinventor.dia.fi.upm.es",
+        "librairy.cassandra.contactpoints = zavijava.dia.fi.upm.es",
         "librairy.cassandra.port = 5011",
         "librairy.cassandra.keyspace = research",
-        "librairy.elasticsearch.contactpoints = drinventor.dia.fi.upm.es",
+        "librairy.elasticsearch.contactpoints = zavijava.dia.fi.upm.es",
         "librairy.elasticsearch.port = 5021",
-        "librairy.neo4j.contactpoints = drinventor.dia.fi.upm.es",
+        "librairy.neo4j.contactpoints = zavijava.dia.fi.upm.es",
         "librairy.neo4j.port = 5030",
-        "librairy.eventbus.host = drinventor.dia.fi.upm.es"})
+        "librairy.eventbus.host = zavijava.dia.fi.upm.es",
+        "librairy.eventbus.port=5041",})
 public class UDMTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(UDMTest.class);
@@ -163,16 +167,76 @@ public class UDMTest {
 
 
     @Test
-    public void read(){
+    public void read() throws InterruptedException {
 
-        String startUri = "http://drinventor.eu/documents/af351b184d0bc10597573d31544a23a4";
-        String endUri = "http://drinventor.eu/topics/72510e5c-f3b3-4a17-ab43-bc64b67a7db3";
 
-        System.out.println(udm.find(Relation.Type.DEALS_WITH_FROM_DOCUMENT).btw(startUri, endUri));
+//        List<String> docs = udm.find(Resource.Type.DOCUMENT).from(Resource.Type.DOMAIN, "http://librairy" +
+//                ".org/domains/default");
+//
+//        System.out.println("Found: " + docs.size() + " documents");
+
+        long documents = 0;
+        long items = 0;
+        long delay = 5000l;
+        while(true){
+
+            long newDocs                = countFor(Resource.Type.DOCUMENT);
+            long incrementDocs          = newDocs - documents;
+            Double rateDocs             = Double.valueOf(incrementDocs) / Double.valueOf(delay/1000);
+            LOG.info("Rate Docs creation: " + rateDocs  + " docs/sec");
+            documents = newDocs;
+
+            long newItems           = countFor(Resource.Type.ITEM);
+            long incrementItems     = newItems - items;
+            Double rateItems        = Double.valueOf(incrementDocs) / Double.valueOf(delay/1000);
+            LOG.info("Rate Items creation: " + rateDocs  + " items/sec");
+            items = newItems;
+
+//            long docs = udm.count(Resource.Type.DOCUMENT).all();
+//            long items = udm.count(Resource.Type.ITEM).all();
+//            System.out.println("Node Items: " + items);
+
+            Thread.sleep(delay);
+        }
+    }
+
+    private long countFor(Resource.Type type){
+        long dDocs = helper.getUnifiedDocumentRepository().count(type);
+        long cDocs = helper.getUnifiedColumnRepository().count(type);
+        long n1Docs = helper.getTemplateFactory().of(type).countAll();
+        long n2Docs = helper.getUnifiedNodeGraphRepository().count(type);
+        LOG.info(type.name() + "s from [ElasticSearch=" + dDocs+"] [Cassandra="+cDocs+"] [Neo4j(template)" +
+                "="+n1Docs+"] [Neo4j(repository)="+n2Docs+"]");
+        return dDocs;
+    }
+
+    @Test
+    public void purge(){
+        udm.delete(Resource.Type.ANY).all();
+        udm.delete(Relation.Type.ANY).all();
     }
 
 
     @Test
+    public void save(){
+
+        for (int i =0;i<1060;i++){
+            Document doc = Resource.newDocument();
+            doc.setUri(uriGenerator.from(Resource.Type.DOCUMENT,""+i));
+            udm.save(doc);
+        }
+
+        Document doc = Resource.newDocument();
+        doc.setUri(uriGenerator.from(Resource.Type.DOCUMENT,"critical"));
+        udm.save(doc);
+
+
+    }
+
+
+
+    @Test
+
     public void findFrom(){
         String uri = "http://drinventor.eu/items/a5179367d5ebf825f01d9247dacae66";
         List<String> domains = udm.find(org.librairy.model.domain.resources.Resource.Type.DOMAIN).from(org.librairy.model.domain.resources.Resource.Type.ITEM, uri);
