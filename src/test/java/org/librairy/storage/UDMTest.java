@@ -176,20 +176,27 @@ public class UDMTest {
 //        System.out.println("Found: " + docs.size() + " documents");
 
         long documents = 0;
+        double docRate = 0.0;
+
         long items = 0;
+        double itemRate = 0.0;
+
         long delay = 5000l;
         while(true){
 
             long newDocs                = countFor(Resource.Type.DOCUMENT);
             long incrementDocs          = newDocs - documents;
             Double rateDocs             = Double.valueOf(incrementDocs) / Double.valueOf(delay/1000);
-            LOG.info("Rate Docs creation: " + rateDocs  + " docs/sec");
+            docRate = (docRate + rateDocs) /2.0;
+            LOG.info("Docs creation. [instant: " + rateDocs  + " docs/sec] [mean: " + docRate + " docs/sec]");
             documents = newDocs;
 
             long newItems           = countFor(Resource.Type.ITEM);
             long incrementItems     = newItems - items;
-            Double rateItems        = Double.valueOf(incrementDocs) / Double.valueOf(delay/1000);
-            LOG.info("Rate Items creation: " + rateDocs  + " items/sec");
+
+            Double rateItems        = Double.valueOf(incrementItems) / Double.valueOf(delay/1000);
+            itemRate = (itemRate + rateItems) /2.0;
+            LOG.info("Items creation. [instant: " + rateItems  + " items/sec] [mean: " + itemRate + " items/sec]");
             items = newItems;
 
 //            long docs = udm.count(Resource.Type.DOCUMENT).all();
@@ -220,14 +227,8 @@ public class UDMTest {
     @Test
     public void save(){
 
-        for (int i =0;i<1060;i++){
-            Document doc = Resource.newDocument();
-            doc.setUri(uriGenerator.from(Resource.Type.DOCUMENT,""+i));
-            udm.save(doc);
-        }
-
         Document doc = Resource.newDocument();
-        doc.setUri(uriGenerator.from(Resource.Type.DOCUMENT,"critical"));
+        doc.setUri("sample");
         udm.save(doc);
 
 
