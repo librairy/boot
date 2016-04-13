@@ -40,6 +40,12 @@ public abstract class NodeTemplate {
         return type;
     }
 
+    public void save(Resource resource){
+        String query = "create (n:"+typeId()+" { uri: {0} , creationTime: {1} })";
+        Map params = ImmutableMap.of("0",resource.getUri(), "1", resource.getCreationTime());
+        executor.query(query, params);
+    }
+
     public List<Relation> findOne(String startUri, String endUri) {
         throw new RuntimeException("Not implemented yet");
     }

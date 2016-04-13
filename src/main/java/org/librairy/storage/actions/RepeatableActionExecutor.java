@@ -1,6 +1,7 @@
 package org.librairy.storage.actions;
 
 import org.librairy.storage.exception.RepositoryNotFound;
+import org.neo4j.ogm.exception.CypherException;
 import org.neo4j.ogm.exception.ResultProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,13 @@ public abstract class RepeatableActionExecutor {
         try {
             return Optional.of(function.run());
         }catch (ResultProcessingException | NullPointerException e){
-            if (retries > MAX_RETRIES){
+            if (( e.getCause() != null) &&
+                    ( e.getCause() instanceof CypherException) &&
+                    (e.getCause().getMessage().contains("ConstraintViolation"))){
+                LOG.warn("Constraint Violation trying to execute: " + id + "=> " + ((CypherException) e.getCause()).getDescription());
+                return Optional.empty();
+            }
+            else if (retries > MAX_RETRIES){
                 LOG.error("Error executing "+id+" after " + MAX_RETRIES + " retries",e);
                 return Optional.empty();
             }

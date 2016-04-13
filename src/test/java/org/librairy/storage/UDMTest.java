@@ -228,7 +228,8 @@ public class UDMTest {
     public void save(){
 
         Document doc = Resource.newDocument();
-        doc.setUri("sample");
+        doc.setUri("http://librairy.org/documents/H0002114");
+        doc.setCreationTime("2016-04-12T16:26+0000");
         udm.save(doc);
 
 
