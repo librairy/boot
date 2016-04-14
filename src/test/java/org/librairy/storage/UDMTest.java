@@ -1,8 +1,14 @@
 package org.librairy.storage;
 
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Select;
 import es.cbadenes.lab.test.IntegrationTest;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.librairy.Config;
 import org.librairy.model.Event;
+import org.librairy.model.domain.LinkableElement;
 import org.librairy.model.domain.relations.HypernymOf;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Document;
@@ -29,14 +35,16 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 /**
  * Created by cbadenes on 01/01/16.
@@ -183,6 +191,30 @@ public class UDMTest {
 //
 //        System.out.println(itemUris);
 
+
+//        Iterator<Map<String, Object>> result = udm.queryGraph("match (d:Document) return count " +
+//                "(d)");
+//
+//        System.out.println(result);
+
+
+//        Select select = QueryBuilder.select().from("research", "items");
+//        select.where(QueryBuilder.eq("uri","http://librairy.org/items/297f44cc83545ea4d9ce5ceb0d8aadb2"));
+//
+//        List<LinkableElement> result = udm.queryColumn(select);
+//
+//        System.out.println(result);
+
+
+//        SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery())
+//                .withQuery(QueryBuilders.termQuery("content", "communication"))
+//                .withHighlightFields(new HighlightBuilder.Field("message"))
+//                .withPageable(new PageRequest(0, 10))
+//                .build();
+//
+//        List<String> result = udm.queryDocument(searchQuery);
+//
+//        System.out.println(result);
 
         long documents = 0;
         double docRate = 0.0;
