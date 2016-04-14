@@ -6,7 +6,9 @@ import org.librairy.model.Event;
 import org.librairy.model.domain.relations.HypernymOf;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Document;
+import org.librairy.model.domain.resources.Domain;
 import org.librairy.model.domain.resources.Resource;
+import org.librairy.model.domain.resources.Source;
 import org.librairy.model.modules.BindingKey;
 import org.librairy.model.modules.EventBus;
 import org.librairy.model.modules.EventBusSubscriber;
@@ -51,7 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         "librairy.neo4j.contactpoints = zavijava.dia.fi.upm.es",
         "librairy.neo4j.port = 5030",
         "librairy.eventbus.host = zavijava.dia.fi.upm.es",
-        "librairy.eventbus.port=5041",})
+        "librairy.eventbus.port=5041"})
 public class UDMTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(UDMTest.class);
@@ -175,6 +177,13 @@ public class UDMTest {
 //
 //        System.out.println("Found: " + docs.size() + " documents");
 
+//        List<String> sources = udm.find(Resource.Type.SOURCE).all();
+//
+//        List<String> itemUris = udm.find(Resource.Type.ITEM).from(Resource.Type.SOURCE, sources.get(0));
+//
+//        System.out.println(itemUris);
+
+
         long documents = 0;
         double docRate = 0.0;
 
@@ -208,13 +217,15 @@ public class UDMTest {
     }
 
     private long countFor(Resource.Type type){
-        long dDocs = helper.getUnifiedDocumentRepository().count(type);
-        long cDocs = helper.getUnifiedColumnRepository().count(type);
+//        long dDocs = helper.getUnifiedDocumentRepository().count(type);
+//        long cDocs = helper.getUnifiedColumnRepository().count(type);
         long n1Docs = helper.getTemplateFactory().of(type).countAll();
-        long n2Docs = helper.getUnifiedNodeGraphRepository().count(type);
-        LOG.info(type.name() + "s from [ElasticSearch=" + dDocs+"] [Cassandra="+cDocs+"] [Neo4j(template)" +
-                "="+n1Docs+"] [Neo4j(repository)="+n2Docs+"]");
-        return dDocs;
+//        long n2Docs = helper.getUnifiedNodeGraphRepository().count(type);
+//        LOG.info(type.name() + "s from [ElasticSearch=" + dDocs+"] [Cassandra="+cDocs+"] [Neo4j(template)" +
+//                "="+n1Docs+"] [Neo4j(repository)="+n2Docs+"]");
+        LOG.info(type.name() + "s from [[Neo4j(template)" +
+                "="+n1Docs+"]");
+        return n1Docs;
     }
 
     @Test

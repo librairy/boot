@@ -30,7 +30,14 @@ public class SearchResourceAction {
         LOG.debug("Finding " + type.name() + "s");
         List<String> uris = new ArrayList<>();
         try{
-            helper.getUnifiedNodeGraphRepository().findAll(type).forEach(x -> uris.add(x.getUri()));
+
+
+            if (helper.getTemplateFactory().handle(type)){
+                helper.getTemplateFactory().of(type).findAll().forEach(x -> uris.add(x.getUri()));
+            }else{
+                helper.getUnifiedNodeGraphRepository().findAll(type).forEach(x -> uris.add(x.getUri()));
+            }
+
             LOG.trace(type.name() + "s: " + uris);
         }catch (Exception e){
             LOG.error("Unexpected error while getting all " + type,e);
@@ -51,7 +58,15 @@ public class SearchResourceAction {
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-            helper.getUnifiedNodeGraphRepository().findFrom(type, referenceType,referenceURI).forEach(x -> uris.add(x.getUri()));
+
+            if (helper.getTemplateFactory().handle(type)){
+                helper.getTemplateFactory().of(type).findFrom(referenceType,referenceURI).forEach(x -> uris.add(x.getUri()));
+            }else{
+                helper.getUnifiedNodeGraphRepository().findFrom(type, referenceType,referenceURI).forEach(x -> uris.add(x.getUri()));
+            }
+
+
+
 
             transaction.commit();
             LOG.debug("In "+referenceType+": " + referenceURI + " found: ["+type + "]: " + uris);

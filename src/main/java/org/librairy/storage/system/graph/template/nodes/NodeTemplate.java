@@ -1,9 +1,11 @@
 package org.librairy.storage.system.graph.template.nodes;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
+import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.system.graph.repository.nodes.UnifiedNodeGraphRepositoryFactory;
 import org.librairy.storage.system.graph.template.TemplateExecutor;
 import org.neo4j.ogm.model.Result;
@@ -11,9 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by cbadenes on 28/02/16.
@@ -40,22 +40,38 @@ public abstract class NodeTemplate {
         return type;
     }
 
+    public abstract String pathTo(Resource.Type type);
+
     public void save(Resource resource){
         String query = "create (n:"+typeId()+" { uri: {0} , creationTime: {1} })";
         Map params = ImmutableMap.of("0",resource.getUri(), "1", resource.getCreationTime());
-        executor.query(query, params);
+        executor.execute(query, params);
     }
 
-    public List<Relation> findOne(String startUri, String endUri) {
-        throw new RuntimeException("Not implemented yet");
+    public List<Resource> findFrom(org.librairy.model.domain.resources.Resource.Type type, String uri) {
+        String query = "match " + pathTo(type) + " return n";
+        Map params = ImmutableMap.of("0",uri);
+        return _find(query,params);
     }
 
-    public List<Relation> findIn(org.librairy.model.domain.resources.Resource.Type type, String uri) {
-        throw new RuntimeException("Not implemented yet");
+    public List<Resource> findAll() {
+        String query = "match (n:"+typeId()+") return n";
+        return _find(query, ImmutableMap.of());
     }
 
-    public List<Relation> findAll() {
-        throw new RuntimeException("Not implemented yet");
+    private List<Resource> _find(String query, Map params){
+        Optional<Result> results = executor.query(query, params);
+
+        if (!results.isPresent()) return Collections.EMPTY_LIST;
+
+        Iterator<Map<String, Object>> iterator = results.get().queryResults().iterator();
+        List<Resource> resources = new ArrayList<>();
+        while(iterator.hasNext()){
+            Map<String, Object> resource = iterator.next();
+            resources.add((Resource) resource.get("n"));
+        }
+
+        return resources;
     }
 
     public Long countAll(){
