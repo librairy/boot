@@ -1,5 +1,7 @@
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.model.domain.relations.Relation;
+import org.librairy.model.domain.resources.Resource;
 import org.librairy.storage.exception.RepositoryNotFound;
 import org.librairy.storage.system.column.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +41,12 @@ public class UnifiedColumnRepositoryFactory {
     TermColumnRepository termColumnRepository;
 
     @Autowired
+    BundleColumnRepository bundleColumnRepository;
+
+    @Autowired
     SerializedObjectColumnRepository serializedObjectColumnRepository;
 
-    public BaseColumnRepository repositoryOf(org.librairy.model.domain.resources.Resource.Type type) throws RepositoryNotFound {
+    public BaseColumnRepository repositoryOf(Resource.Type type) throws RepositoryNotFound {
         switch (type){
             case ANALYSIS: return analysisColumnRepository;
             case DOCUMENT: return documentColumnRepository;
@@ -57,7 +62,14 @@ public class UnifiedColumnRepositoryFactory {
         throw new RepositoryNotFound("Column Repository not found for " + type);
     }
 
-    public Class mappingOf(org.librairy.model.domain.resources.Resource.Type type){
+    public BaseColumnRepository repositoryOf(Relation.Type type) throws RepositoryNotFound {
+        switch (type){
+            case BUNDLES: return bundleColumnRepository;
+        }
+        throw new RepositoryNotFound("Column Repository not found for " + type);
+    }
+
+    public Class mappingOf(Resource.Type type){
         switch (type){
             case ANALYSIS: return AnalysisColumn.class;
             case DOCUMENT: return DocumentColumn.class;
@@ -69,6 +81,13 @@ public class UnifiedColumnRepositoryFactory {
             case WORD: return WordColumn.class;
             case TERM: return TermColumn.class;
             case SERIALIZED_OBJECT: return SerializedObjectColumn.class;
+        }
+        throw new RuntimeException("Mapping not found for " + type);
+    }
+
+    public Class mappingOf(Relation.Type type){
+        switch (type){
+            case BUNDLES: return BundleColumn.class;
         }
         throw new RuntimeException("Mapping not found for " + type);
     }

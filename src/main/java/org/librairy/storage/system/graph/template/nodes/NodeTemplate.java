@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.utils.ResourceUtils;
+import org.librairy.storage.system.column.repository.UnifiedColumnRepository;
 import org.librairy.storage.system.graph.repository.nodes.UnifiedNodeGraphRepositoryFactory;
 import org.librairy.storage.system.graph.template.TemplateExecutor;
 import org.neo4j.ogm.model.Result;
@@ -30,7 +31,6 @@ public abstract class NodeTemplate {
     @Autowired
     UnifiedNodeGraphRepositoryFactory unifiedNodeGraphRepositoryFactory;
 
-
     public NodeTemplate(Resource.Type type){
         this.type = type;
     }
@@ -48,7 +48,7 @@ public abstract class NodeTemplate {
         executor.execute(query, params);
     }
 
-    public List<Resource> findFrom(org.librairy.model.domain.resources.Resource.Type type, String uri) {
+    public List<Resource> findFrom(Resource.Type type, String uri) {
         String query = "match " + pathTo(type) + " return n";
         Map params = ImmutableMap.of("0",uri);
         return _find(query,params);
@@ -60,6 +60,7 @@ public abstract class NodeTemplate {
     }
 
     private List<Resource> _find(String query, Map params){
+
         Optional<Result> results = executor.query(query, params);
 
         if (!results.isPresent()) return Collections.EMPTY_LIST;

@@ -1,5 +1,6 @@
 package org.librairy.storage.actions;
 
+import org.librairy.model.domain.resources.Resource;
 import org.librairy.storage.Helper;
 import org.librairy.storage.session.UnifiedTransaction;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ public class SearchResourceAction {
      * @param referenceURI
      * @return
      */
-    public List<String> from(org.librairy.model.domain.resources.Resource.Type referenceType, String referenceURI){
+    public List<String> from(Resource.Type referenceType, String referenceURI){
         LOG.debug("Finding " + type.name() + "s in " + referenceType + ": " + referenceURI);
         List<String> uris = new ArrayList<>();
         try{
@@ -64,9 +65,6 @@ public class SearchResourceAction {
             }else{
                 helper.getUnifiedNodeGraphRepository().findFrom(type, referenceType,referenceURI).forEach(x -> uris.add(x.getUri()));
             }
-
-
-
 
             transaction.commit();
             LOG.debug("In "+referenceType+": " + referenceURI + " found: ["+type + "]: " + uris);

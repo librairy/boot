@@ -7,6 +7,7 @@ import org.librairy.model.modules.RoutingKey;
 import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.Helper;
 import org.librairy.storage.executor.QueryTask;
+import org.librairy.storage.generator.URIGenerator;
 import org.librairy.storage.session.UnifiedTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,37 +26,39 @@ public class SaveRelationAction {
 
         // initialize URI
         if (!relation.hasUri()){
-            relation.setUri(helper.getUriGenerator().newFor(relation.getType()));
+
+            String startId  = URIGenerator.retrieveId(relation.getStartUri());
+            String endId    = URIGenerator.retrieveId(relation.getEndUri());
+
+            relation.setUri(helper.getUriGenerator().from(relation.getType(),startId+"-"+endId));
         }
 
-//        Random random = new Random();
-//        helper.getQueryExecutor().execute(new QueryTask(() -> {
-            try{
-                LOG.debug("trying to save :" + relation);
+        try{
+            LOG.debug("trying to save :" + relation);
 
-                helper.getSession().clean();
-                UnifiedTransaction transaction = helper.getSession().beginTransaction();
+            helper.getSession().clean();
+            UnifiedTransaction transaction = helper.getSession().beginTransaction();
+
+            // Column Database
+            helper.getUnifiedColumnRepository().save(relation);
 
 
-
-                if (helper.getTemplateFactory().handle(relation.getType())){
-                    helper.getTemplateFactory().of(relation.getType()).save(relation);
-                }else{
-                    helper.getUnifiedEdgeGraphRepository().save(relation);
-                }
-//                Thread.sleep(500);
-//                helper.getUnifiedEdgeGraphRepository().save(relation);
-
-                transaction.commit();
-
-                LOG.debug("Relation Saved: " + relation);
-
-                //Publish the event
-                helper.getEventBus().post(Event.from(ResourceUtils.map(relation,Relation.class)), RoutingKey.of(relation.getType(), Relation.State.CREATED));
-            }catch (Exception e){
-                throw new RuntimeException("Unexpected error while saving relation: "+relation,e);
+            // Graph Database
+            if (helper.getTemplateFactory().handle(relation.getType())){
+                helper.getTemplateFactory().of(relation.getType()).save(relation);
+            }else{
+                helper.getUnifiedEdgeGraphRepository().save(relation);
             }
-//        }, 10, 50L + random.nextInt(100)));
+
+            transaction.commit();
+
+            LOG.debug("Relation Saved: " + relation);
+
+            //Publish the event
+            helper.getEventBus().post(Event.from(ResourceUtils.map(relation,Relation.class)), RoutingKey.of(relation.getType(), Relation.State.CREATED));
+        }catch (Exception e){
+            throw new RuntimeException("Unexpected error while saving relation: "+relation,e);
+        }
 
     }
 

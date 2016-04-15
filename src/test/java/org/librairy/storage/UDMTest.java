@@ -9,6 +9,7 @@ import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.librairy.Config;
 import org.librairy.model.Event;
 import org.librairy.model.domain.LinkableElement;
+import org.librairy.model.domain.relations.Bundles;
 import org.librairy.model.domain.relations.HypernymOf;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Document;
@@ -60,7 +61,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
         "librairy.elasticsearch.port = 5021",
         "librairy.neo4j.contactpoints = zavijava.dia.fi.upm.es",
         "librairy.neo4j.port = 5030",
-        "librairy.eventbus.host = zavijava.dia.fi.upm.es",
+        "librairy.eventbus.host = localhost",
         "librairy.eventbus.port=5041"})
 public class UDMTest {
 
@@ -216,6 +217,22 @@ public class UDMTest {
 //
 //        System.out.println(result);
 
+
+        Iterable<Relation> res = helper.getUnifiedColumnRepository().findBy(Relation.Type.BUNDLES, "item",
+                "http://librairy" +
+                        ".org/items/297f44cc83545ea4d9ce5ceb0d8aadb2");
+
+
+        List<String> doc = udm.find(Resource.Type.DOCUMENT).from(Resource.Type.ITEM, "http://librairy" +
+                ".org/items/297f44cc83545ea4d9ce5ceb0d8aadb2");
+
+
+        System.out.println(doc);
+
+
+//        Boolean res = helper.getUnifiedDocumentRepository().exists(Resource.Type.ITEM, "http://librairy" +
+//                ".org/items/297f44cc83545ea4d9ce5ceb0d8aadb3");
+
         long documents = 0;
         double docRate = 0.0;
 
@@ -270,10 +287,30 @@ public class UDMTest {
     @Test
     public void save(){
 
-        Document doc = Resource.newDocument();
-        doc.setUri("http://librairy.org/documents/H0002114");
-        doc.setCreationTime("2016-04-12T16:26+0000");
-        udm.save(doc);
+
+        List<Relation> relations = udm.find(Relation.Type.BUNDLES).all();
+
+        relations.stream().parallel().forEach(relation -> {
+            LOG.info("saving relation: " + relation.getUri());
+            helper.getUnifiedColumnRepository().save(relation);
+        });
+
+
+
+
+
+
+
+//        String document = "http://librairy.org/documents/07043092";
+//        String item     = "http://librairy.org/items/b4e1576bf9fb01271e78c52947b12644";
+//        Bundles bundle = Relation.newBundles(document,item);
+//        udm.save(bundle);
+
+
+//        Document doc = Resource.newDocument();
+//        doc.setUri("http://librairy.org/documents/06856810");
+//        doc.setCreationTime("2016-04-12T16:26+0000");
+//        udm.save(doc);
 
 
     }

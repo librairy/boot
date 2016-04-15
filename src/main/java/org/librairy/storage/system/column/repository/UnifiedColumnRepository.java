@@ -1,6 +1,7 @@
 package org.librairy.storage.system.column.repository;
 
 import org.apache.commons.lang.WordUtils;
+import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.system.graph.repository.Repository;
@@ -39,6 +40,16 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
             LOG.debug("Resource: " + resource + " saved");
         }catch (RuntimeException e){
             LOG.warn(e.getMessage());
+        }
+    }
+
+    public void save(Relation resource){
+        try{
+            factory.repositoryOf(resource.getType()).save(ResourceUtils.map(resource, factory.mappingOf(resource
+                    .getType())));
+            LOG.debug("Relation: " + resource + " saved");
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage(),e);
         }
     }
 
@@ -81,6 +92,10 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
         return find("findBy",resultType,field,value);
     }
 
+    public Iterable<Relation> findBy(Relation.Type resultType, String field, String value) {
+        return find("findBy",resultType,field,value);
+    }
+
     @Override
     public Iterable<Resource> findFrom(Resource.Type resultType, Resource.Type referenceType, String referenceURI) {
         return find("findBy",resultType,referenceType.key(),referenceURI);
@@ -101,6 +116,20 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
             LOG.warn(e.getMessage());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             LOG.warn("No such method to find: " + e.getMessage());
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    private Iterable<Relation> find(String prefix, Relation.Type result,String reference,String value) {
+        try{
+            BaseColumnRepository repository = factory.repositoryOf(result);
+            Method method                   = findMethod(prefix,reference,repository.getClass());
+            Iterable<Relation> resources    = (Iterable<Relation>) method.invoke(repository, value);
+            return resources;
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            LOG.warn("No such method to find: " + e.getMessage(),e);
         }
         return Collections.EMPTY_LIST;
     }
