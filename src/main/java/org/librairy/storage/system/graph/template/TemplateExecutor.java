@@ -50,7 +50,7 @@ public class TemplateExecutor extends RepeatableActionExecutor{
     }
 
 
-    public QueryStatistics execute(String query, Map<String, Object> parameters){
+    public void execute(String query, Map<String, Object> parameters){
         Long start = System.currentTimeMillis();
         Optional<Object> result = performRetries(0, query + " => PARAMS: " + Arrays.toString(parameters.entrySet().toArray()),
                 () -> {
@@ -64,8 +64,6 @@ public class TemplateExecutor extends RepeatableActionExecutor{
         });
         Period period = new Interval(start, System.currentTimeMillis()).toPeriod();
         LOG.debug("Executed : " + query + " in: " + period.getMinutes() + " minutes, " + period.getSeconds() + " seconds [" + query+"]");
-        if (!result.isPresent()) throw new RuntimeException("Operation not completed");
-        return (QueryStatistics) result.get();
     }
 
 

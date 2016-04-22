@@ -44,6 +44,45 @@ public class UnifiedColumnRepositoryFactory {
     BundleColumnRepository bundleColumnRepository;
 
     @Autowired
+    AggregateColumnRepository aggregateColumnRepository;
+
+    @Autowired
+    AppearedInColumnRepository appearedInColumnRepository;
+
+    @Autowired
+    ComposeColumnRepository composeColumnRepository;
+
+    @Autowired
+    ContainColumnRepository containColumnRepository;
+
+    @Autowired
+    DealsWithColumnRepository dealsWithColumnRepository;
+
+    @Autowired
+    DescribesColumnRepository describesColumnRepository;
+
+    @Autowired
+    EmbeddedInColumnRepository embeddedInColumnRepository;
+
+    @Autowired
+    EmergesInColumnRepository emergesInColumnRepository;
+
+    @Autowired
+    HypernymColumnRepository hypernymColumnRepository;
+
+    @Autowired
+    MentionsColumnRepository mentionsColumnRepository;
+
+    @Autowired
+    PairsWithColumnRepository pairsWithColumnRepository;
+
+    @Autowired
+    ProvideColumnRepository provideColumnRepository;
+
+    @Autowired
+    SimilarToColumnRepository similarToColumnRepository;
+
+    @Autowired
     SerializedObjectColumnRepository serializedObjectColumnRepository;
 
     public BaseColumnRepository repositoryOf(Resource.Type type) throws RepositoryNotFound {
@@ -65,6 +104,24 @@ public class UnifiedColumnRepositoryFactory {
     public BaseColumnRepository repositoryOf(Relation.Type type) throws RepositoryNotFound {
         switch (type){
             case BUNDLES: return bundleColumnRepository;
+            case AGGREGATES: return aggregateColumnRepository;
+            case APPEARED_IN: return appearedInColumnRepository;
+            case COMPOSES: return composeColumnRepository;
+            case CONTAINS: return containColumnRepository;
+            case DEALS_WITH_FROM_DOCUMENT:
+            case DEALS_WITH_FROM_ITEM:
+            case DEALS_WITH_FROM_PART: return dealsWithColumnRepository;
+            case DESCRIBES: return describesColumnRepository;
+            case EMBEDDED_IN: return embeddedInColumnRepository;
+            case EMERGES_IN: return emergesInColumnRepository;
+            case HYPERNYM_OF: return hypernymColumnRepository;
+            case MENTIONS_FROM_TERM:
+            case MENTIONS_FROM_TOPIC: return mentionsColumnRepository;
+            case PAIRS_WITH: return pairsWithColumnRepository;
+            case PROVIDES: return provideColumnRepository;
+            case SIMILAR_TO_DOCUMENTS:
+            case SIMILAR_TO_ITEMS:
+            case SIMILAR_TO_PARTS: return similarToColumnRepository;
         }
         throw new RepositoryNotFound("Column Repository not found for " + type);
     }
@@ -88,6 +145,24 @@ public class UnifiedColumnRepositoryFactory {
     public Class mappingOf(Relation.Type type){
         switch (type){
             case BUNDLES: return BundleColumn.class;
+            case AGGREGATES: return AggregateColumn.class;
+            case APPEARED_IN: return AppearedInColumn.class;
+            case COMPOSES: return ComposeColumn.class;
+            case CONTAINS: return ContainColumn.class;
+            case DEALS_WITH_FROM_DOCUMENT:
+            case DEALS_WITH_FROM_ITEM:
+            case DEALS_WITH_FROM_PART: return DealsWithColumn.class;
+            case DESCRIBES: return DescribeColumn.class;
+            case EMBEDDED_IN: return EmbeddedInColumn.class;
+            case EMERGES_IN: return EmergeInColumn.class;
+            case HYPERNYM_OF: return HypernymOfColumn.class;
+            case MENTIONS_FROM_TERM:
+            case MENTIONS_FROM_TOPIC: return MentionsColumn.class;
+            case PAIRS_WITH: return PairsWithColumn.class;
+            case PROVIDES: return ProvideColumn.class;
+            case SIMILAR_TO_DOCUMENTS:
+            case SIMILAR_TO_ITEMS:
+            case SIMILAR_TO_PARTS: return SimilarToColumn.class;
         }
         throw new RuntimeException("Mapping not found for " + type);
     }

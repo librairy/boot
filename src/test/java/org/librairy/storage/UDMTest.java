@@ -54,12 +54,12 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
 @TestPropertySource(properties = {
-        "librairy.cassandra.contactpoints = zavijava.dia.fi.upm.es",
+        "librairy.cassandra.contactpoints = wiig.dia.fi.upm.es",
         "librairy.cassandra.port = 5011",
         "librairy.cassandra.keyspace = research",
-        "librairy.elasticsearch.contactpoints = zavijava.dia.fi.upm.es",
+        "librairy.elasticsearch.contactpoints = wiig.dia.fi.upm.es",
         "librairy.elasticsearch.port = 5021",
-        "librairy.neo4j.contactpoints = zavijava.dia.fi.upm.es",
+        "librairy.neo4j.contactpoints = wiig.dia.fi.upm.es",
         "librairy.neo4j.port = 5030",
         "librairy.eventbus.host = localhost",
         "librairy.eventbus.port=5041"})
@@ -281,6 +281,36 @@ public class UDMTest {
     public void purge(){
         udm.delete(Resource.Type.ANY).all();
         udm.delete(Relation.Type.ANY).all();
+    }
+
+
+    @Test
+    public void relations(){
+
+        _saveRelation(Relation.newAggregates("u1","u2"));
+        _saveRelation(Relation.newAppearedIn("u1","u2"));
+        _saveRelation(Relation.newBundles("u1","u2"));
+        _saveRelation(Relation.newComposes("u1","u2"));
+        _saveRelation(Relation.newContains("u1","u2"));
+        _saveRelation(Relation.newContains("u1","u2"));
+        _saveRelation(Relation.newDealsWithFromDocument("u1","u2"));
+        _saveRelation(Relation.newDealsWithFromItem("i1","i2"));
+        _saveRelation(Relation.newDealsWithFromPart("p1","p2"));
+        _saveRelation(Relation.newDescribes("u1","u2"));
+        _saveRelation(Relation.newEmbeddedIn("u1","u2"));
+        _saveRelation(Relation.newEmergesIn("u1","u2"));
+        _saveRelation(Relation.newHypernymOf("u1","u2"));
+        _saveRelation(Relation.newMentionsFromTerm("u1","u2"));
+        _saveRelation(Relation.newMentionsFromTopic("t1","t2"));
+        _saveRelation(Relation.newPairsWith("u1","u2"));
+        _saveRelation(Relation.newProvides("u1","u2"));
+    }
+
+    private void _saveRelation(Relation relation){
+        LOG.info("Saving: " + relation.getType() + " ...");
+        relation.setUri(UUID.randomUUID().toString());
+        helper.getUnifiedColumnRepository().save(relation);
+        LOG.info("Saved: " + relation.getType());
     }
 
 
