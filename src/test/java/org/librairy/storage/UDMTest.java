@@ -61,7 +61,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
         "librairy.elasticsearch.port = 5021",
         "librairy.neo4j.contactpoints = wiig.dia.fi.upm.es",
         "librairy.neo4j.port = 5030",
-        "librairy.eventbus.host = localhost",
+        "librairy.eventbus.host = wiig.dia.fi.upm.es",
         "librairy.eventbus.port=5041"})
 public class UDMTest {
 
@@ -138,41 +138,17 @@ public class UDMTest {
     @Test
     public void fixModel(){
 
+        Source casaSource = Resource.newSource();
+        casaSource.setName("casa");
+        casaSource.setDescription("casa 2016 papers");
+        casaSource.setUrl("file://casa");
+        udm.save(casaSource);
 
-        // Remove 'd' term
-        List<String> uri = udm.find(org.librairy.model.domain.resources.Resource.Type.TERM).by(org.librairy.model.domain.resources.Term.CONTENT, "t");
-        System.out.println(uri);
-
-        udm.delete(org.librairy.model.domain.resources.Resource.Type.TERM).byUri(uri.get(0));
-
-//        udm.delete(Resource.Type.TOPIC).all();
-//        udm.delete(Resource.Type.WORD).all();
-//        udm.delete(Resource.Type.TERM).all();
-
-
-//        Domain domain = Resource.newDomain();
-//        domain.setUri("http://drinventor.eu/domains/7df34748-7fad-486e-a799-3bcd86a03499");
-//        domain.setName("siggraph");
-//
-//        System.out.println(udm.find(Resource.Type.DOMAIN).in(Resource.Type.SOURCE,"http://drinventor.eu/sources/00729c4c-f449-40d5-ae83-482278e83e9a"));
-//
-//        System.out.println(udm.find(Resource.Type.DOMAIN).all());
-//
-//
-
-//        System.out.println("adding documents to domain...");
-//        udm.find(Resource.Type.DOCUMENT).all().forEach(uri -> udm.save(Relation.newContains(domain.getUri(),uri)));
-
-//        List<String> items = udm.find(Resource.Type.ITEM).all();
-//        System.out.println("Total Items: " + items.size());
-//        List<String> itemsInDomain = udm.find(Resource.Type.ITEM).in(Resource.Type.DOMAIN, domain.getUri());
-//        System.out.println("Items in Domain: " + itemsInDomain.size());
-
-
-
-//        System.out.println("adding items to document to domain...");
-//        udm.find(Resource.Type.DOCUMENT).all().forEach(uri -> udm.save(Relation.newContains(domain.getUri(),uri)));
-
+        Source siggraphSource = Resource.newSource();
+        siggraphSource.setName("siggraph");
+        siggraphSource.setDescription("siggraph 2002-2015 papers");
+        siggraphSource.setUrl("file://siggraph");
+        udm.save(siggraphSource);
 
     }
 
