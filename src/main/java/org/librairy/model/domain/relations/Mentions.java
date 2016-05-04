@@ -19,9 +19,4 @@ public abstract class Mentions extends Relation{
     public org.librairy.model.domain.resources.Resource.Type getEndType() {
         return org.librairy.model.domain.resources.Resource.Type.WORD;
     }
-
-    @Override
-    public Double getWeight() {
-        return Double.valueOf(times);
-    }
 }

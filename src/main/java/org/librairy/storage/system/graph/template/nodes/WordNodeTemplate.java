@@ -17,7 +17,9 @@ public class WordNodeTemplate extends NodeTemplate {
     public String pathTo(Resource.Type type) {
         switch (type){
             case SOURCE:    return "(n:Word)-[:EMBEDDED_IN]->(:Domain)<-[:COMPOSES]-(source{uri:{0}})";
-            case DOMAIN:    return "(n:Word)-[:EMBEDDED_IN]->(domain{uri:{0}})";
+            case DOMAIN:    return "n where (:Domain{uri:{0}})<-[:EMBEDDED_IN]-(n:Word) or (:Domain{uri:{0}})" +
+                    "<-[:EMERGES_IN]-(:Topic)-[:MENTIONS]->(n:Word) or (:Domain{uri:{0}})<-[:APPEARED_IN]-(:Term)" +
+                    "-[:MENTIONS]->(n:Word)";
             case DOCUMENT:  return "(n:Word)<-[:MENTIONS]-(:Topic)<-[:DEALS_WITH]-(document{uri:{0}})";
             case ITEM:      return "(n:Word)<-[:MENTIONS]-(:Topic)<-[:DEALS_WITH]-(item{uri:{0}})";
             case PART:      return "(n:Word)<-[:MENTIONS]-(:Topic)<-[:DEALS_WITH]-(part{uri:{0}})";

@@ -14,6 +14,11 @@ public class SimilarPartEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "SIMILAR_TO";
+    }
+
+    @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Part)-[r:SIMILAR_TO]->(e:Part)";

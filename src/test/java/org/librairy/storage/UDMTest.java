@@ -11,6 +11,7 @@ import org.librairy.model.Event;
 import org.librairy.model.domain.LinkableElement;
 import org.librairy.model.domain.relations.Bundles;
 import org.librairy.model.domain.relations.HypernymOf;
+import org.librairy.model.domain.relations.MentionsFromTopic;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Document;
 import org.librairy.model.domain.resources.Domain;

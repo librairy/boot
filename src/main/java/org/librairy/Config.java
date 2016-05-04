@@ -11,7 +11,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  */
 @Configuration("librairy-boot")
 @ComponentScan({"org.librairy.storage", "org.librairy.eventbus"})
-@PropertySource({"classpath:storage.properties", "classpath:eventbus.properties"})
+@PropertySource({"classpath:boot.properties"})
 public class Config {
 
     public static final String EVENT_HOST = "MESSAGE_BROKER_HOST";

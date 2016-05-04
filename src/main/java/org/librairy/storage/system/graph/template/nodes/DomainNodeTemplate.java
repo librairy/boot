@@ -22,7 +22,9 @@ public class DomainNodeTemplate extends NodeTemplate {
             case ITEM:      return "(n:Domain)-[:CONTAINS]->(:Document)-[:BUNDLES]->(item{uri:{0}})";
             case PART:      return "(n:Domain)-[:CONTAINS]->(:Document)-[:BUNDLES]->(:Item)<-[:DESCRIBES]-(part{uri:{0}})";
             case TOPIC:     return "(n:Domain)<-[:EMERGES_IN]-(topic{uri:{0}})";
-            case WORD:      return "(n:Domain)<-[:EMBEDDED_IN]-(word{uri:{0}})";
+            case WORD:      return " n where (n:Domain)<-[:EMBEDDED_IN]-(:Word{uri:{0}}) or (n:Domain)" +
+                    "<-[:EMERGES_IN]-(:Topic)-[:MENTIONS]->(:Word{uri:{0}}) or (n:Domain)<-[:APPEARED_IN]-(:Term)" +
+                    "-[:MENTIONS]->(:Word{uri:{0}})";
             case TERM:      return "(n:Domain)<-[:APPEARED_IN]-(term{uri:{0}})";
             default: throw new RuntimeException("Path to " + type + " not handled from " + this.type);
         }

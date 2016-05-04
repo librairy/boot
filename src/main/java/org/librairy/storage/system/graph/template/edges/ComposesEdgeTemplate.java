@@ -15,6 +15,11 @@ public class ComposesEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "COMPOSES";
+    }
+
+    @Override
     protected String pathBy(Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Source)-[r:COMPOSES]->(e:Domain)";

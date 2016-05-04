@@ -42,7 +42,6 @@ public class SaveRelationAction {
             // Column Database
             helper.getUnifiedColumnRepository().save(relation);
 
-
             // Graph Database
             if (helper.getTemplateFactory().handle(relation.getType())){
                 helper.getTemplateFactory().of(relation.getType()).save(relation);

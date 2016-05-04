@@ -13,6 +13,11 @@ public class SimilarDocEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "SIMILAR_TO";
+    }
+
+    @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Document)-[r:SIMILAR_TO]->(e:Document)";

@@ -14,6 +14,11 @@ public class EmergesInEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "EMERGES_IN";
+    }
+
+    @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Topic)-[r:EMERGES_IN]->(e:Domain)";

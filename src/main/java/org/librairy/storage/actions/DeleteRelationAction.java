@@ -39,6 +39,9 @@ public class DeleteRelationAction {
                 helper.getUnifiedEdgeGraphRepository().deleteAll(type);
             }
 
+            // Column Database
+            helper.getUnifiedColumnRepository().deleteAll(type);
+
             transaction.commit();
 
             LOG.debug("Deleted All: "+type.name());
@@ -59,7 +62,14 @@ public class DeleteRelationAction {
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-            helper.getUnifiedEdgeGraphRepository().delete(type,uri);
+            if (helper.getTemplateFactory().handle(type)) {
+                helper.getTemplateFactory().of(type).delete(uri);
+            }else{
+                helper.getUnifiedEdgeGraphRepository().delete(type,uri);
+            }
+
+            // Column Database
+            helper.getUnifiedColumnRepository().delete(type,uri);
 
             transaction.commit();
 
@@ -79,16 +89,23 @@ public class DeleteRelationAction {
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
             if (helper.getTemplateFactory().handle(type)){
-                helper.getTemplateFactory().of(type).deleteIn(refType,uri);
+
+                helper.getTemplateFactory().of(type).findIn(refType,uri).forEach(relation -> byUri(relation.getUri()));
+                //helper.getTemplateFactory().of(type).deleteIn(refType,uri);
             }else{
                 Iterable<Relation> pairs = helper.getUnifiedEdgeGraphRepository().findFrom(type,refType, uri);
                 if (pairs != null){
                     StreamSupport.stream(pairs.spliterator(), false).parallel().forEach(pair -> {
                         helper.getUnifiedEdgeGraphRepository().delete(type,pair.getUri());
+
+                        // Column Database
+                        helper.getUnifiedColumnRepository().delete(type,pair.getUri());
                         LOG.debug("Deleted: "+type.name()+"[" + uri+"]");
                     });
                 }
             }
+
+
 
             //Publish the event
             //TODO

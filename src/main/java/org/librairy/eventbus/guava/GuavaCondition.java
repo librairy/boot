@@ -24,7 +24,7 @@ public class GuavaCondition implements Condition {
         String propHost = conditionContext.getEnvironment().getProperty("librairy.eventbus.host");
 
         boolean condition = false;
-        if (!propHost.startsWith("#")){
+        if (propHost != null && !propHost.startsWith("#")){
             condition =  propHost.startsWith("local");
         }else{
             condition =  ( Strings.isNullOrEmpty(host) || host.startsWith("local"));

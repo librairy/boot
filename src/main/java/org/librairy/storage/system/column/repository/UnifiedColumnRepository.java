@@ -77,6 +77,19 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
         return result;
     }
 
+
+    public Optional<Relation> read(Relation.Type type, String uri){
+        Optional<Relation> result = Optional.empty();
+        try{
+            Relation column = (Relation) factory.repositoryOf(type).findOne(BasicMapId.id(ResourceUtils.URI, uri));
+            if (column != null) result = Optional.of((Relation) ResourceUtils.map(column, Relation.classOf(type)));
+            LOG.debug("Relation read: " + column );
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        }
+        return result;
+    }
+
     @Override
     public Iterable<Resource> findAll(Resource.Type type){
         try{
@@ -144,8 +157,26 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
         }
     }
 
+    public void delete(Relation.Type type, String uri){
+        try{
+            factory.repositoryOf(type).delete(BasicMapId.id(ResourceUtils.URI, uri));
+            LOG.debug("Resource: " + uri + " deleted");
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        }
+    }
+
     @Override
     public void deleteAll(Resource.Type type){
+        try{
+            factory.repositoryOf(type).deleteAll();
+            LOG.debug("All " + type.route() + " have been deleted");
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        }
+    }
+
+    public void deleteAll(Relation.Type type){
         try{
             factory.repositoryOf(type).deleteAll();
             LOG.debug("All " + type.route() + " have been deleted");

@@ -4,11 +4,13 @@ import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.env.Environment;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.conversion.MetaDataDrivenConversionService;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
@@ -34,6 +36,7 @@ public class GraphConfig extends Neo4jConfiguration {
 
     @Bean
     public org.neo4j.ogm.config.Configuration getConfiguration() {
+        LOG.info("Initializying Neo4j connection to: " + hosts + " " + port + " ..") ;
         org.neo4j.ogm.config.Configuration config = new org.neo4j.ogm.config.Configuration();
         config
                 .driverConfiguration()

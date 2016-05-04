@@ -12,10 +12,6 @@ import lombok.ToString;
 @EqualsAndHashCode(of={"uri"}, callSuper = true)
 public class EmbeddedIn extends Relation {
 
-    @Getter
-    @Setter
-    private float[] vector;
-
     @Override
     public org.librairy.model.domain.resources.Resource.Type getStartType() {
         return org.librairy.model.domain.resources.Resource.Type.WORD;

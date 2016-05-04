@@ -14,6 +14,11 @@ public class BundlesEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "BUNDLES";
+    }
+
+    @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Document)-[r:BUNDLES]->(e:Item)";
