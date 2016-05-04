@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -32,8 +33,13 @@ public class URIGenerator {
         df = new SimpleDateFormat("yyyyMMddHHmmssSSS");
     }
 
-    @Value("${librairy.uri.base}")
+    @Value("${LIBRAIRY_URI:http://librairy.org/}")
     String base;
+
+    @PostConstruct
+    public void setup(){
+        LOG.info("Uri Generator initialized successfully");
+    }
 
     public String basedOnContent(org.librairy.model.domain.resources.Resource.Type resource, String content){
         return new StringBuilder(base).append(resource.route()).append(SEPARATOR).append(getMD5(content)).toString();
