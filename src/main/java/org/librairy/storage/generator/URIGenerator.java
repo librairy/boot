@@ -54,11 +54,13 @@ public class URIGenerator {
     }
 
     public String newFor(org.librairy.model.domain.resources.Resource.Type type){
-        return from(type,df.format(new Date())+"-"+getMD5(getUUID())).toString();
+        return from(type,df.format(new StringBuilder().append(getMD5(getUUID())).append(new Date()).toString()))
+                .toString();
     }
 
     public String newFor(org.librairy.model.domain.relations.Relation.Type type){
-        return from(type,df.format(new Date())+"-"+getMD5(getUUID())).toString();
+        return from(type,df.format(new StringBuilder().append(getMD5(getUUID())).append(new Date()).toString()))
+                .toString();
     }
 
     public static String retrieveId(String uri){

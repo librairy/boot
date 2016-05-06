@@ -55,14 +55,14 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
 @TestPropertySource(properties = {
-        "librairy.cassandra.contactpoints = wiig.dia.fi.upm.es",
+        "librairy.cassandra.contactpoints = wiener.dia.fi.upm.es",
         "librairy.cassandra.port = 5011",
         "librairy.cassandra.keyspace = research",
-        "librairy.elasticsearch.contactpoints = wiig.dia.fi.upm.es",
+        "librairy.elasticsearch.contactpoints = wiener.dia.fi.upm.es",
         "librairy.elasticsearch.port = 5021",
-        "librairy.neo4j.contactpoints = wiig.dia.fi.upm.es",
+        "librairy.neo4j.contactpoints = wiener.dia.fi.upm.es",
         "librairy.neo4j.port = 5030",
-        "librairy.eventbus.host = wiig.dia.fi.upm.es",
+        "librairy.eventbus.host = wiener.dia.fi.upm.es",
         "librairy.eventbus.port=5041"})
 public class UDMTest {
 
