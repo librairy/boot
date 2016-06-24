@@ -21,8 +21,15 @@ public class RabbitMQCondition implements Condition{
         String envHost  = System.getenv(Config.EVENT_HOST);
         String host     = (Strings.isNullOrEmpty(envHost))? sysHost : envHost;
 
-        boolean condition =  !Strings.isNullOrEmpty(host) && !host.startsWith("local");
-        LOG.debug("RabbitMQ condition for: " + host + " is:" + condition);
+        String propHost = conditionContext.getEnvironment().getProperty("librairy.eventbus.host");
+
+        boolean condition = false;
+        if (propHost  != null && !propHost.startsWith("#")){
+            condition =  !propHost.startsWith("local");
+        }else{
+            condition =  (!Strings.isNullOrEmpty(host) && !host.startsWith("local"));
+        }
+        LOG.debug("RabbitMQ condition for: " + propHost+"|"+host + " is:" + condition);
         return condition;
     }
 }

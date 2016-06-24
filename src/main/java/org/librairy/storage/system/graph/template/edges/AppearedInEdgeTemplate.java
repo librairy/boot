@@ -14,6 +14,11 @@ public class AppearedInEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "APPEARED_IN";
+    }
+
+    @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Term)-[r:APPEARED_IN]->(e:Domain)";

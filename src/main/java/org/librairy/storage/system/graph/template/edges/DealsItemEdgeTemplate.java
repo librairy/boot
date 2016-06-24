@@ -14,6 +14,11 @@ public class DealsItemEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "DEALS_WITH";
+    }
+
+    @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Item)-[r:DEALS_WITH]->(e:Topic)";

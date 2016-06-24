@@ -1,6 +1,7 @@
 package org.librairy.storage.actions;
 
 import org.librairy.model.domain.relations.Relation;
+import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,10 @@ public class ReadRelationAction {
      */
     public Optional<Relation> byUri(String uri){
         try{
-            return helper.getUnifiedEdgeGraphRepository().read(type,uri);
+
+            // Column Database
+            return helper.getUnifiedColumnRepository().read(type,uri);
+
         }catch (Exception e){
             LOG.error("Unexpected error while checking resource: "+uri,e);
             return Optional.empty();

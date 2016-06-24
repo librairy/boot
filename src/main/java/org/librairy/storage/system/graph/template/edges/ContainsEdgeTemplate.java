@@ -14,6 +14,11 @@ public class ContainsEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "CONTAINS";
+    }
+
+    @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Domain)-[r:CONTAINS]->(e:Document)";

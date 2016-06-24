@@ -4,6 +4,7 @@ import org.apache.commons.lang.WordUtils;
 import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.actions.RepeatableActionExecutor;
+import org.librairy.storage.system.graph.cache.GraphCache;
 import org.librairy.storage.system.graph.repository.Repository;
 import org.librairy.storage.system.graph.domain.nodes.Node;
 import org.slf4j.Logger;
@@ -24,13 +25,25 @@ public class UnifiedNodeGraphRepository extends RepeatableActionExecutor impleme
     @Autowired
     UnifiedNodeGraphRepositoryFactory factory;
 
+    @Autowired
+    GraphCache graphCache;
+
     private static final Logger LOG = LoggerFactory.getLogger(UnifiedNodeGraphRepository.class);
 
+    @Override
+    public long count(Resource.Type type){
+        return factory.repositoryOf(type).count();
+    }
 
     @Override
     public void save(Resource resource){
-        performRetries(0,"saving a " + resource.getResourceType(), () ->
-                factory.repositoryOf(resource.getResourceType()).save(ResourceUtils.map(resource, factory.mappingOf(resource.getResourceType()))));
+        performRetries(0,"saving a " + resource.getResourceType(), () ->{
+            Node node = (Node) factory.repositoryOf(resource.getResourceType()).save(ResourceUtils.map(resource, factory
+                    .mappingOf(resource.getResourceType())));
+            // Save in cache
+            graphCache.load(resource.getUri(),node);
+            return 0;
+        });
     }
 
     @Override

@@ -1,11 +1,22 @@
 package org.librairy.storage;
 
+import com.datastax.driver.core.querybuilder.Select;
+import com.google.common.collect.ImmutableMap;
+import org.librairy.model.domain.LinkableElement;
 import org.librairy.model.domain.relations.Relation;
+import org.librairy.model.domain.resources.Resource;
 import org.librairy.storage.actions.*;
+import org.librairy.storage.system.column.templates.ColumnTemplate;
+import org.librairy.storage.system.document.templates.DocumentTemplate;
+import org.librairy.storage.system.graph.template.TemplateExecutor;
+import org.neo4j.ogm.model.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Component;
+
+import java.util.*;
 
 /**
  * Created by cbadenes on 23/12/15.
@@ -17,6 +28,32 @@ public class UDM {
 
     @Autowired
     Helper helper;
+
+
+    @Autowired
+    TemplateExecutor neo4jExecutor;
+
+    @Autowired
+    ColumnTemplate columnTemplate;
+
+    @Autowired
+    DocumentTemplate documentTemplate;
+
+    public Iterator<Map<String, Object>> queryGraph(String query){
+        Optional<Result> result = neo4jExecutor.query(query, ImmutableMap.of());
+        if (!result.isPresent()) return Collections.EMPTY_LIST.iterator();
+        return result.get().queryResults().iterator();
+    }
+
+
+    public List<LinkableElement> queryColumn(Select select){
+        return columnTemplate.query(select);
+    }
+
+
+    public List<String> queryDocument(SearchQuery select){
+        return documentTemplate.query(select);
+    }
 
     /**
      * Save a resource
@@ -88,14 +125,14 @@ public class UDM {
         return new SearchRelationAction(helper,type);
     }
 
-//    /**
-//     * Count 'type' resources
-//     * @param type
-//     * @return uris
-//     */
-//    public CountResourceAction count(Resource.Type type){
-//        return new CountResourceAction(helper,type);
-//    }
+    /**
+     * Count 'type' resources
+     * @param type
+     * @return uris
+     */
+    public CountResourceAction count(Resource.Type type){
+        return new CountResourceAction(helper,type);
+    }
 
     /**
      * Count 'type' relations
@@ -105,9 +142,6 @@ public class UDM {
     public CountRelationAction count(Relation.Type type){
         return new CountRelationAction(helper,type);
     }
-
-
-
 
     /**
      * Delete 'type' resources

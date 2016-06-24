@@ -2,7 +2,9 @@ package org.librairy.storage.system.graph.repository.edges;
 
 import org.apache.commons.lang.WordUtils;
 import org.librairy.model.domain.relations.Relation;
+import org.librairy.model.domain.resources.Resource;
 import org.librairy.storage.actions.RepeatableActionExecutor;
+import org.librairy.storage.system.graph.cache.GraphCache;
 import org.librairy.storage.system.graph.repository.Repository;
 import org.librairy.storage.system.graph.domain.edges.Edge;
 import org.librairy.storage.system.graph.domain.nodes.Node;
@@ -32,15 +34,25 @@ public class UnifiedEdgeGraphRepository extends RepeatableActionExecutor impleme
     @Autowired
     Session session;
 
+    @Autowired
+    GraphCache cache;
 
     private static final Logger LOG = LoggerFactory.getLogger(UnifiedEdgeGraphRepository.class);
+
+    @Override
+    public long count(Relation.Type type){
+        return factory.repositoryOf(type).count();
+    }
 
     @Override
     public void save(org.librairy.model.domain.relations.Relation relation){
         performRetries(0, "save " + relation.getType() + "[" + relation + "]", () -> {
 
-            org.librairy.model.domain.resources.Resource snode = nodeFactory.repositoryOf(relation.getStartType()).findOneByUri(relation.getStartUri());
-            org.librairy.model.domain.resources.Resource enode = nodeFactory.repositoryOf(relation.getEndType()).findOneByUri(relation.getEndUri());
+//            org.librairy.model.domain.resources.Resource snode = nodeFactory.repositoryOf(relation.getStartType()).findOneByUri(relation.getStartUri());
+//            org.librairy.model.domain.resources.Resource enode = nodeFactory.repositoryOf(relation.getEndType()).findOneByUri(relation.getEndUri());
+
+            org.librairy.model.domain.resources.Resource snode = cache.get(relation.getStartUri());
+            org.librairy.model.domain.resources.Resource enode = cache.get(relation.getEndUri());
 
             if (snode == null || enode == null){
                 throw new RuntimeException("One of nodes is null: ["+snode +"->"+enode+"]");

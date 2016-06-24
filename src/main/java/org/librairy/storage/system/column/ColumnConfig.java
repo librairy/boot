@@ -1,11 +1,6 @@
 package org.librairy.storage.system.column;
 
-import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.SocketOptions;
-import com.datastax.driver.core.Statement;
-import com.datastax.driver.core.WriteType;
-import com.datastax.driver.core.policies.ReconnectionPolicy;
-import com.datastax.driver.core.policies.RetryPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +42,7 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
     public CassandraClusterFactoryBean cluster(){
         CassandraClusterFactoryBean cluster = new CassandraClusterFactoryBean();
         try{
+            LOG.info("Initializying Cassandra connection to: " + hosts + " " + port + " ..");
             cluster.setContactPoints(hosts);
             cluster.setPort(port);
             SocketOptions options = new SocketOptions();

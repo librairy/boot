@@ -1,16 +1,20 @@
 package org.librairy.storage.generator;
 
 import org.apache.commons.lang.StringUtils;
+import org.librairy.model.domain.resources.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -29,8 +33,13 @@ public class URIGenerator {
         df = new SimpleDateFormat("yyyyMMddHHmmssSSS");
     }
 
-    @Value("${librairy.uri.base}")
+    @Value("${LIBRAIRY_URI:http://librairy.org/}")
     String base;
+
+    @PostConstruct
+    public void setup(){
+        LOG.info("Uri Generator initialized successfully");
+    }
 
     public String basedOnContent(org.librairy.model.domain.resources.Resource.Type resource, String content){
         return new StringBuilder(base).append(resource.route()).append(SEPARATOR).append(getMD5(content)).toString();
@@ -45,15 +54,21 @@ public class URIGenerator {
     }
 
     public String newFor(org.librairy.model.domain.resources.Resource.Type type){
-        return from(type,df.format(new Date())+"-"+getMD5(getUUID())).toString();
+        return from(type,df.format(new StringBuilder().append(getMD5(getUUID())).append(new Date()).toString()))
+                .toString();
     }
 
     public String newFor(org.librairy.model.domain.relations.Relation.Type type){
-        return from(type,df.format(new Date())+"-"+getMD5(getUUID())).toString();
+        return from(type,df.format(new StringBuilder().append(getMD5(getUUID())).append(new Date()).toString()))
+                .toString();
     }
 
     public static String retrieveId(String uri){
         return StringUtils.substringAfterLast(uri,"/");
+    }
+
+    public void setBase(String base){
+        this.base = base;
     }
 
     private String getUUID(){
@@ -71,6 +86,17 @@ public class URIGenerator {
             LOG.warn("Error calculating MD5 from text. UUID will be used: " + id);
         }
         return id;
+    }
+
+    public Resource.Type getResourceFrom(String uri){
+        String type = StringUtils.substringBefore(StringUtils.substringAfter(uri, base), "/");
+
+        Optional<Resource.Type> resourceType = Arrays.stream(Resource.Type.values()).filter(entry -> type
+                .equalsIgnoreCase
+                        (entry.route())).findFirst();
+
+        if (resourceType.isPresent()) return resourceType.get();
+        throw new RuntimeException("No resource type found in uri: " + uri);
     }
 
     public static BigInteger getId(String uri){

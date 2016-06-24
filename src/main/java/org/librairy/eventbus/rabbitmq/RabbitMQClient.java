@@ -12,8 +12,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 /**
  * Created by cbadenes on 09/10/15.
@@ -45,11 +44,49 @@ public class RabbitMQClient {
     public void connect(String uri) throws IOException, TimeoutException, NoSuchAlgorithmException, KeyManagementException, URISyntaxException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUri(uri);
-
         LOG.info("trying to connect to: " + uri);
         this.connection = factory.newConnection();
         LOG.info("connected to: " + uri);
     }
+
+
+    public void connect(String username, String password, String host, int port, String keyspace) throws IOException,
+            TimeoutException,
+            NoSuchAlgorithmException, KeyManagementException, URISyntaxException {
+
+
+
+
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setUsername(username);
+        factory.setPassword(password);
+        factory.setHost(host);
+        factory.setPort(port);
+        factory.setVirtualHost(keyspace);
+        factory.setRequestedHeartbeat(60); // seconds
+        factory.setConnectionTimeout(60); // seconds
+        factory.setAutomaticRecoveryEnabled(true);
+        factory.setTopologyRecoveryEnabled(true);
+        factory.setExceptionHandler(new RabbitMQExceptionHandler());
+
+
+        int cpus = Runtime.getRuntime().availableProcessors();
+        ExecutorService pool = new ThreadPoolExecutor(
+                cpus, // core thread pool size
+                cpus, // maximum thread pool size
+                1, // time to wait before resizing pool
+                TimeUnit.MINUTES,
+                new ArrayBlockingQueue<Runnable>(cpus, true),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+        factory.setSharedExecutor(pool);
+
+
+
+        LOG.info("trying to connect to: " + host +":" + port + " ..");
+        this.connection = factory.newConnection();
+        LOG.info("connected to: " + host+":"+port);
+    }
+
 
     public void disconnect() throws IOException, TimeoutException {
         if (!channels.isEmpty()){
@@ -133,15 +170,15 @@ public class RabbitMQClient {
         //maybe better externalize to config file
         //a non-durable, non-exclusive, autodelete queue with a well-known name and a maximum length of 1000 messages
         Map<String, Object> args = new HashMap<>();
-        args.put("x-max-length", 1000); // x-max-length-bytes
-        boolean durable     = false;
+        args.put("x-max-length", 1000000); // x-max-length-bytes
+        boolean durable     = true;
         boolean exclusive   = false;
         boolean autodelete  = true;
         channel.queueDeclare(queue, durable, exclusive, autodelete, args);
 
         channel.queueBind(queue, exchange, bindingKey);
 
-        boolean autoAck = true;
+        boolean autoAck = false;
         channel.basicConsume(queue, autoAck, new DefaultConsumer(channel) {
 
             @Override
@@ -154,10 +191,15 @@ public class RabbitMQClient {
 
                 LOG.debug(" Received message: [" + body + "] in routingKey: '" + routingKey + "'");
 
-                subscriber.handle(Event.from(body));
+                try{
+                    subscriber.handle(Event.from(body));
 
-                //maybe better Avoid Auto ACK. Handle manual ACK
-                //channel.basicAck(deliveryTag, false);
+                    //maybe better Avoid Auto ACK. Handle manual ACK
+                    channel.basicAck(deliveryTag, false);
+                }catch (Exception e){
+                    channel.basicNack(deliveryTag, false, true);
+                }
+
             }
         });
 

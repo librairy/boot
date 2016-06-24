@@ -13,6 +13,11 @@ public class PairsWithEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "PAIRS_WITH";
+    }
+
+    @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Word)-[r:PAIRS_WITH]->(e:Word)";

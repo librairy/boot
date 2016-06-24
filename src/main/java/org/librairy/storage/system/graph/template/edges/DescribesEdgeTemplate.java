@@ -15,6 +15,11 @@ public class DescribesEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "DESCRIBES";
+    }
+
+    @Override
     protected String pathBy(Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Part)-[r:DESCRIBES]->(e:Item)";

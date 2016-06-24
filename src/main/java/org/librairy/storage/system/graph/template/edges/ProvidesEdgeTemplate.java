@@ -13,6 +13,11 @@ public class ProvidesEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "PROVIDES";
+    }
+
+    @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Source)-[r:PROVIDES]->(e:Document)";

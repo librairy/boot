@@ -1,6 +1,7 @@
 package org.librairy.storage.system.column.repository;
 
 import org.apache.commons.lang.WordUtils;
+import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.system.graph.repository.Repository;
@@ -27,12 +28,28 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
     private static final Logger LOG = LoggerFactory.getLogger(UnifiedColumnRepository.class);
 
     @Override
+    public long count(Resource.Type type){
+        return factory.repositoryOf(type).count();
+    }
+
+
+    @Override
     public void save(Resource resource){
         try{
             factory.repositoryOf(resource.getResourceType()).save(ResourceUtils.map(resource, factory.mappingOf(resource.getResourceType())));
             LOG.debug("Resource: " + resource + " saved");
         }catch (RuntimeException e){
             LOG.warn(e.getMessage());
+        }
+    }
+
+    public void save(Relation resource){
+        try{
+            factory.repositoryOf(resource.getType()).save(ResourceUtils.map(resource, factory.mappingOf(resource
+                    .getType())));
+            LOG.debug("Relation: " + resource + " saved");
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage(),e);
         }
     }
 
@@ -60,6 +77,19 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
         return result;
     }
 
+
+    public Optional<Relation> read(Relation.Type type, String uri){
+        Optional<Relation> result = Optional.empty();
+        try{
+            Relation column = (Relation) factory.repositoryOf(type).findOne(BasicMapId.id(ResourceUtils.URI, uri));
+            if (column != null) result = Optional.of((Relation) ResourceUtils.map(column, Relation.classOf(type)));
+            LOG.debug("Relation read: " + column );
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        }
+        return result;
+    }
+
     @Override
     public Iterable<Resource> findAll(Resource.Type type){
         try{
@@ -72,6 +102,10 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
 
     @Override
     public Iterable<Resource> findBy(Resource.Type resultType, String field, String value) {
+        return find("findBy",resultType,field,value);
+    }
+
+    public Iterable<Relation> findBy(Relation.Type resultType, String field, String value) {
         return find("findBy",resultType,field,value);
     }
 
@@ -99,6 +133,20 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
         return Collections.EMPTY_LIST;
     }
 
+    private Iterable<Relation> find(String prefix, Relation.Type result,String reference,String value) {
+        try{
+            BaseColumnRepository repository = factory.repositoryOf(result);
+            Method method                   = findMethod(prefix,reference,repository.getClass());
+            Iterable<Relation> resources    = (Iterable<Relation>) method.invoke(repository, value);
+            return resources;
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            LOG.warn("No such method to find: " + e.getMessage(),e);
+        }
+        return Collections.EMPTY_LIST;
+    }
+
     @Override
     public void delete(Resource.Type type, String uri){
         try{
@@ -109,8 +157,26 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
         }
     }
 
+    public void delete(Relation.Type type, String uri){
+        try{
+            factory.repositoryOf(type).delete(BasicMapId.id(ResourceUtils.URI, uri));
+            LOG.debug("Resource: " + uri + " deleted");
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        }
+    }
+
     @Override
     public void deleteAll(Resource.Type type){
+        try{
+            factory.repositoryOf(type).deleteAll();
+            LOG.debug("All " + type.route() + " have been deleted");
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        }
+    }
+
+    public void deleteAll(Relation.Type type){
         try{
             factory.repositoryOf(type).deleteAll();
             LOG.debug("All " + type.route() + " have been deleted");

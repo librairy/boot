@@ -1,13 +1,26 @@
 package org.librairy.storage;
 
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Select;
 import es.cbadenes.lab.test.IntegrationTest;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.librairy.Config;
 import org.librairy.model.Event;
+import org.librairy.model.domain.LinkableElement;
+import org.librairy.model.domain.relations.Bundles;
 import org.librairy.model.domain.relations.HypernymOf;
+import org.librairy.model.domain.relations.MentionsFromTopic;
 import org.librairy.model.domain.relations.Relation;
+import org.librairy.model.domain.resources.Document;
+import org.librairy.model.domain.resources.Domain;
+import org.librairy.model.domain.resources.Resource;
+import org.librairy.model.domain.resources.Source;
 import org.librairy.model.modules.BindingKey;
 import org.librairy.model.modules.EventBus;
 import org.librairy.model.modules.EventBusSubscriber;
+import org.librairy.storage.actions.CountResourceAction;
 import org.librairy.storage.generator.URIGenerator;
 import org.librairy.storage.system.document.domain.WordDocument;
 import org.librairy.storage.system.document.repository.WordDocumentRepository;
@@ -24,14 +37,16 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 /**
  * Created by cbadenes on 01/01/16.
@@ -40,14 +55,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
 @TestPropertySource(properties = {
-        "librairy.cassandra.contactpoints = drinventor.dia.fi.upm.es",
+        "librairy.cassandra.contactpoints = zavijava.dia.fi.upm.es",
         "librairy.cassandra.port = 5011",
         "librairy.cassandra.keyspace = research",
-        "librairy.elasticsearch.contactpoints = drinventor.dia.fi.upm.es",
+        "librairy.elasticsearch.contactpoints = zavijava.dia.fi.upm.es",
         "librairy.elasticsearch.port = 5021",
-        "librairy.neo4j.contactpoints = drinventor.dia.fi.upm.es",
+        "librairy.neo4j.contactpoints = zavijava.dia.fi.upm.es",
         "librairy.neo4j.port = 5030",
-        "librairy.eventbus.host = drinventor.dia.fi.upm.es"})
+        "librairy.eventbus.host = zavijava.dia.fi.upm.es",
+        "librairy.eventbus.port=5041"})
 public class UDMTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(UDMTest.class);
@@ -123,56 +139,194 @@ public class UDMTest {
     @Test
     public void fixModel(){
 
+        Source casaSource = Resource.newSource();
+        casaSource.setName("casa");
+        casaSource.setDescription("casa 2016 papers");
+        casaSource.setUrl("file://casa");
+        udm.save(casaSource);
 
-        // Remove 'd' term
-        List<String> uri = udm.find(org.librairy.model.domain.resources.Resource.Type.TERM).by(org.librairy.model.domain.resources.Term.CONTENT, "t");
-        System.out.println(uri);
-
-        udm.delete(org.librairy.model.domain.resources.Resource.Type.TERM).byUri(uri.get(0));
-
-//        udm.delete(Resource.Type.TOPIC).all();
-//        udm.delete(Resource.Type.WORD).all();
-//        udm.delete(Resource.Type.TERM).all();
-
-
-//        Domain domain = Resource.newDomain();
-//        domain.setUri("http://drinventor.eu/domains/7df34748-7fad-486e-a799-3bcd86a03499");
-//        domain.setName("siggraph");
-//
-//        System.out.println(udm.find(Resource.Type.DOMAIN).in(Resource.Type.SOURCE,"http://drinventor.eu/sources/00729c4c-f449-40d5-ae83-482278e83e9a"));
-//
-//        System.out.println(udm.find(Resource.Type.DOMAIN).all());
-//
-//
-
-//        System.out.println("adding documents to domain...");
-//        udm.find(Resource.Type.DOCUMENT).all().forEach(uri -> udm.save(Relation.newContains(domain.getUri(),uri)));
-
-//        List<String> items = udm.find(Resource.Type.ITEM).all();
-//        System.out.println("Total Items: " + items.size());
-//        List<String> itemsInDomain = udm.find(Resource.Type.ITEM).in(Resource.Type.DOMAIN, domain.getUri());
-//        System.out.println("Items in Domain: " + itemsInDomain.size());
-
-
-
-//        System.out.println("adding items to document to domain...");
-//        udm.find(Resource.Type.DOCUMENT).all().forEach(uri -> udm.save(Relation.newContains(domain.getUri(),uri)));
-
+        Source siggraphSource = Resource.newSource();
+        siggraphSource.setName("siggraph");
+        siggraphSource.setDescription("siggraph 2002-2015 papers");
+        siggraphSource.setUrl("file://siggraph");
+        udm.save(siggraphSource);
 
     }
 
 
     @Test
-    public void read(){
+    public void read() throws InterruptedException {
 
-        String startUri = "http://drinventor.eu/documents/af351b184d0bc10597573d31544a23a4";
-        String endUri = "http://drinventor.eu/topics/72510e5c-f3b3-4a17-ab43-bc64b67a7db3";
 
-        System.out.println(udm.find(Relation.Type.DEALS_WITH_FROM_DOCUMENT).btw(startUri, endUri));
+//        List<String> docs = udm.find(Resource.Type.DOCUMENT).from(Resource.Type.DOMAIN, "http://librairy" +
+//                ".org/domains/default");
+//
+//        System.out.println("Found: " + docs.size() + " documents");
+
+//        List<String> sources = udm.find(Resource.Type.SOURCE).all();
+//
+//        List<String> itemUris = udm.find(Resource.Type.ITEM).from(Resource.Type.SOURCE, sources.get(0));
+//
+//        System.out.println(itemUris);
+
+
+//        Iterator<Map<String, Object>> result = udm.queryGraph("match (d:Document) return count " +
+//                "(d)");
+//
+//        System.out.println(result);
+
+
+//        Select select = QueryBuilder.select().from("research", "items");
+//        select.where(QueryBuilder.eq("uri","http://librairy.org/items/297f44cc83545ea4d9ce5ceb0d8aadb2"));
+//
+//        List<LinkableElement> result = udm.queryColumn(select);
+//
+//        System.out.println(result);
+
+
+//        SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery())
+//                .withQuery(QueryBuilders.termQuery("content", "communication"))
+//                .withHighlightFields(new HighlightBuilder.Field("message"))
+//                .withPageable(new PageRequest(0, 10))
+//                .build();
+//
+//        List<String> result = udm.queryDocument(searchQuery);
+//
+//        System.out.println(result);
+
+
+        Iterable<Relation> res = helper.getUnifiedColumnRepository().findBy(Relation.Type.BUNDLES, "item",
+                "http://librairy" +
+                        ".org/items/297f44cc83545ea4d9ce5ceb0d8aadb2");
+
+
+        List<String> doc = udm.find(Resource.Type.DOCUMENT).from(Resource.Type.ITEM, "http://librairy" +
+                ".org/items/297f44cc83545ea4d9ce5ceb0d8aadb2");
+
+
+        System.out.println(doc);
+
+
+//        Boolean res = helper.getUnifiedDocumentRepository().exists(Resource.Type.ITEM, "http://librairy" +
+//                ".org/items/297f44cc83545ea4d9ce5ceb0d8aadb3");
+
+        long documents = 0;
+        double docRate = 0.0;
+
+        long items = 0;
+        double itemRate = 0.0;
+
+        long delay = 5000l;
+        while(true){
+
+            long newDocs                = countFor(Resource.Type.DOCUMENT);
+            long incrementDocs          = newDocs - documents;
+            Double rateDocs             = Double.valueOf(incrementDocs) / Double.valueOf(delay/1000);
+            docRate = (docRate + rateDocs) /2.0;
+            LOG.info("Docs creation. [instant: " + rateDocs  + " docs/sec] [mean: " + docRate + " docs/sec]");
+            documents = newDocs;
+
+            long newItems           = countFor(Resource.Type.ITEM);
+            long incrementItems     = newItems - items;
+
+            Double rateItems        = Double.valueOf(incrementItems) / Double.valueOf(delay/1000);
+            itemRate = (itemRate + rateItems) /2.0;
+            LOG.info("Items creation. [instant: " + rateItems  + " items/sec] [mean: " + itemRate + " items/sec]");
+            items = newItems;
+
+//            long docs = udm.count(Resource.Type.DOCUMENT).all();
+//            long items = udm.count(Resource.Type.ITEM).all();
+//            System.out.println("Node Items: " + items);
+
+            Thread.sleep(delay);
+        }
+    }
+
+    private long countFor(Resource.Type type){
+//        long dDocs = helper.getUnifiedDocumentRepository().count(type);
+//        long cDocs = helper.getUnifiedColumnRepository().count(type);
+        long n1Docs = helper.getTemplateFactory().of(type).countAll();
+//        long n2Docs = helper.getUnifiedNodeGraphRepository().count(type);
+//        LOG.info(type.name() + "s from [ElasticSearch=" + dDocs+"] [Cassandra="+cDocs+"] [Neo4j(template)" +
+//                "="+n1Docs+"] [Neo4j(repository)="+n2Docs+"]");
+        LOG.info(type.name() + "s from [[Neo4j(template)" +
+                "="+n1Docs+"]");
+        return n1Docs;
+    }
+
+    @Test
+    public void purge(){
+
+        udm.delete(Resource.Type.ANY).all();
+        udm.delete(Relation.Type.ANY).all();
     }
 
 
     @Test
+    public void relations(){
+
+        _saveRelation(Relation.newAggregates("u1","u2"));
+        _saveRelation(Relation.newAppearedIn("u1","u2"));
+        _saveRelation(Relation.newBundles("u1","u2"));
+        _saveRelation(Relation.newComposes("u1","u2"));
+        _saveRelation(Relation.newContains("u1","u2"));
+        _saveRelation(Relation.newContains("u1","u2"));
+        _saveRelation(Relation.newDealsWithFromDocument("u1","u2"));
+        _saveRelation(Relation.newDealsWithFromItem("i1","i2"));
+        _saveRelation(Relation.newDealsWithFromPart("p1","p2"));
+        _saveRelation(Relation.newDescribes("u1","u2"));
+        _saveRelation(Relation.newEmbeddedIn("u1","u2"));
+        _saveRelation(Relation.newEmergesIn("u1","u2"));
+        _saveRelation(Relation.newHypernymOf("u1","u2"));
+        _saveRelation(Relation.newMentionsFromTerm("u1","u2"));
+        _saveRelation(Relation.newMentionsFromTopic("t1","t2"));
+        _saveRelation(Relation.newPairsWith("u1","u2"));
+        _saveRelation(Relation.newProvides("u1","u2"));
+    }
+
+    private void _saveRelation(Relation relation){
+        LOG.info("Saving: " + relation.getType() + " ...");
+        relation.setUri(UUID.randomUUID().toString());
+        helper.getUnifiedColumnRepository().save(relation);
+        LOG.info("Saved: " + relation.getType());
+    }
+
+
+    @Test
+    public void save(){
+
+
+        List<Relation> relations = udm.find(Relation.Type.BUNDLES).all();
+
+        relations.stream().parallel().forEach(relation -> {
+            LOG.info("saving relation: " + relation.getUri());
+            helper.getUnifiedColumnRepository().save(relation);
+        });
+
+
+
+
+
+
+
+//        String document = "http://librairy.org/documents/07043092";
+//        String item     = "http://librairy.org/items/b4e1576bf9fb01271e78c52947b12644";
+//        Bundles bundle = Relation.newBundles(document,item);
+//        udm.save(bundle);
+
+
+//        Document doc = Resource.newDocument();
+//        doc.setUri("http://librairy.org/documents/06856810");
+//        doc.setCreationTime("2016-04-12T16:26+0000");
+//        udm.save(doc);
+
+
+    }
+
+
+
+    @Test
+
     public void findFrom(){
         String uri = "http://drinventor.eu/items/a5179367d5ebf825f01d9247dacae66";
         List<String> domains = udm.find(org.librairy.model.domain.resources.Resource.Type.DOMAIN).from(org.librairy.model.domain.resources.Resource.Type.ITEM, uri);

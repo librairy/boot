@@ -15,6 +15,11 @@ public class MentionsTopicEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "MENTIONS";
+    }
+
+    @Override
     protected String pathBy(Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Topic)-[r:MENTIONS]->(e:Word)";
@@ -33,6 +38,8 @@ public class MentionsTopicEdgeTemplate extends EdgeTemplate {
 
     @Override
     protected TemplateParameters paramsFrom(Relation relation) {
-        return new TemplateParameters(relation).add("times",relation.asMentionsFromTopic().getTimes());
+        return new TemplateParameters(relation).
+                add("times",relation.asMentionsFromTopic().getTimes())
+                ;
     }
 }

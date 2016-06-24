@@ -7,7 +7,9 @@ import org.apache.commons.lang.StringUtils;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.storage.system.graph.repository.edges.UnifiedEdgeGraphRepositoryFactory;
 import org.librairy.storage.system.graph.template.TemplateExecutor;
+import org.neo4j.ogm.model.Property;
 import org.neo4j.ogm.model.Result;
+import org.neo4j.ogm.response.model.RelationshipModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,8 @@ public abstract class EdgeTemplate {
     public Relation.Type accept() {
         return type;
     }
+
+    protected abstract String label();
 
     protected abstract String pathBy(org.librairy.model.domain.resources.Resource.Type type);
 
@@ -77,6 +81,10 @@ public abstract class EdgeTemplate {
         _delete(pathBy(type), ImmutableMap.of("0",uri));
     }
 
+    public void delete(String uri){
+        _delete( "(a)-[r: " + label() + " {uri: {0} }]->(b)", ImmutableMap.of("0",uri));
+    }
+
     public void save(Relation relation) {
         String relationLabel    = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, type.key());
         String startNodeLabel   = StringUtils.capitalize(relation.getStartType().key());
@@ -84,7 +92,10 @@ public abstract class EdgeTemplate {
 
         TemplateParameters parameters = paramsFrom(relation);
         String extraParams = Strings.isNullOrEmpty(parameters.toExpression())? "": ","+parameters.toExpression();
-        executor.execute("MATCH (a:"+startNodeLabel+"),(b:"+endNodeLabel+") WHERE a.uri = {0} AND b.uri = {1} CREATE (a)-[r:"+relationLabel+" { uri : {2}, creationTime : {3}, weight : {4} "+extraParams+" } ]->(b) RETURN r", parameters.getParams());
+        Map<String, Object> params = parameters.getParams();
+        executor.execute("MATCH (a:"+startNodeLabel+"),(b:"+endNodeLabel+") WHERE a.uri = {0} AND b.uri = {1} CREATE " +
+                "(a)-[r:"+relationLabel+" { uri : {2}, creationTime : {3}, weight : {4} "+extraParams+" } ]->(b) " +
+                "RETURN r", params);
     }
 
     private void _delete(String path, Map params){
@@ -94,7 +105,8 @@ public abstract class EdgeTemplate {
 
 
     private List<Relation> _find(String path, Map params){
-        String query = new StringBuilder().append("match ").append(path).append(" return r.uri,r.creationTime,s.uri,e.uri").toString();
+        String query = new StringBuilder().append("match ").append(path).append(" return r.uri,r.creationTime,s.uri,e" +
+                ".uri,r.weight").toString();
         Optional<Result> result = executor.query(query, params);
 
         if (!result.isPresent()) return Collections.EMPTY_LIST;
@@ -110,6 +122,7 @@ public abstract class EdgeTemplate {
                 instance.setCreationTime((String) relationship.get("r.creationTime"));
                 instance.setStartUri((String) relationship.get("s.uri"));
                 instance.setEndUri((String) relationship.get("e.uri"));
+                instance.setWeight((Double) relationship.get("r.weight"));
                 relations.add(instance);
             } catch (InstantiationException | IllegalAccessException e) {
                 LOG.error("Error reading relations by: " + query,e);
@@ -117,6 +130,49 @@ public abstract class EdgeTemplate {
         }
         return relations;
     }
+
+//    public Optional<Relation> read(String uri){
+//
+//        String query = new StringBuilder().append("match (a)-[r:").append(label()).append(" {uri:{0} }]->(b) return " +
+//                "a.uri, b.uri, r").toString();
+//        Optional<Result> result = executor.query(query, ImmutableMap.of("0",uri));
+//
+//        if (!result.isPresent()) return Optional.empty();
+//
+//        Iterator<Map<String, Object>> iterator = result.get().queryResults().iterator();
+//        List<Relation> relations = new ArrayList<>();
+//        while(iterator.hasNext()){
+//            Map<String, Object> relationship = iterator.next();
+//
+//            try {
+//                RelationshipModel element = (RelationshipModel) relationship.get("r");
+//
+//                Relation instance = (Relation) unifiedEdgeGraphRepositoryFactory.mappingOf(type).newInstance();
+//                instance.setStartUri((String) relationship.get("a.uri"));
+//                instance.setEndUri((String) relationship.get("b.uri"));
+//
+//
+//
+//                for (Property<String, Object> property : element.getPropertyList()) {
+//
+//                    unifiedEdgeGraphRepositoryFactory.mappingOf(type).getMethod()
+//
+//                    property.getKey()
+//
+//                }
+//
+//                instance.setUri((String) relationship.get("r.uri"));
+//                instance.setCreationTime((String) relationship.get("r.creationTime"));
+//                instance.setWeight((Double) relationship.get("r.weight"));
+////                relations.add(instance);
+//            } catch (InstantiationException | IllegalAccessException e) {
+//                LOG.error("Error reading relations by: " + query,e);
+//            }
+//        }
+//
+//
+//        return Optional.empty();
+//    }
 
 
     private long _count(String path, Map params){

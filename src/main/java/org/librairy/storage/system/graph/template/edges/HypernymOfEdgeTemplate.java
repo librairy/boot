@@ -14,6 +14,11 @@ public class HypernymOfEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "HYPERNYM_OF";
+    }
+
+    @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Term)-[r:HYPERNYM_OF]->(e:Term)";

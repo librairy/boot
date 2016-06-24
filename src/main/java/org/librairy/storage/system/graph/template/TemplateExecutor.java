@@ -15,6 +15,7 @@ import org.springframework.data.neo4j.template.Neo4jTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,7 +40,7 @@ public class TemplateExecutor extends RepeatableActionExecutor{
 
     public Optional<Result> query(String query, Map<String, ?> parameters){
         Long start = System.currentTimeMillis();
-        Optional<Object> result = performRetries(0, query, () -> {
+        Optional<Object> result = performRetries(0, query + " => PARAMS: " + Arrays.toString(parameters.entrySet().toArray()), () -> {
             Result res = template.query(query, parameters);
             return res;
         });
@@ -49,9 +50,10 @@ public class TemplateExecutor extends RepeatableActionExecutor{
     }
 
 
-    public QueryStatistics execute(String query, Map<String, Object> parameters){
+    public void execute(String query, Map<String, Object> parameters){
         Long start = System.currentTimeMillis();
-        Optional<Object> result = performRetries(0, query, () -> {
+        Optional<Object> result = performRetries(0, query + " => PARAMS: " + Arrays.toString(parameters.entrySet().toArray()),
+                () -> {
             template.clear();
             QueryStatistics res = template.execute(query, parameters);
             // TODO This part of code should be removed when Neo4j uses Bolt
@@ -62,8 +64,12 @@ public class TemplateExecutor extends RepeatableActionExecutor{
         });
         Period period = new Interval(start, System.currentTimeMillis()).toPeriod();
         LOG.debug("Executed : " + query + " in: " + period.getMinutes() + " minutes, " + period.getSeconds() + " seconds [" + query+"]");
-        if (!result.isPresent()) throw new RuntimeException("Operation not completed");
-        return (QueryStatistics) result.get();
     }
+
+
+    public void deleteAll(Class<Object> type){
+        template.deleteAll(type);
+    }
+
 
 }

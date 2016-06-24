@@ -9,6 +9,8 @@ import java.util.Optional;
  */
 public interface  Repository<L extends LinkableElement,T> {
 
+    long count(T type);
+
     void save(L linkableElement);
 
     Boolean exists(T type, String uri);

@@ -11,7 +11,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  */
 @Configuration("eventbus")
 @ComponentScan({"org.librairy.eventbus"})
-@PropertySource({"classpath:eventbus.properties"})
+@PropertySource({"classpath:boot.properties"})
 public class EventBusConfig {
 
     //To resolve ${} in @Value

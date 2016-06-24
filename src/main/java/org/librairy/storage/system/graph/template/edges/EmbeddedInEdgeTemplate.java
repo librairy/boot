@@ -15,6 +15,11 @@ public class EmbeddedInEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "EMBEDDED_IN";
+    }
+
+    @Override
     protected String pathBy(Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Word)-[r:EMBEDDED_IN]->(e:Domain)";
@@ -33,7 +38,7 @@ public class EmbeddedInEdgeTemplate extends EdgeTemplate {
 
     @Override
     protected TemplateParameters paramsFrom(Relation relation) {
-        return new TemplateParameters(relation).add("vector",relation.asEmbeddedIn().getVector());
+        return new TemplateParameters(relation);
     }
 
 

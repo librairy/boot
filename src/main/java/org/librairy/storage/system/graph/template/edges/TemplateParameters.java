@@ -47,16 +47,4 @@ public class TemplateParameters {
         return labels.keySet().stream().map(key -> new StringBuilder().append(key).append(" : ").append("{").append(labels.get(key)).append("}")).collect(Collectors.joining(", "));
     }
 
-
-    public static void main(String[] args){
-        org.librairy.model.domain.relations.Relation relation = org.librairy.model.domain.relations.Relation.newEmbeddedIn("s-uri","e-uri");
-        relation.setUri("r-uti");
-        relation.setCreationTime("now");
-        relation.setWeight(0.0);
-        TemplateParameters parameters = new TemplateParameters(relation);
-        parameters.add("vector",new float[]{Float.valueOf("1.0"),Float.valueOf("2.3")});
-        parameters.add("times",2);
-        System.out.println(parameters.toExpression());
-    }
-
 }

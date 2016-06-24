@@ -14,6 +14,11 @@ public class MentionsTermEdgeTemplate extends EdgeTemplate {
     }
 
     @Override
+    protected String label() {
+        return "MENTIONS";
+    }
+
+    @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Term)-[r:MENTIONS]->(e:Word)";

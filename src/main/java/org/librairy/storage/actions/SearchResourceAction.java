@@ -1,5 +1,6 @@
 package org.librairy.storage.actions;
 
+import org.librairy.model.domain.resources.Resource;
 import org.librairy.storage.Helper;
 import org.librairy.storage.session.UnifiedTransaction;
 import org.slf4j.Logger;
@@ -30,7 +31,14 @@ public class SearchResourceAction {
         LOG.debug("Finding " + type.name() + "s");
         List<String> uris = new ArrayList<>();
         try{
-            helper.getUnifiedNodeGraphRepository().findAll(type).forEach(x -> uris.add(x.getUri()));
+
+
+            if (helper.getTemplateFactory().handle(type)){
+                helper.getTemplateFactory().of(type).findAll().forEach(x -> uris.add(x.getUri()));
+            }else{
+                helper.getUnifiedNodeGraphRepository().findAll(type).forEach(x -> uris.add(x.getUri()));
+            }
+
             LOG.trace(type.name() + "s: " + uris);
         }catch (Exception e){
             LOG.error("Unexpected error while getting all " + type,e);
@@ -44,14 +52,19 @@ public class SearchResourceAction {
      * @param referenceURI
      * @return
      */
-    public List<String> from(org.librairy.model.domain.resources.Resource.Type referenceType, String referenceURI){
+    public List<String> from(Resource.Type referenceType, String referenceURI){
         LOG.debug("Finding " + type.name() + "s in " + referenceType + ": " + referenceURI);
         List<String> uris = new ArrayList<>();
         try{
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-            helper.getUnifiedNodeGraphRepository().findFrom(type, referenceType,referenceURI).forEach(x -> uris.add(x.getUri()));
+
+            if (helper.getTemplateFactory().handle(type)){
+                helper.getTemplateFactory().of(type).findFrom(referenceType,referenceURI).forEach(x -> uris.add(x.getUri()));
+            }else{
+                helper.getUnifiedNodeGraphRepository().findFrom(type, referenceType,referenceURI).forEach(x -> uris.add(x.getUri()));
+            }
 
             transaction.commit();
             LOG.debug("In "+referenceType+": " + referenceURI + " found: ["+type + "]: " + uris);

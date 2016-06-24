@@ -50,6 +50,7 @@ public class Relation extends LinkableElement {
     }
 
     public enum Type{
+        AGGREGATES("aggregates","aggregations"),
         PROVIDES("provides","provisions"),
         COMPOSES("composes","compositions"),
         CONTAINS("contains","contains"),
@@ -100,6 +101,7 @@ public class Relation extends LinkableElement {
 
     public static Class classOf(Type type){
         switch (type){
+            case AGGREGATES: return Aggregates.class;
             case APPEARED_IN: return AppearedIn.class;
             case BUNDLES: return Bundles.class;
             case COMPOSES: return Composes.class;
@@ -120,6 +122,10 @@ public class Relation extends LinkableElement {
             case SIMILAR_TO_PARTS: return SimilarToParts.class;
             default: return Relation.class;
         }
+    }
+
+    public static Aggregates newAggregates(String startUri, String endUri){
+        return newRelation(Aggregates.class,startUri,endUri);
     }
 
     public static AppearedIn newAppearedIn(String startUri, String endUri){
@@ -204,6 +210,10 @@ public class Relation extends LinkableElement {
             LOG.error("Error creating instance of a relation: " + clazz);
         }
         return instance;
+    }
+
+    public Aggregates asAggregates(){
+        return Aggregates.class.cast(this);
     }
 
     public AppearedIn asAppearedIn(){
