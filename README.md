@@ -35,7 +35,7 @@ and then add the dependency:
 
 ## (or) Include directly the jar library
 
-If you are not using Maven or simply prefer to directly add the jar library, download it from ![here](https://github.com/librairy/boot/tree/mvn-repo/org/librairy/boot)
+If you are not using Maven or simply prefer to directly add the jar library, download it from [here](https://github.com/librairy/boot/tree/mvn-repo/org/librairy/boot)
 
 ## Get Started!
 
