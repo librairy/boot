@@ -16,7 +16,7 @@ import org.neo4j.ogm.annotation.*;
 public abstract class Edge<S extends Node,E extends Node> extends Relation{
 
     @GraphId
-    protected Long id;
+    public Long id;
 
     @Property
     protected String uri;

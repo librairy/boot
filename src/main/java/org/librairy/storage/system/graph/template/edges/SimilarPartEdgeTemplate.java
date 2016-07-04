@@ -23,6 +23,7 @@ public class SimilarPartEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Part)-[r:SIMILAR_TO]->(e:Part)";
             case DOMAIN:        return "(dom:Domain{uri:{0}})-[:CONTAINS]->(doc:Document)-[:BUNDLES]->(i:Item)<-[:DESCRIBES]-(s:Part)-[r:SIMILAR_TO]->(e:Part)";
+            case PART:          return "(s:Part{uri:{0}})-[r:SIMILAR_TO]->(e:Part)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

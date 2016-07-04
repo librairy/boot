@@ -23,6 +23,7 @@ public class MentionsTermEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Term)-[r:MENTIONS]->(e:Word)";
             case DOMAIN:        return "(d:Domain{uri:{0}})<-[:APPEARED_IN]-(s:Term)-[r:MENTIONS]->(e:Word)";
+            case TERM:          return "(s:Term{uri:{0}})-[r:MENTIONS]->(e:Word)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

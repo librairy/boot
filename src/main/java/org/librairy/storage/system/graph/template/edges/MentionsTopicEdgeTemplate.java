@@ -24,6 +24,7 @@ public class MentionsTopicEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Topic)-[r:MENTIONS]->(e:Word)";
             case DOMAIN:        return "(d:Domain{uri:{0}})<-[:EMERGES_IN]-(s:Topic)-[r:MENTIONS]->(e:Word)";
+            case TOPIC:         return "(s:Topic{uri:{0}})-[r:MENTIONS]->(e:Word)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

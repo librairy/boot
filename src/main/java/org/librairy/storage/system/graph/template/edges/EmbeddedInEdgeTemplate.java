@@ -24,6 +24,7 @@ public class EmbeddedInEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Word)-[r:EMBEDDED_IN]->(e:Domain)";
             case DOMAIN:        return "(e:Domain{uri:{0}})<-[r:EMBEDDED_IN]-(s:Word)";
+            case WORD:          return "(s:Word{uri:{0}})-[r:EMBEDDED_IN]->(e:Domain)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

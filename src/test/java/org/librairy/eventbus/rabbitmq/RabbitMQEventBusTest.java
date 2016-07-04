@@ -7,8 +7,12 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.librairy.Config;
 import org.librairy.eventbus.EventBusConfig;
+import org.librairy.model.Event;
+import org.librairy.model.domain.relations.Contains;
+import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.modules.BindingKey;
 import org.librairy.model.modules.EventBus;
+import org.librairy.model.modules.RoutingKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = EventBusConfig.class)
 @TestPropertySource(properties = {
-        "librairy.eventbus.host=wiig.dia.fi.upm.es",
+        "librairy.eventbus.host=wiener.dia.fi.upm.es",
         "librairy.eventbus.port=5041",
         "librairy.eventbus.user=librairy",
         "librairy.eventbus.password=drinventor",
@@ -39,6 +43,18 @@ public class RabbitMQEventBusTest {
 
     @Autowired
     EventBus eventBus;
+
+
+    @Test
+    public void newDocument(){
+
+
+        Contains contains = Relation.newContains("http://drinventor.eu/domains/4f56ab24bb6d815a48b8968a3b157470",
+                "http://drinventor.eu/documents/39d9c4c0bb38b5fd740be63ad4cbb82c");
+
+        this.eventBus.post(Event.from(contains), RoutingKey.of(Relation.Type.CONTAINS, Relation.State.CREATED));
+
+    }
 
     @Test
     public void OneToOneCommunication() throws InterruptedException, IOException {

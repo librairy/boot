@@ -23,6 +23,7 @@ public class EmergesInEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Topic)-[r:EMERGES_IN]->(e:Domain)";
             case DOMAIN:        return "(e:Domain{uri:{0}})<-[r:EMERGES_IN]-(s:Topic)";
+            case TOPIC:         return "(e:Domain)<-[r:EMERGES_IN]-(s:Topic{uri:{0}})";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

@@ -24,6 +24,7 @@ public class ComposesEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Source)-[r:COMPOSES]->(e:Domain)";
             case DOMAIN:        return "(e:Domain{uri:{0}})<-[r:COMPOSES]-(s:Source)";
+            case SOURCE:        return "(s:Source{uri:{0}})-[r:COMPOSES]->(e:Domain)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

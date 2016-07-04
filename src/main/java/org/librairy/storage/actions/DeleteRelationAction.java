@@ -4,10 +4,13 @@ import org.librairy.model.Event;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
 import org.librairy.storage.Helper;
+import org.librairy.storage.exception.RepositoryNotFound;
 import org.librairy.storage.session.UnifiedTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 /**
@@ -33,18 +36,31 @@ public class DeleteRelationAction {
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-            if (helper.getTemplateFactory().handle(type)){
-                helper.getTemplateFactory().of(type).deleteAll();
-            }else{
-                helper.getUnifiedEdgeGraphRepository().deleteAll(type);
-            }
+            List<Relation.Type> types = (type.equals(Relation.Type.ANY)) ? Arrays.asList
+                    (Relation.Type.values()) : Arrays.asList(new Relation.Type[]{type});
 
-            // Column Database
-            helper.getUnifiedColumnRepository().deleteAll(type);
+            LOG.info("Ready to delete the following relation types: " + types);
+
+            types.stream().filter(x -> !x.equals(Relation.Type.ANY)).forEach(t ->{
+                try{
+                    if (helper.getTemplateFactory().handle(t)){
+                        helper.getTemplateFactory().of(t).deleteAll();
+                    }else{
+                        helper.getUnifiedEdgeGraphRepository().deleteAll(t);
+                    }
+
+                    // Column Database
+                    helper.getUnifiedColumnRepository().deleteAll(t);
+
+                    LOG.debug("Deleted All: "+t.name());
+
+                }catch (RepositoryNotFound e){
+                    LOG.warn("" + e.getMessage());
+                }
+            });
 
             transaction.commit();
 
-            LOG.debug("Deleted All: "+type.name());
 
             //Publish the event
             // TODO
@@ -82,6 +98,7 @@ public class DeleteRelationAction {
             throw new RuntimeException("Unexpected error during delete of '"+uri,e);
         }
     }
+
 
     public void in(Resource.Type refType, String uri){
         try{

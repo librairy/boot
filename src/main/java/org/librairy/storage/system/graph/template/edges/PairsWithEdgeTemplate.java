@@ -22,6 +22,7 @@ public class PairsWithEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Word)-[r:PAIRS_WITH]->(e:Word)";
             case DOMAIN:        return "(d:Domain{uri:{0}})<-[:EMBEDDED_IN]-(s:Word)-[r:PAIRS_WITH]->(e:Word)";
+            case WORD:          return "(s:Word{uri:{0}})-[r:PAIRS_WITH]->(e:Word)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

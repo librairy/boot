@@ -23,6 +23,7 @@ public class AppearedInEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Term)-[r:APPEARED_IN]->(e:Domain)";
             case DOMAIN:        return "(e:Domain{uri:{0}})<-[r:APPEARED_IN]-(s:Term)";
+            case TERM:          return "(s:Term{uri:{0}})-[r:APPEARED_IN]->(e:Domain)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

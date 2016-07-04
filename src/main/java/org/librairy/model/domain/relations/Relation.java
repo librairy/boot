@@ -19,6 +19,9 @@ public class Relation extends LinkableElement {
     private static final Logger LOG = LoggerFactory.getLogger(Relation.class);
 
     @Getter @Setter
+    public Long id;
+
+    @Getter @Setter
     protected String startUri;
 
     @Getter @Setter

@@ -22,6 +22,7 @@ public class SimilarDocEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Document)-[r:SIMILAR_TO]->(e:Document)";
             case DOMAIN:        return "(d:Domain{uri:{0}})-[:CONTAINS]->(s:Document)-[r:SIMILAR_TO]->(e:Document)";
+            case DOCUMENT:      return "(s:Document{uri:{0}})-[r:SIMILAR_TO]->(e:Document)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

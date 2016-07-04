@@ -23,7 +23,7 @@ public interface DealsWithFromDocumentEdgeRepository extends RelationGraphReposi
     @Query("match (domain{uri:{0}})-[:CONTAINS]->(:Document)-[r:DEALS_WITH]->(:Topic) return r")
     Iterable<DealsWithFromDocumentEdge> findByDomain(String uri);
 
-    @Query("match (document{uri:{0}})-[r:DEALS_WITH]->(topic) return r")
+    @Query("match (document{uri:{0}})-[r:DEALS_WITH]->(t:Topic) return r")
     Iterable<DealsWithFromDocumentEdge> findByDocument(String uri);
 
     @Query("match (document)-[r:DEALS_WITH]->(topic{uri:{0}}) return r")

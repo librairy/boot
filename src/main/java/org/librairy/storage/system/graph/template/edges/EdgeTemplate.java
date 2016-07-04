@@ -105,7 +105,8 @@ public abstract class EdgeTemplate {
 
 
     private List<Relation> _find(String path, Map params){
-        String query = new StringBuilder().append("match ").append(path).append(" return r.uri,r.creationTime,s.uri,e" +
+        String query = new StringBuilder().append("match ").append(path).append(" return ID(r),r.uri,r.creationTime,s" +
+                ".uri,e" +
                 ".uri,r.weight").toString();
         Optional<Result> result = executor.query(query, params);
 
@@ -118,6 +119,7 @@ public abstract class EdgeTemplate {
 
             try {
                 Relation instance = (Relation) unifiedEdgeGraphRepositoryFactory.mappingOf(type).newInstance();
+                instance.setId(Long.valueOf((Integer) relationship.get("ID(r)")));
                 instance.setUri((String) relationship.get("r.uri"));
                 instance.setCreationTime((String) relationship.get("r.creationTime"));
                 instance.setStartUri((String) relationship.get("s.uri"));

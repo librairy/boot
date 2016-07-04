@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.librairy.storage.system.graph.domain.nodes.DocumentNode;
 import org.librairy.storage.system.graph.domain.nodes.ItemNode;
+import org.librairy.storage.system.graph.domain.nodes.TopicNode;
 import org.neo4j.ogm.annotation.*;
 
 /**
@@ -14,7 +15,7 @@ import org.neo4j.ogm.annotation.*;
 @Data
 @EqualsAndHashCode(of={"uri"}, callSuper = true)
 @ToString(of = {"uri"},callSuper = true)
-public class DealsWithFromDocumentEdge extends Edge<DocumentNode,ItemNode> {
+public class DealsWithFromDocumentEdge extends Edge<DocumentNode,TopicNode> {
 
 
     @Override

@@ -22,6 +22,8 @@ public class DealsDocEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Document)-[r:DEALS_WITH]->(e:Topic)";
             case DOMAIN:        return "(domain:Domain{uri:{0}})-[c:CONTAINS]->(s:Document)-[r:DEALS_WITH]->(e:Topic)";
+            case TOPIC:         return "(e:Topic{uri:{0}})<-[r:DEALS_WITH]-(s:Document)";
+            case DOCUMENT:      return "(e:Topic)<-[r:DEALS_WITH]-(s:Document{uri:{0}})";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

@@ -23,6 +23,7 @@ public class HypernymOfEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Term)-[r:HYPERNYM_OF]->(e:Term)";
             case DOMAIN:        return "(dom1:Domain{uri:{0}})<-[app1:APPEARED_IN]-(e:Term)-[r:HYPERNYM_OF]->(s:Term)";
+            case TERM:          return "(s:Term{uri:{0}})-[r:HYPERNYM_OF]->(e:Term)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

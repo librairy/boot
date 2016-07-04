@@ -22,6 +22,8 @@ public class DealsPartEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Part)-[r:DEALS_WITH]->(e:Topic)";
             case DOMAIN:        return "(domain:Domain{uri:{0}})-[c:CONTAINS]->(d:Document)-[:BUNDLES]->(i:Item)<-[:DESCRIBES]-(s:Part)-[r:DEALS_WITH]->(e:Topic)";
+            case TOPIC:         return "(e:Topic{uri:{0}})<-[r:DEAL_WITH]-(s:Part)";
+            case PART:          return "(e:Topic)<-[r:DEALS_WITH]-(s:Part{uri:{0}})";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

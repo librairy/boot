@@ -24,7 +24,7 @@ public interface DealsWithFromPartEdgeRepository extends RelationGraphRepository
     @Query("match (:Part)-[r:DEALS_WITH]->(:Topic)-[:EMERGES_IN]->(domain{uri:{0}}) return r")
     Iterable<DealsWithFromPartEdge> findByDomain(String uri);
 
-    @Query("match (part{uri:{0}})-[r:DEALS_WITH]->(topic) return r")
+    @Query("match (part{uri:{0}})-[r:DEALS_WITH]->(:Topic) return r")
     Iterable<DealsWithFromPartEdge> findByPart(String uri);
 
     @Query("match (part)-[r:DEALS_WITH]->(topic{uri:{0}}) return r")

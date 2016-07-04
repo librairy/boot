@@ -22,6 +22,7 @@ public class ProvidesEdgeTemplate extends EdgeTemplate {
         switch (type){
             case ANY:           return "(s:Source)-[r:PROVIDES]->(e:Document)";
             case DOMAIN:        return "(d:Domain{uri:{0}})-[:CONTAINS]->(e:Document)<-[r:PROVIDES]-(s:Source)";
+            case SOURCE:        return "(s:Source{uri:{0}})-[r:PROVIDES]->(e:Document)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

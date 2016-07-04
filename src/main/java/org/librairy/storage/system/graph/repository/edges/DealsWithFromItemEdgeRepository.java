@@ -23,7 +23,7 @@ public interface DealsWithFromItemEdgeRepository extends RelationGraphRepository
     @Query("match (:Item)-[r:DEALS_WITH]->(:Topic)-[:EMERGES_IN]->(domain{uri:{0}}) return r")
     Iterable<DealsWithFromItemEdge> findByDomain(String uri);
 
-    @Query("match (item{uri:{0}})-[r:DEALS_WITH]->(topic) return r")
+    @Query("match (item{uri:{0}})-[r:DEALS_WITH]->(:Topic) return r")
     Iterable<DealsWithFromItemEdge> findByItem(String uri);
 
     @Query("match (item)-[r:DEALS_WITH]->(topic{uri:{0}}) return r")

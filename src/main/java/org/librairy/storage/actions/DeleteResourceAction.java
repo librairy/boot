@@ -37,6 +37,8 @@ public class DeleteResourceAction {
 
             List<org.librairy.model.domain.resources.Resource.Type> types = (type.equals(org.librairy.model.domain.resources.Resource.Type.ANY)) ? Arrays.asList(org.librairy.model.domain.resources.Resource.Type.values()) : Arrays.asList(new org.librairy.model.domain.resources.Resource.Type[]{type});
 
+            LOG.info("Ready to delete the following resource types: " + types);
+
             types.stream().filter(x -> !x.equals(org.librairy.model.domain.resources.Resource.Type.ANY)).forEach(t ->{
                 try{
                     helper.getUnifiedColumnRepository().deleteAll(t);
