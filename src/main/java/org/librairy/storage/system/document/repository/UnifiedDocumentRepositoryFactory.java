@@ -38,6 +38,9 @@ public class UnifiedDocumentRepositoryFactory {
     @Autowired
     TermDocumentRepository termDocumentRepository;
 
+    @Autowired
+    FilterDocumentRepository filterDocumentRepository;
+
     public BaseDocumentRepository repositoryOf(org.librairy.model.domain.resources.Resource.Type type) throws RepositoryNotFound{
         switch (type){
             case ANALYSIS: return analysisDocumentRepository;
@@ -49,6 +52,7 @@ public class UnifiedDocumentRepositoryFactory {
             case TOPIC: return topicDocumentRepository;
             case WORD: return wordDocumentRepository;
             case TERM: return termDocumentRepository;
+            case FILTER: return filterDocumentRepository;
         }
         throw new RepositoryNotFound("Document Repository not found for " + type);
     }
@@ -64,6 +68,7 @@ public class UnifiedDocumentRepositoryFactory {
             case TOPIC: return TopicDocument.class;
             case WORD: return WordDocument.class;
             case TERM: return TermDocument.class;
+            case FILTER: return FilterDocument.class;
         }
         throw new RuntimeException("Mapping not found for " + type);
     }

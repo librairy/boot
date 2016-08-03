@@ -22,7 +22,49 @@ public class SaveResourceAction {
 
         // initialize URI
         if (!resource.hasUri()){
-            resource.setUri(helper.getUriGenerator().newFor(resource.getResourceType()));
+            String uri;
+            switch(resource.getResourceType()){
+                case FILTER:
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asFilter()
+                            .getContent());
+                    break;
+                case WORD:
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asWord()
+                            .getContent());
+                    break;
+                case TERM:
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asTerm()
+                            .getContent());
+                    break;
+                case TOPIC:
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asTopic()
+                            .getContent());
+                    break;
+                case DOCUMENT:
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asDocument()
+                            .getDescription());
+                    break;
+                case ITEM:
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asItem()
+                            .getContent());
+                    break;
+                case PART:
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asPart()
+                            .getContent());
+                    break;
+                case DOMAIN:
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asDomain()
+                            .getName());
+                    break;
+                case SOURCE:
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asSource()
+                            .getName());
+                    break;
+                default:
+                    uri = helper.getUriGenerator().newFor(resource.getResourceType());
+            }
+
+            resource.setUri(uri);
         }
 
 

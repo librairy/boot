@@ -39,19 +39,15 @@ public class TemplateExecutor extends RepeatableActionExecutor{
 
 
     public Optional<Result> query(String query, Map<String, ?> parameters){
-        Long start = System.currentTimeMillis();
         Optional<Object> result = performRetries(0, query + " => PARAMS: " + Arrays.toString(parameters.entrySet().toArray()), () -> {
             Result res = template.query(query, parameters);
             return res;
         });
-        Period period = new Interval(start, System.currentTimeMillis()).toPeriod();
-        LOG.debug("Query : " + query + " in: " + period.getMinutes() + " minutes, " + period.getSeconds() + " seconds [" + query+"]");
         return (result.isPresent())? Optional.of((Result)result.get()) : Optional.empty();
     }
 
 
     public void execute(String query, Map<String, Object> parameters){
-        Long start = System.currentTimeMillis();
         Optional<Object> result = performRetries(0, query + " => PARAMS: " + Arrays.toString(parameters.entrySet().toArray()),
                 () -> {
             template.clear();
@@ -62,8 +58,6 @@ public class TemplateExecutor extends RepeatableActionExecutor{
             }
             return res;
         });
-        Period period = new Interval(start, System.currentTimeMillis()).toPeriod();
-        LOG.debug("Executed : " + query + " in: " + period.getMinutes() + " minutes, " + period.getSeconds() + " seconds [" + query+"]");
     }
 
 

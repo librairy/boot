@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +16,8 @@ import java.util.Map;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(of={"uri"}, callSuper = true)
+@XmlRootElement(name = "provenance")
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class ProvenanceRelation extends Relation {
 
     @Getter @Setter

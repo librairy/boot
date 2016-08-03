@@ -23,6 +23,7 @@ public class Resource extends LinkableElement {
 		TOPIC("topic","topics"),
 		SERIALIZED_OBJECT("object","objects"),
 		TERM("term","terms"),
+		FILTER("filter","filters"),
 		ANY("*","*");
 
 		String plural;
@@ -63,6 +64,7 @@ public class Resource extends LinkableElement {
 			case TERM: return org.librairy.model.domain.resources.Term.class;
 			case TOPIC: return Topic.class;
 			case WORD: return org.librairy.model.domain.resources.Word.class;
+			case FILTER: return org.librairy.model.domain.resources.Filter.class;
 			default: return Resource.class;
 		}
 	}
@@ -97,6 +99,10 @@ public class Resource extends LinkableElement {
 
 	public static org.librairy.model.domain.resources.Term newTerm(){
 		return new org.librairy.model.domain.resources.Term();
+	}
+
+	public static org.librairy.model.domain.resources.Filter newFilter(){
+		return new org.librairy.model.domain.resources.Filter();
 	}
 
 	public static Topic newTopic(){
@@ -145,6 +151,10 @@ public class Resource extends LinkableElement {
 
 	public org.librairy.model.domain.resources.Word asWord(){
 		return org.librairy.model.domain.resources.Word.class.cast(this);
+	}
+
+	public org.librairy.model.domain.resources.Filter asFilter(){
+		return org.librairy.model.domain.resources.Filter.class.cast(this);
 	}
 
 }

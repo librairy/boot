@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @Category(IntegrationTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ConfigTest.class)
+@ContextConfiguration(classes = Config.class)
 @TestPropertySource(properties = {
         "librairy.cassandra.contactpoints = wiig.dia.fi.upm.es",
         "librairy.cassandra.port = 5011",

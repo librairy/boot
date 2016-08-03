@@ -41,6 +41,9 @@ public class UnifiedColumnRepositoryFactory {
     TermColumnRepository termColumnRepository;
 
     @Autowired
+    FilterColumnRepository filterColumnRepository;
+
+    @Autowired
     BundleColumnRepository bundleColumnRepository;
 
     @Autowired
@@ -96,6 +99,7 @@ public class UnifiedColumnRepositoryFactory {
             case TOPIC: return topicColumnRepository;
             case WORD: return wordColumnRepository;
             case TERM: return termColumnRepository;
+            case FILTER: return filterColumnRepository;
             case SERIALIZED_OBJECT: return serializedObjectColumnRepository;
         }
         throw new RepositoryNotFound("Column Repository not found for " + type);
@@ -137,6 +141,7 @@ public class UnifiedColumnRepositoryFactory {
             case TOPIC: return TopicColumn.class;
             case WORD: return WordColumn.class;
             case TERM: return TermColumn.class;
+            case FILTER: return FilterColumn.class;
             case SERIALIZED_OBJECT: return SerializedObjectColumn.class;
         }
         throw new RuntimeException("Mapping not found for " + type);

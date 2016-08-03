@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang.StringUtils;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import java.io.Serializable;
 
 /**

@@ -6,12 +6,18 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.apache.commons.lang.StringUtils;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Created by cbadenes on 22/12/15.
  */
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(of = "uri", callSuper = true)
+@XmlRootElement(name = "source")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Source extends Resource {
 
     @Override
