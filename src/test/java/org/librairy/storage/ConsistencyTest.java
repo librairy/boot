@@ -294,23 +294,35 @@ public class ConsistencyTest {
         evaluate();
 
         System.out.println("Delete PAIRS_WITH");
-        udm.delete(Relation.Type.PAIRS_WITH).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domainUri);
+        udm.find(Relation.Type.PAIRS_WITH)
+                .from(org.librairy.model.domain.resources.Resource.Type.DOMAIN, domainUri)
+                .parallelStream()
+                .forEach(rel -> udm.delete(Relation.Type.PAIRS_WITH).byUri(rel.getUri()));
         numPairs            = 0;
         evaluate();
 
         System.out.println("Delete SIMILAR_TO DOCUMENT");
-        udm.delete(Relation.Type.SIMILAR_TO_DOCUMENTS).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domainUri);
+        udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS)
+                .from(org.librairy.model.domain.resources.Resource.Type.DOMAIN, domainUri)
+                .parallelStream()
+                .forEach(rel -> udm.delete(Relation.Type.SIMILAR_TO_DOCUMENTS).byUri(rel.getUri()));
         numSimilarDoc       = 0;
         evaluate();
 
 
         System.out.println("Delete SIMILAR_TO ITEMS");
-        udm.delete(Relation.Type.SIMILAR_TO_ITEMS).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domainUri);
+        udm.find(Relation.Type.SIMILAR_TO_ITEMS)
+                .from(org.librairy.model.domain.resources.Resource.Type.DOMAIN, domainUri)
+                .parallelStream()
+                .forEach(rel -> udm.delete(Relation.Type.SIMILAR_TO_ITEMS).byUri(rel.getUri()));
         numSimilarItem      = 0;
         evaluate();
 
         System.out.println("Delete SIMILAR_TO PARTS");
-        udm.delete(Relation.Type.SIMILAR_TO_PARTS).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domainUri);
+        udm.find(Relation.Type.SIMILAR_TO_PARTS)
+                .from(org.librairy.model.domain.resources.Resource.Type.DOMAIN, domainUri)
+                .parallelStream()
+                .forEach(rel -> udm.delete(Relation.Type.SIMILAR_TO_PARTS).byUri(rel.getUri()));
         numSimilarPart      = 0;
         evaluate();
 

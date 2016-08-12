@@ -448,7 +448,10 @@ public class UDMTest {
             String word = "http://librairy.org/words/67f76420-4d11-42d5-a692-f2bd5c353ac9";
 
             LOG.info("First loop");
-            udm.delete(Relation.Type.EMBEDDED_IN).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domain);
+            udm.find(Relation.Type.EMBEDDED_IN)
+                    .from(org.librairy.model.domain.resources.Resource.Type.DOMAIN, domain)
+                    .parallelStream()
+                    .forEach(rel -> udm.delete(Relation.Type.EMBEDDED_IN).byUri(rel.getUri()));
 
 
             Iterable<Relation> pairs = udm.find(Relation.Type.PAIRS_WITH).from(org.librairy.model.domain.resources.Resource.Type.DOMAIN, domain);
@@ -462,13 +465,26 @@ public class UDMTest {
 
 
             LOG.info("Second loop");
-            udm.delete(Relation.Type.EMBEDDED_IN).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domain);
-            udm.delete(Relation.Type.PAIRS_WITH).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domain);
+            udm.find(Relation.Type.EMBEDDED_IN)
+                    .from(org.librairy.model.domain.resources.Resource.Type.DOMAIN, domain)
+                    .parallelStream()
+                    .forEach(rel -> udm.delete(Relation.Type.EMBEDDED_IN).byUri(rel.getUri()));
+
+            udm.find(Relation.Type.PAIRS_WITH)
+                    .from(org.librairy.model.domain.resources.Resource.Type.DOMAIN, domain)
+                    .parallelStream()
+                    .forEach(rel -> udm.delete(Relation.Type.PAIRS_WITH).byUri(rel.getUri()));
             udm.save(Relation.newEmbeddedIn(word,domain));
 
             LOG.info("Third loop");
-            udm.delete(Relation.Type.EMBEDDED_IN).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domain);
-            udm.delete(Relation.Type.PAIRS_WITH).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domain);
+            udm.find(Relation.Type.EMBEDDED_IN)
+                    .from(org.librairy.model.domain.resources.Resource.Type.DOMAIN, domain)
+                    .parallelStream()
+                    .forEach(rel -> udm.delete(Relation.Type.EMBEDDED_IN).byUri(rel.getUri()));
+            udm.find(Relation.Type.PAIRS_WITH)
+                    .from(org.librairy.model.domain.resources.Resource.Type.DOMAIN, domain)
+                    .parallelStream()
+                    .forEach(rel -> udm.delete(Relation.Type.PAIRS_WITH).byUri(rel.getUri()));
             udm.save(Relation.newEmbeddedIn(word,domain));
 
 

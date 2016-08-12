@@ -113,7 +113,10 @@ public class RelationTest {
         Assert.assertEquals(doc1.getUri(), rels.get(0).getStartUri());
         Assert.assertEquals(doc2.getUri(), rels.get(0).getEndUri());
 
-        udm.delete(Relation.Type.SIMILAR_TO_DOCUMENTS).in(Resource.Type.DOMAIN,domain.getUri());
+        udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS)
+                .from(org.librairy.model.domain.resources.Resource.Type.DOMAIN, domain.getUri())
+                .parallelStream()
+                .forEach(rel -> udm.delete(Relation.Type.SIMILAR_TO_DOCUMENTS).byUri(rel.getUri()));
         rels = udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).from(Resource.Type.DOMAIN, domain.getUri());
         Assert.assertTrue(rels.isEmpty());
     }
