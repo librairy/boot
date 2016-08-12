@@ -231,7 +231,7 @@ public class RelationTest {
 
         List<Relation> res1 = udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).from(Resource.Type.DOMAIN, domain1.getUri());
         Assert.assertFalse(res1.isEmpty());
-        Assert.assertEquals(1,res1.size());
+        Assert.assertEquals(2,res1.size());
         Assert.assertEquals(s1.getUri(), res1.get(0).getUri());
 
 
@@ -241,7 +241,7 @@ public class RelationTest {
 
         List<Relation> res2 = udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).from(Resource.Type.DOMAIN, domain2.getUri());
         Assert.assertFalse(res2.isEmpty());
-        Assert.assertEquals(1,res2.size());
+        Assert.assertEquals(2,res2.size());
         Assert.assertEquals(s2.getUri(), res2.get(0).getUri());
 
 
@@ -277,6 +277,77 @@ public class RelationTest {
 
         System.out.println(res);
 
+
+    }
+
+
+    @Test
+    public void checkSimilarRelations(){
+
+        udm.find(Resource.Type.DOCUMENT).all().stream().forEach(resource -> udm.delete(Resource.Type.DOCUMENT).byUri
+                (resource.getUri()));
+        udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).all().stream().forEach(rel -> udm.delete(Relation.Type.SIMILAR_TO_DOCUMENTS).byUri
+                (rel.getUri
+                        ()));
+
+        Document doc1 = Resource.newDocument("doc1");
+        udm.save(doc1);
+        System.out.println("D1 uri: " + doc1.getUri());
+
+        Document doc2 = Resource.newDocument("doc2");
+        udm.save(doc2);
+        System.out.println("D2 uri: " + doc2.getUri());
+
+        Document doc3 = Resource.newDocument("doc3");
+        udm.save(doc3);
+        System.out.println("D3 uri: " + doc3.getUri());
+
+
+        String domainUri = uriGenerator.basedOnContent(Resource.Type.DOMAIN,"d1");
+
+        // 1 - 2
+        udm.save(Relation.newSimilarToDocuments(doc1.getUri(),doc2.getUri(),domainUri));
+        // 1 - 3
+        udm.save(Relation.newSimilarToDocuments(doc1.getUri(),doc3.getUri(),domainUri));
+        // 2 - 3
+        udm.save(Relation.newSimilarToDocuments(doc2.getUri(),doc3.getUri(),domainUri));
+
+
+        // all relations
+        List<Relation> allRelations = udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).all();
+        Assert.assertFalse(allRelations.isEmpty());
+        Assert.assertEquals(6, allRelations.size());
+
+        // domain relations
+        List<Relation> domainRelations = udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).from(Resource.Type.DOMAIN,
+                domainUri);
+        Assert.assertFalse(domainRelations.isEmpty());
+        Assert.assertEquals(6, domainRelations.size());
+
+        // relations from 1
+        List<Relation> d1Rels = udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).from(Resource.Type.DOCUMENT, doc1.getUri
+                ());
+        Assert.assertFalse(d1Rels.isEmpty());
+        Assert.assertEquals(2, d1Rels.size());
+        Assert.assertTrue(d1Rels.stream().filter(rel -> rel.getStartUri().equalsIgnoreCase(doc1.getUri()) || rel
+                .getEndUri().equalsIgnoreCase(doc1.getUri())).count()>0);
+
+        // relations from 2
+        List<Relation> d2Rels = udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).from(Resource.Type.DOCUMENT, doc2.getUri
+                ());
+        Assert.assertFalse(d2Rels.isEmpty());
+        Assert.assertEquals(2, d2Rels.size());
+        Assert.assertTrue(d2Rels.stream().filter(rel -> rel.getStartUri().equalsIgnoreCase(doc2.getUri()) || rel
+                .getEndUri().equalsIgnoreCase(doc2.getUri())).count()>0);
+
+
+        // relations from 3
+        List<Relation> d3Rels = udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).from(Resource.Type.DOCUMENT, doc3.getUri
+                ());
+        Assert.assertFalse(d3Rels.isEmpty());
+        Assert.assertEquals(2, d3Rels.size());
+        Assert.assertTrue(d3Rels.stream().filter(rel -> rel.getStartUri().equalsIgnoreCase(doc3.getUri()) || rel
+                .getEndUri().equalsIgnoreCase(doc3.getUri())).count()>0);
 
     }
 

@@ -77,12 +77,12 @@ public class GraphTest {
 //        Map<String,String> params = new HashMap<>();
 //        params.put("0","http://drinventor.eu/documents/c369c917fecf3b4828688bdb6677dd6e");
 //        params.put("1","http://drinventor.eu/documents/f6f36164961229eac1bf19431a3744a0");
-//        Result result = template.query("match (node1:Document{uri:{0}})-[r:SIMILAR_TO]->(node2:Document{uri:{1}}) return r", params);
+//        Result result = template.query("match (node1:Document{uri:{0}})-[r:SIMILAR_TO]-(node2:Document{uri:{1}}) return r", params);
 //        System.out.println("Query Results: "+ result.queryResults());
 //
 //        params.put("0","http://drinventor.eu/items/c369c917fecf3b4828688bdb6677dd6e");
 //        params.put("1","http://drinventor.eu/items/715f6df41fdf75cb3d0db7fce050f301");
-//        Result result2 = template.query("match (node1:Item{uri:{0}})-[r:SIMILAR_TO]->(node2:Item{uri:{1}}) return r", params);
+//        Result result2 = template.query("match (node1:Item{uri:{0}})-[r:SIMILAR_TO]-(node2:Item{uri:{1}}) return r", params);
 //        System.out.println("Query Results: "+ result2.queryResults());
 
 

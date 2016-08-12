@@ -18,7 +18,7 @@ public class DocumentNodeTemplate extends NodeTemplate {
         switch (type){
             case SOURCE:    return "(n:Document)<-[:PROVIDES]-(source{uri:{0}})";
             case DOMAIN:    return "(n:Document)<-[:CONTAINS]-(domain{uri:{0}})";
-            case DOCUMENT:  return "(n:Document)<-[:SIMILAR_TO]-(document{uri:{0}})";
+            case DOCUMENT:  return "(n:Document)-[:SIMILAR_TO]-(document{uri:{0}})";
             case ITEM:      return "(n:Document)-[:BUNDLES]->(item{uri:{0}})";
             case PART:      return "(n:Document)-[:BUNDLES]->(:Item)<-[:DESCRIBES]-(part{uri:{0}})";
             case TOPIC:     return "(n:Document)-[:DEALS_WITH]->(topic{uri:{0}})";

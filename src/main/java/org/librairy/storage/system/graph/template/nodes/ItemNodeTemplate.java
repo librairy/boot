@@ -19,7 +19,7 @@ public class ItemNodeTemplate extends NodeTemplate {
             case SOURCE:    return "(n:Item)<-[:BUNDLES]-(:Document)<-[:PROVIDES]-(source{uri:{0}})";
             case DOMAIN:    return "(n:Item)<-[:BUNDLES]-(:Document)<-[:CONTAINS]-(domain{uri:{0}})";
             case DOCUMENT:  return "(n:Item)<-[:BUNDLES]-(document{uri:{0}})";
-            case ITEM:      return "(n:Item)<-[:SIMILAR_TO]-(item{uri:{0}})";
+            case ITEM:      return "(n:Item)-[:SIMILAR_TO]-(item{uri:{0}})";
             case PART:      return "(n:Item)<-[:DESCRIBES]-(part{uri:{0}})";
             case TOPIC:     return "(n:Item)-[:DEALS_WITH]->(topic{uri:{0}})";
             case WORD:      return "(n:Item)-[:DEALS_WITH]->(:Topic)-[:MENTIONS]->(word{uri:{0}})";

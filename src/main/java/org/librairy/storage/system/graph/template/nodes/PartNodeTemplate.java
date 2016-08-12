@@ -22,7 +22,7 @@ public class PartNodeTemplate extends NodeTemplate {
                     "(domain{uri:{0}})";
             case DOCUMENT:  return "(n:Part)-[:DESCRIBES]->(:Item)<-[:BUNDLES]-(document{uri:{0}})";
             case ITEM:      return "(n:Part)-[:DESCRIBES]->(item{uri:{0}})";
-            case PART:      return "(n:Part)<-[:SIMILAR_TO]-(part{uri:{0}})";
+            case PART:      return "(n:Part)-[:SIMILAR_TO]-(part{uri:{0}})";
             case TOPIC:     return "(n:Part)-[:DEALS_WITH]->(topic{uri:{0}})";
             case WORD:      return "(n:Part)-[:DEALS_WITH]->(:Topic)-[:MENTIONS]->(word{uri:{0}})";
             case TERM:      return "(n:Part)-[:DEALS_WITH]->(:Topic)-[:MENTIONS]->(:Word)<-[:MENTIONS]-(term{uri:{0}})";

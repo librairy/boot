@@ -48,8 +48,8 @@ public class SaveResourceAction {
                     break;
                 case DOCUMENT:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
-                            (Strings.isNullOrEmpty(resource.asDocument().getDescription()))? TimeUtils.asISO() : resource
-                                    .asDocument().getDescription());
+                            (Strings.isNullOrEmpty(resource.asDocument().getTitle()))? TimeUtils.asISO() : resource
+                                    .asDocument().getTitle());
                     break;
                 case ITEM:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asItem()

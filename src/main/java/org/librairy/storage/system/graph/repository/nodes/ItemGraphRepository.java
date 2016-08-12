@@ -26,7 +26,7 @@ public interface ItemGraphRepository extends ResourceGraphRepository<ItemNode> {
     @Query("match (item)-[:DEALS_WITH]->(topic{uri:{0}}) return item")
     Iterable<ItemNode> findByTopic(String uri);
 
-    @Query("match (item)-[:SIMILAR_TO]->(i{uri:{0}}) return item")
+    @Query("match (item)-[:SIMILAR_TO]-(i{uri:{0}}) return item")
     Iterable<ItemNode> findByItem(String uri);
 
 }
