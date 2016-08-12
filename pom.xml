@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.librairy</groupId>
     <artifactId>librairy-boot</artifactId>
-    <version>0.7</version>
+    <version>0.8-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Librairy-Boot</name>
     <description>It makes easy to create librairy-powered applications and services with minimum fuss.</description>
