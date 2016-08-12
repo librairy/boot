@@ -35,6 +35,12 @@ public class UnifiedNodeGraphRepositoryFactory {
     @Autowired
     TermGraphRepository termGraphRepository;
 
+    @Autowired
+    FilterGraphRepository filterGraphRepository;
+
+    @Autowired
+    PathGraphRepository pathGraphRepository;
+
 
     public ResourceGraphRepository repositoryOf(org.librairy.model.domain.resources.Resource.Type type) throws RepositoryNotFound {
         switch (type){
@@ -46,6 +52,8 @@ public class UnifiedNodeGraphRepositoryFactory {
             case TOPIC: return topicGraphRepository;
             case WORD: return wordGraphRepository;
             case TERM: return termGraphRepository;
+            case FILTER: return filterGraphRepository;
+            case PATH: return pathGraphRepository;
         }
         throw new RepositoryNotFound("Graph Repository not found for " + type);
     }
@@ -60,6 +68,8 @@ public class UnifiedNodeGraphRepositoryFactory {
             case TOPIC: return TopicNode.class;
             case WORD: return WordNode.class;
             case TERM: return TermNode.class;
+            case FILTER: return FilterNode.class;
+            case PATH: return PathNode.class;
         }
         throw new RuntimeException("Mapping not found for " + type);
     }

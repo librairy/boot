@@ -89,6 +89,20 @@ public abstract class NodeTemplate {
         throw new RuntimeException("Not implemented yet");
     }
 
+
+    public Optional<Resource> fromNodeId(Long id){
+        String query = "match (n) where ID(n)="+id+" return n.uri, n.creationTime";
+        Optional<Result> result = executor.query(query, ImmutableMap.of());
+
+        if (!result.isPresent()) return Optional.empty();
+        Map<String, Object> resultNode = result.get().queryResults().iterator().next();
+        Resource resource = new Resource();
+        resource.setUri((String)resultNode.get("n.uri"));
+        resource.setCreationTime((String)resultNode.get("n.creationTime"));
+
+        return Optional.of(resource);
+    }
+
     public void deleteOne(String uri){
         _delete( "(n: {uri: {0} })", ImmutableMap.of("0",uri));
     }

@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
 import org.librairy.model.domain.relations.Relation;
+import org.librairy.model.domain.resources.Resource;
 import org.librairy.storage.system.graph.repository.edges.UnifiedEdgeGraphRepositoryFactory;
 import org.librairy.storage.system.graph.template.TemplateExecutor;
 import org.neo4j.ogm.model.Property;
@@ -96,6 +97,30 @@ public abstract class EdgeTemplate {
         executor.execute("MATCH (a:"+startNodeLabel+"),(b:"+endNodeLabel+") WHERE a.uri = {0} AND b.uri = {1} CREATE " +
                 "(a)-[r:"+relationLabel+" { uri : {2}, creationTime : {3}, weight : {4} "+extraParams+" } ]->(b) " +
                 "RETURN r", params);
+
+
+        // TODO This should be removed when Neo4j uses Bolt
+        // Remove duplicated relations
+        String queryRels = "MATCH (a:"+startNodeLabel+")-[r:"+relationLabel+"]->(b:"+endNodeLabel+") WHERE a.uri = " +
+                "{0} AND b.uri = {1} AND r.uri = {2} return ID(r),r.uri,r.creationTime";
+        Optional<Result> result = executor.query(queryRels, params);
+        if (!result.isPresent()) return;
+        Iterator<Map<String, Object>> it = result.get().queryResults().iterator();
+        int counter = 0;
+        while(it.hasNext()){
+            Map<String, Object> resultNode = it.next();
+            boolean matched = ((String) resultNode.get("r.creationTime")).equalsIgnoreCase((String) params.get("3"));
+            if (!matched){
+                // remove
+                executor.execute("start r=rel("+( (Integer) resultNode.get("ID(r)"))+") delete r", ImmutableMap.of());
+            }else if (matched && counter>0){
+                // remove
+                executor.execute("start r=rel("+( (Integer) resultNode.get("ID(r)"))+") delete r", ImmutableMap.of());
+            }else{
+                counter += 1;
+            }
+        }
+
     }
 
     private void _delete(String path, Map params){
@@ -103,6 +128,25 @@ public abstract class EdgeTemplate {
         executor.execute(query, params);
     }
 
+    public Optional<Relation> fromNodeId(Long id){
+        String query = "match (s)-[r]->(e) where ID(r)="+id+" return r.uri, r.creationTime, r.weight, s.uri, e.uri";
+        Optional<Result> result = executor.query(query, ImmutableMap.of());
+
+        if (!result.isPresent()) return Optional.empty();
+        Map<String, Object> resultNode = result.get().queryResults().iterator().next();
+        Relation relation = new Relation();
+        relation.setUri((String)resultNode.get("r.uri"));
+        relation.setCreationTime((String)resultNode.get("r.creationTime"));
+        relation.setStartUri((String) resultNode.get("s.uri"));
+        relation.setEndUri((String) resultNode.get("e.uri"));
+        relation.setId(id);
+        Object weight = resultNode.get("r.weight");
+        if (weight != null){
+            relation.setWeight((Double)weight);
+        }
+
+        return Optional.of(relation);
+    }
 
     private List<Relation> _find(String path, Map params){
         String query = new StringBuilder().append("match ").append(path).append(" return ID(r),r.uri,r.creationTime,s" +

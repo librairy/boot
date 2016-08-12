@@ -1,9 +1,11 @@
 package org.librairy.storage.actions;
 
+import com.google.common.base.Strings;
 import org.librairy.model.Event;
 import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.modules.RoutingKey;
 import org.librairy.model.utils.ResourceUtils;
+import org.librairy.model.utils.TimeUtils;
 import org.librairy.storage.Helper;
 import org.librairy.storage.executor.QueryTask;
 import org.librairy.storage.session.UnifiedTransaction;
@@ -28,6 +30,10 @@ public class SaveResourceAction {
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asFilter()
                             .getContent());
                     break;
+                case PATH:
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asPath()
+                            .getStart()+resource.asPath().getEnd());
+                    break;
                 case WORD:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asWord()
                             .getContent());
@@ -41,8 +47,9 @@ public class SaveResourceAction {
                             .getContent());
                     break;
                 case DOCUMENT:
-                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asDocument()
-                            .getDescription());
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
+                            (Strings.isNullOrEmpty(resource.asDocument().getDescription()))? TimeUtils.asISO() : resource
+                                    .asDocument().getDescription());
                     break;
                 case ITEM:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asItem()
@@ -53,12 +60,13 @@ public class SaveResourceAction {
                             .getContent());
                     break;
                 case DOMAIN:
-                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asDomain()
-                            .getName());
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
+                            (Strings.isNullOrEmpty(resource.asDomain().getName()))? TimeUtils.asISO() : resource.asDomain().getName());
                     break;
                 case SOURCE:
-                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asSource()
-                            .getName());
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
+                            (Strings.isNullOrEmpty(resource.asSource().getName()))? TimeUtils.asISO() : resource.asSource()
+                                    .getName());
                     break;
                 default:
                     uri = helper.getUriGenerator().newFor(resource.getResourceType());

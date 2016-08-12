@@ -49,11 +49,13 @@ public abstract class RepeatableActionExecutor {
             }
             else if (retries > MAX_RETRIES){
                 LOG.error("Error executing "+id+" after " + MAX_RETRIES + " retries",e);
+                // TODO Remove retries
                 return Optional.empty();
             }
             else{
                 LOG.warn("Trying to retry "+id+": " + retries);
                 waitForRetry(retries);
+                // TODO Remove retries
                 return performRetries(++retries,id,function);
             }
         }catch (RepositoryNotFound e){
