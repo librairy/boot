@@ -55,14 +55,14 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
 @TestPropertySource(properties = {
-        "librairy.cassandra.contactpoints = zavijava.dia.fi.upm.es",
+        "librairy.cassandra.contactpoints = 192.168.99.100",
         "librairy.cassandra.port = 5011",
         "librairy.cassandra.keyspace = research",
-        "librairy.elasticsearch.contactpoints = zavijava.dia.fi.upm.es",
+        "librairy.elasticsearch.contactpoints = 192.168.99.100",
         "librairy.elasticsearch.port = 5021",
-        "librairy.neo4j.contactpoints = zavijava.dia.fi.upm.es",
+        "librairy.neo4j.contactpoints = 192.168.99.100",
         "librairy.neo4j.port = 5030",
-        "librairy.eventbus.host = zavijava.dia.fi.upm.es",
+        "librairy.eventbus.host = 192.168.99.100",
         "librairy.eventbus.port=5041"})
 public class UDMTest {
 
@@ -139,14 +139,12 @@ public class UDMTest {
     @Test
     public void fixModel(){
 
-        Source casaSource = Resource.newSource();
-        casaSource.setName("casa");
+        Source casaSource = Resource.newSource("casa");
         casaSource.setDescription("casa 2016 papers");
         casaSource.setUrl("file://casa");
         udm.save(casaSource);
 
-        Source siggraphSource = Resource.newSource();
-        siggraphSource.setName("siggraph");
+        Source siggraphSource = Resource.newSource("siggraph");
         siggraphSource.setDescription("siggraph 2002-2015 papers");
         siggraphSource.setUrl("file://siggraph");
         udm.save(siggraphSource);
@@ -200,11 +198,11 @@ public class UDMTest {
                         ".org/items/297f44cc83545ea4d9ce5ceb0d8aadb2");
 
 
-        List<String> doc = udm.find(Resource.Type.DOCUMENT).from(Resource.Type.ITEM, "http://librairy" +
+        List<Resource> docs = udm.find(Resource.Type.DOCUMENT).from(Resource.Type.ITEM, "http://librairy" +
                 ".org/items/297f44cc83545ea4d9ce5ceb0d8aadb2");
 
 
-        System.out.println(doc);
+        System.out.println(docs);
 
 
 //        Boolean res = helper.getUnifiedDocumentRepository().exists(Resource.Type.ITEM, "http://librairy" +
@@ -329,7 +327,8 @@ public class UDMTest {
 
     public void findFrom(){
         String uri = "http://drinventor.eu/items/a5179367d5ebf825f01d9247dacae66";
-        List<String> domains = udm.find(org.librairy.model.domain.resources.Resource.Type.DOMAIN).from(org.librairy.model.domain.resources.Resource.Type.ITEM, uri);
+        List<Resource> domains = udm.find(org.librairy.model.domain.resources.Resource.Type.DOMAIN).from(org.librairy
+                .model.domain.resources.Resource.Type.ITEM, uri);
         System.out.println("Domains: " + domains);
     }
 
@@ -359,10 +358,10 @@ public class UDMTest {
         }, BindingKey.of(org.librairy.model.modules.RoutingKey.of(org.librairy.model.domain.resources.Resource.Type.SOURCE, org.librairy.model.domain.resources.Resource.State.CREATED),"test"));
 
 
-        org.librairy.model.domain.resources.Source source = org.librairy.model.domain.resources.Resource.newSource();
+        org.librairy.model.domain.resources.Source source = org.librairy.model.domain.resources.Resource.newSource
+                ("test-source");
         source.setUri("http://librairy.org/sources/0b3e80ae-d598-4dd4-8c54-38e2229f0bf8");
         source.setUrl("file://opt/librairy/inbox/upm");
-        source.setName("test-source");
         source.setProtocol("file");
         source.setCreationTime("20160101T22:02");
         source.setDescription("testing purposes");
@@ -388,15 +387,16 @@ public class UDMTest {
     @Test
     public void findDocumentsInDomain(){
         // Source
-        org.librairy.model.domain.resources.Source source = org.librairy.model.domain.resources.Resource.newSource();
+        org.librairy.model.domain.resources.Source source = org.librairy.model.domain.resources.Resource.newSource("s");
         udm.save(source);
 
         // Domain
-        org.librairy.model.domain.resources.Domain domain = org.librairy.model.domain.resources.Resource.newDomain();
+        org.librairy.model.domain.resources.Domain domain = org.librairy.model.domain.resources.Resource.newDomain("d");
         udm.save(domain);
 
         // Document 1
-        org.librairy.model.domain.resources.Document doc1 = org.librairy.model.domain.resources.Resource.newDocument();
+        org.librairy.model.domain.resources.Document doc1 = org.librairy.model.domain.resources.Resource.newDocument
+                ("d1");
         udm.save(doc1);
         // -> document1 in source
         udm.save(Relation.newProvides(source.getUri(),doc1.getUri()));
@@ -404,7 +404,8 @@ public class UDMTest {
         udm.save(Relation.newContains(domain.getUri(),doc1.getUri()));
 
         // Document 2
-        org.librairy.model.domain.resources.Document doc2 = org.librairy.model.domain.resources.Resource.newDocument();
+        org.librairy.model.domain.resources.Document doc2 = org.librairy.model.domain.resources.Resource.newDocument
+                ("d2");
         udm.save(doc2);
         // -> document2 in source
         udm.save(Relation.newProvides(source.getUri(),doc2.getUri()));
@@ -412,7 +413,8 @@ public class UDMTest {
         udm.save(Relation.newContains(domain.getUri(),doc2.getUri()));
 
         // Getting Documents
-        List<String> documents = udm.find(org.librairy.model.domain.resources.Resource.Type.DOCUMENT).from(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domain.getUri());
+        List<Resource> documents = udm.find(org.librairy.model.domain.resources.Resource.Type.DOCUMENT).from(org
+                .librairy.model.domain.resources.Resource.Type.DOMAIN,domain.getUri());
 
         // Delete
         udm.delete(org.librairy.model.domain.resources.Resource.Type.SOURCE).byUri(source.getUri());
@@ -488,12 +490,13 @@ public class UDMTest {
         });
 
         domains.forEach(domain -> {
-            List<String> wordsByDomain = udm.find(org.librairy.model.domain.resources.Resource.Type.WORD).from(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domain);
+            List<Resource> wordsByDomain = udm.find(org.librairy.model.domain.resources.Resource.Type.WORD).from(org
+                    .librairy.model.domain.resources.Resource.Type.DOMAIN,domain);
             LOG.info("Domain '" + domain + "' contains: " + wordsByDomain.size() + " words");
         });
 
 
-        List<String> words = udm.find(org.librairy.model.domain.resources.Resource.Type.WORD).all();
+        List<Resource> words = udm.find(org.librairy.model.domain.resources.Resource.Type.WORD).all();
         LOG.info("Total words: " + words.size());
 
     }

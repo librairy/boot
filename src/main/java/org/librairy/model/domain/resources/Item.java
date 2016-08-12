@@ -21,26 +21,14 @@ public class Item extends Resource {
     @Override
     public Resource.Type getResourceType() {return Type.ITEM;}
 
-    public static final String AUTHORED_ON="authoredOn";
-    private String authoredOn;
-
     public static final String AUTHORED_BY="authoredBY";
     private String authoredBy;
-
-    public static final String CONTRIBUTED_BY="contributedBy";
-    private String contributedBy;
 
     public static final String FORMAT="format";
     private String format;
 
     public static final String LANGUAGE="language";
     private String language;
-
-    public static final String TITLE="title";
-    private String title;
-
-    public static final String SUBJECT="subject";
-    private String subject;
 
     public static final String DESCRIPTION="description";
     private String description;

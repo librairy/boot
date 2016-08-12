@@ -26,11 +26,7 @@ public class SaveRelationAction {
 
         // initialize URI
         if (!relation.hasUri()){
-
-            String startId  = URIGenerator.retrieveId(relation.getStartUri());
-            String endId    = URIGenerator.retrieveId(relation.getEndUri());
-
-            relation.setUri(helper.getUriGenerator().from(relation.getType(),startId+"-"+endId));
+            relation.setUri(helper.getUriGenerator().from(relation.getType(),relation.getUriComposition()));
         }
 
         try{

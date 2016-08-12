@@ -16,7 +16,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @Category(IntegrationTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = DocumentConfig.class)
-@TestPropertySource(properties = { "librairy.eventbus.host = local","librairy.elasticsearch.contactpoints = drinventor.dia.fi.upm.es", "librairy.elasticsearch.port = 5021" })
+@TestPropertySource(properties = { "librairy.eventbus.host = local","librairy.elasticsearch.contactpoints = 192.168" +
+        ".99.100", "librairy.elasticsearch.port = 5021" })
 public abstract class BaseDocumentRepositoryTest<T extends org.librairy.model.domain.resources.Resource> {
 
     public abstract BaseDocumentRepository<T> getRepository();

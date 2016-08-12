@@ -18,7 +18,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @Category(IntegrationTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = GraphConfig.class)
-@TestPropertySource(properties = { "librairy.eventbus.host = local","librairy.neo4j.contactpoints = drinventor.dia.fi.upm.es", "librairy.neo4j.port = 5030" })
+@TestPropertySource(properties = { "librairy.eventbus.host = local","librairy.neo4j.contactpoints = 192.168.99.100",
+        "librairy.neo4j.port = 5030" })
 public abstract class BaseGraphRepositoryTest<T extends Node> {
 
     public abstract ResourceGraphRepository<T> getRepository();

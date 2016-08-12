@@ -69,7 +69,6 @@ public class UnifiedUnifiedDocumentRepositoryTest {
         org.librairy.model.domain.resources.Item resource = new org.librairy.model.domain.resources.Item();
         resource.setUri("items/01");
         resource.setAuthoredBy("me");
-        resource.setAuthoredOn("20151210");
         resource.setDescription("testing purposes");
         test(resource, org.librairy.model.domain.resources.Resource.Type.ITEM);
     }

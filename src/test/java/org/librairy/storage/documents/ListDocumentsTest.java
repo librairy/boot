@@ -8,6 +8,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.librairy.Config;
 import org.librairy.model.domain.resources.Document;
+import org.librairy.model.domain.resources.Resource;
 import org.librairy.storage.Helper;
 import org.librairy.storage.UDM;
 import org.librairy.storage.generator.URIGenerator;
@@ -155,11 +156,12 @@ public class ListDocumentsTest {
 
 //        udm.save(new Item());
 //
-        List<String> uris = udm.find(org.librairy.model.domain.resources.Resource.Type.DOCUMENT).all();
+        List<Resource> resources = udm.find(org.librairy.model.domain.resources.Resource.Type.DOCUMENT).all();
 //
-        LOG.info("Item URIs: " + uris);
+        LOG.info("Items: " + resources);
 
-        List<Document> documents = uris.stream().map(uri -> udm.read(org.librairy.model.domain.resources.Resource.Type.DOCUMENT).byUri(uri).get().asDocument()).filter(doc -> newFiles.contains(doc.getRetrievedFrom())).collect(Collectors.toList());
+        List<Document> documents = resources.stream().map(resource -> udm.read(org.librairy.model.domain.resources
+                .Resource.Type.DOCUMENT).byUri(resource.getUri()).get().asDocument()).filter(doc -> newFiles.contains(doc.getRetrievedFrom())).collect(Collectors.toList());
 
         List<Reference> references = new ArrayList<>();
         for (Document document : documents){

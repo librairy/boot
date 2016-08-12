@@ -28,8 +28,8 @@ public class AppearedInGraphRepositoryTest extends BaseGraphRepositoryTest<Appea
     Term term;
 
     public void setup(){
-        this.domain = org.librairy.model.domain.resources.Resource.newDomain();
-        this.term  = org.librairy.model.domain.resources.Resource.newTerm();
+        this.domain = org.librairy.model.domain.resources.Resource.newDomain("d");
+        this.term  = org.librairy.model.domain.resources.Resource.newTerm("t");
 
         nodeRepository.save(domain);
         nodeRepository.save(term);

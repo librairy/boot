@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.librairy.model.domain.LinkableElement;
 import org.librairy.model.domain.resources.Resource;
+import org.librairy.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,10 @@ public class Relation extends LinkableElement {
     public void between(LinkableElement start,LinkableElement end){
         this.startUri = start.getUri();
         this.endUri = end.getUri();
+    }
+
+    public String getUriComposition(){
+        return URIGenerator.retrieveId(getStartUri()) + "-" + URIGenerator.retrieveId(getEndUri());
     }
 
     public org.librairy.model.domain.resources.Resource.Type getStartType(){
@@ -191,16 +196,22 @@ public class Relation extends LinkableElement {
         return newRelation(Provides.class,startUri,endUri);
     }
 
-    public static SimilarToDocuments newSimilarToDocuments(String startUri, String endUri){
-        return newRelation(SimilarToDocuments.class,startUri,endUri);
+    public static SimilarToDocuments newSimilarToDocuments(String startUri, String endUri, String domainUri){
+        SimilarToDocuments rel = newRelation(SimilarToDocuments.class, startUri, endUri);
+        rel.setDomain(domainUri);
+        return rel;
     }
 
-    public static SimilarToItems newSimilarToItems(String startUri, String endUri){
-        return newRelation(SimilarToItems.class,startUri,endUri);
+    public static SimilarToItems newSimilarToItems(String startUri, String endUri, String domainUri){
+        SimilarToItems rel = newRelation(SimilarToItems.class, startUri, endUri);
+        rel.setDomain(domainUri);
+        return rel;
     }
 
-    public static SimilarToParts newSimilarToParts(String startUri, String endUri){
-        return newRelation(SimilarToParts.class,startUri,endUri);
+    public static SimilarToParts newSimilarToParts(String startUri, String endUri, String domainUri){
+        SimilarToParts rel = newRelation(SimilarToParts.class, startUri, endUri);
+        rel.setDomain(domainUri);
+        return rel;
     }
 
     private static <T extends Relation> T newRelation(Class<T> clazz, String su, String eu){

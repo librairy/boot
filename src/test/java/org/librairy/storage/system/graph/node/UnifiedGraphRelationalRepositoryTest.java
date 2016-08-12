@@ -43,11 +43,11 @@ public class UnifiedGraphRelationalRepositoryTest {
         unifiedNodeGraphRepository.deleteAll(org.librairy.model.domain.resources.Resource.Type.SOURCE);
         unifiedNodeGraphRepository.deleteAll(org.librairy.model.domain.resources.Resource.Type.DOCUMENT);
 
-        Source source = org.librairy.model.domain.resources.Resource.newSource();
+        Source source = org.librairy.model.domain.resources.Resource.newSource("s1");
         source.setUri("sources/01");
         unifiedNodeGraphRepository.save(source);
 
-        Document document = org.librairy.model.domain.resources.Resource.newDocument();
+        Document document = org.librairy.model.domain.resources.Resource.newDocument("d1");
         document.setUri("documents/01");
         unifiedNodeGraphRepository.save(document);
 
@@ -66,11 +66,11 @@ public class UnifiedGraphRelationalRepositoryTest {
         unifiedNodeGraphRepository.deleteAll(org.librairy.model.domain.resources.Resource.Type.SOURCE);
         unifiedNodeGraphRepository.deleteAll(org.librairy.model.domain.resources.Resource.Type.DOCUMENT);
 
-        Source source = org.librairy.model.domain.resources.Resource.newSource();
+        Source source = org.librairy.model.domain.resources.Resource.newSource("s1");
         source.setUri("sources/01");
         unifiedNodeGraphRepository.save(source);
 
-        Document document = org.librairy.model.domain.resources.Resource.newDocument();
+        Document document = org.librairy.model.domain.resources.Resource.newDocument("d1");
         document.setUri("documents/01");
         unifiedNodeGraphRepository.save(document);
 

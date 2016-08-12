@@ -36,7 +36,8 @@ public class UnifiedColumnRepositoryTest {
     @Test
     public void source(){
 
-        org.librairy.model.domain.resources.Source source = org.librairy.model.domain.resources.Resource.newSource();
+        org.librairy.model.domain.resources.Source source = org.librairy.model.domain.resources.Resource.newSource
+                ("s1");
         source.setUri("sources/01");
         source.setName("test01");
         source.setDescription("testing purposes");
@@ -46,7 +47,8 @@ public class UnifiedColumnRepositoryTest {
     @Test
     public void domain(){
 
-        org.librairy.model.domain.resources.Domain domain = org.librairy.model.domain.resources.Resource.newDomain();
+        org.librairy.model.domain.resources.Domain domain = org.librairy.model.domain.resources.Resource.newDomain
+                ("d1");
         domain.setUri("domains/01");
         domain.setName("test01");
         domain.setDescription("testing purposes");
@@ -56,7 +58,8 @@ public class UnifiedColumnRepositoryTest {
     @Test
     public void document() {
 
-        org.librairy.model.domain.resources.Document document = org.librairy.model.domain.resources.Resource.newDocument();
+        org.librairy.model.domain.resources.Document document = org.librairy.model.domain.resources.Resource
+                .newDocument("d1");
         document.setUri("documents/01");
         document.setAuthoredBy("me");
         document.setAuthoredOn("20151210");
@@ -67,10 +70,9 @@ public class UnifiedColumnRepositoryTest {
     @Test
     public void item() {
 
-        org.librairy.model.domain.resources.Item resource = org.librairy.model.domain.resources.Resource.newItem();
+        org.librairy.model.domain.resources.Item resource = org.librairy.model.domain.resources.Resource.newItem("i1");
         resource.setUri("items/01");
         resource.setAuthoredBy("me");
-        resource.setAuthoredOn("20151210");
         resource.setDescription("testing purposes");
         test(resource, org.librairy.model.domain.resources.Resource.Type.ITEM);
     }
@@ -78,7 +80,7 @@ public class UnifiedColumnRepositoryTest {
     @Test
     public void part() {
 
-        org.librairy.model.domain.resources.Part resource = org.librairy.model.domain.resources.Resource.newPart();
+        org.librairy.model.domain.resources.Part resource = org.librairy.model.domain.resources.Resource.newPart("p1");
         resource.setUri("items/01");
         resource.setSense("nosense");
         resource.setContent("sampling");
@@ -89,7 +91,8 @@ public class UnifiedColumnRepositoryTest {
     @Test
     public void topic() {
 
-        org.librairy.model.domain.resources.Topic resource = org.librairy.model.domain.resources.Resource.newTopic();
+        org.librairy.model.domain.resources.Topic resource = org.librairy.model.domain.resources.Resource.newTopic
+                ("t1");
         resource.setUri("items/01");
         resource.setAnalysis("analyses/01");
         resource.setContent("sampling");
@@ -99,7 +102,7 @@ public class UnifiedColumnRepositoryTest {
     @Test
     public void word() {
 
-        org.librairy.model.domain.resources.Word resource = org.librairy.model.domain.resources.Resource.newWord();
+        org.librairy.model.domain.resources.Word resource = org.librairy.model.domain.resources.Resource.newWord("w1");
         resource.setUri("items/01");
         resource.setContent("house");
         test(resource, org.librairy.model.domain.resources.Resource.Type.WORD);

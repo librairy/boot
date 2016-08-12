@@ -25,8 +25,6 @@ public class ItemUnifiedColumnRepositoryTest extends BaseColumnRepositoryTest<It
         column.setCreationTime("2015-12-21T16:18:59Z");
         column.setFormat("pdf");
         column.setLanguage("en");
-        column.setTitle("This is an example");
-        column.setSubject("semantic web, e-science");
         column.setDescription("for testing purposes");
         column.setUrl("file:://opt/drinventor/example.pdf");
         column.setContent("Miniopterus aelleni is a bat in the genus Miniopterus found in the Comoro Islands and Madagascar. It is a small, brown bat, with a forearm length of 35 to 41 mm (1.4 to 1.6 in). The long tragus (a projection in the outer ear) has a broad base and a blunt or rounded tip. The uropatagium (tail membrane) is sparsely haired. The palate is flat and there are distinct diastemata (gaps) between the upper canines and premolars. Populations of this species were previously included in Miniopterus manavi, but recent molecular studies revealed that M");

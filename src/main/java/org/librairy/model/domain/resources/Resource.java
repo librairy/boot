@@ -75,48 +75,65 @@ public class Resource extends LinkableElement {
 		return new Analysis();
 	}
 
-	public static org.librairy.model.domain.resources.Document newDocument(){
-		return new org.librairy.model.domain.resources.Document();
+	public static org.librairy.model.domain.resources.Document newDocument(String title){
+		Document document = new Document();
+		document.setTitle(title);
+		return document;
 	}
 
-	public static org.librairy.model.domain.resources.Domain newDomain(){
-		return new org.librairy.model.domain.resources.Domain();
+	public static org.librairy.model.domain.resources.Domain newDomain(String name){
+		Domain domain = new Domain();
+		domain.setName(name);
+		return domain;
 	}
 
-	public static org.librairy.model.domain.resources.Item newItem(){
-		return new org.librairy.model.domain.resources.Item();
+	public static org.librairy.model.domain.resources.Item newItem(String content){
+		Item item = new Item();
+		item.setContent(content);
+		return item;
 	}
 
-	public static org.librairy.model.domain.resources.Part newPart(){
-		return new org.librairy.model.domain.resources.Part();
+	public static org.librairy.model.domain.resources.Part newPart(String content){
+		Part part =  new org.librairy.model.domain.resources.Part();
+		part.setContent(content);
+		return part;
 	}
 
-	public static org.librairy.model.domain.resources.SerializedObject newSerializedObject(){
-		return new org.librairy.model.domain.resources.SerializedObject();
+	public static org.librairy.model.domain.resources.Source newSource(String name){
+		Source source = new Source();
+		source.setName(name);
+		return source;
 	}
 
-	public static org.librairy.model.domain.resources.Source newSource(){
-		return new org.librairy.model.domain.resources.Source();
+	public static org.librairy.model.domain.resources.Term newTerm(String content){
+		Term term =  new org.librairy.model.domain.resources.Term();
+		term.setContent(content);
+		return term;
 	}
 
-	public static org.librairy.model.domain.resources.Term newTerm(){
-		return new org.librairy.model.domain.resources.Term();
+	public static org.librairy.model.domain.resources.Filter newFilter(String content){
+		Filter filter = new Filter();
+		filter.setContent(content);
+		return filter;
 	}
 
-	public static org.librairy.model.domain.resources.Filter newFilter(){
-		return new org.librairy.model.domain.resources.Filter();
+	public static org.librairy.model.domain.resources.Path newPath(String start, String end){
+		Path path = new Path();
+		path.setStart(start);
+		path.setEnd(end);
+		return path;
 	}
 
-	public static org.librairy.model.domain.resources.Path newPath(){
-		return new org.librairy.model.domain.resources.Path();
+	public static Topic newTopic(String content){
+		Topic topic = new Topic();
+		topic.setContent(content);
+		return topic;
 	}
 
-	public static Topic newTopic(){
-		return new Topic();
-	}
-
-	public static org.librairy.model.domain.resources.Word newWord(){
-		return new org.librairy.model.domain.resources.Word();
+	public static org.librairy.model.domain.resources.Word newWord(String content){
+		Word word = new Word();
+		word.setContent(content);
+		return word;
 	}
 
 	public Analysis asAnalysis(){

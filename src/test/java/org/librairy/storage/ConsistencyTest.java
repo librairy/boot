@@ -28,14 +28,14 @@ import java.util.stream.IntStream;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
 @TestPropertySource(properties = {
-        "librairy.cassandra.contactpoints = wiig.dia.fi.upm.es",
+        "librairy.cassandra.contactpoints = 192.168.99.100",
         "librairy.cassandra.port = 5011",
         "librairy.cassandra.keyspace = research",
-        "librairy.elasticsearch.contactpoints = wiig.dia.fi.upm.es",
+        "librairy.elasticsearch.contactpoints = 192.168.99.100",
         "librairy.elasticsearch.port = 5021",
-        "librairy.neo4j.contactpoints = wiig.dia.fi.upm.es",
+        "librairy.neo4j.contactpoints = 192.168.99.100",
         "librairy.neo4j.port = 5030",
-        "librairy.eventbus.host = wiig.dia.fi.upm.es"
+        "librairy.eventbus.host = 192.168.99.100"
 })
 public class ConsistencyTest {
 
@@ -126,17 +126,20 @@ public class ConsistencyTest {
         udm.delete(org.librairy.model.domain.resources.Resource.Type.ANY).all();
 
         // Source
-        org.librairy.model.domain.resources.Source source = org.librairy.model.domain.resources.Resource.newSource();
+        org.librairy.model.domain.resources.Source source = org.librairy.model.domain.resources.Resource.newSource
+                ("s1");
         udm.save(source);
 
         // Domain
-        org.librairy.model.domain.resources.Domain domain = org.librairy.model.domain.resources.Resource.newDomain();
+        org.librairy.model.domain.resources.Domain domain = org.librairy.model.domain.resources.Resource.newDomain
+                ("d1");
         udm.save(domain);
         udm.save(Relation.newComposes(source.getUri(),domain.getUri()));
         domainUri = domain.getUri();
 
         // Words
-        List<org.librairy.model.domain.resources.Word> words = IntStream.range(0, NUM_WORDS).mapToObj(i -> org.librairy.model.domain.resources.Resource.newWord()).collect(Collectors.toList());
+        List<org.librairy.model.domain.resources.Word> words = IntStream.range(0, NUM_WORDS).mapToObj(i -> org
+                .librairy.model.domain.resources.Resource.newWord(String.valueOf(i))).collect(Collectors.toList());
         words.forEach(word -> {
             udm.save(word);
             udm.save(Relation.newEmbeddedIn(word.getUri(),domainUri));
@@ -144,7 +147,8 @@ public class ConsistencyTest {
 
 
         // Terms
-        List<org.librairy.model.domain.resources.Term> terms = IntStream.range(0, NUM_TERMS).mapToObj(i -> org.librairy.model.domain.resources.Resource.newTerm()).collect(Collectors.toList());
+        List<org.librairy.model.domain.resources.Term> terms = IntStream.range(0, NUM_TERMS).mapToObj(i -> org
+                .librairy.model.domain.resources.Resource.newTerm(String.valueOf(i))).collect(Collectors.toList());
         terms.forEach(term -> {
             udm.save(term);
             udm.save(Relation.newAppearedIn(term.getUri(),domainUri));
@@ -166,7 +170,8 @@ public class ConsistencyTest {
         });
 
         // Topics
-        List<org.librairy.model.domain.resources.Topic> docTopics = IntStream.range(0, NUM_DOC_TOPICS).mapToObj(i -> org.librairy.model.domain.resources.Resource.newTopic()).collect(Collectors.toList());
+        List<org.librairy.model.domain.resources.Topic> docTopics = IntStream.range(0, NUM_DOC_TOPICS).mapToObj(i ->
+                org.librairy.model.domain.resources.Resource.newTopic("d"+String.valueOf(i))).collect(Collectors.toList());
         docTopics.forEach(topic -> {
             udm.save(topic);
             udm.save(Relation.newEmergesIn(topic.getUri(),domainUri));
@@ -174,7 +179,9 @@ public class ConsistencyTest {
 
         });
 
-        List<org.librairy.model.domain.resources.Topic> itemTopics = IntStream.range(0, NUM_ITEM_TOPICS).mapToObj(i -> org.librairy.model.domain.resources.Resource.newTopic()).collect(Collectors.toList());
+        List<org.librairy.model.domain.resources.Topic> itemTopics = IntStream.range(0, NUM_ITEM_TOPICS).mapToObj(i
+                -> org.librairy.model.domain.resources.Resource.newTopic("i"+String.valueOf(i))).collect(Collectors
+                .toList());
         itemTopics.forEach(topic -> {
             udm.save(topic);
             udm.save(Relation.newEmergesIn(topic.getUri(),domainUri));
@@ -182,7 +189,9 @@ public class ConsistencyTest {
 
         });
 
-        List<org.librairy.model.domain.resources.Topic> partTopics = IntStream.range(0, NUM_PART_TOPICS).mapToObj(i -> org.librairy.model.domain.resources.Resource.newTopic()).collect(Collectors.toList());
+        List<org.librairy.model.domain.resources.Topic> partTopics = IntStream.range(0, NUM_PART_TOPICS).mapToObj(i
+                -> org.librairy.model.domain.resources.Resource.newTopic("p"+String.valueOf(i))).collect(Collectors
+                .toList());
         partTopics.forEach(topic -> {
             udm.save(topic);
             udm.save(Relation.newEmergesIn(topic.getUri(),domainUri));
@@ -193,7 +202,10 @@ public class ConsistencyTest {
         // Documents
         List<org.librairy.model.domain.resources.Part> parts            = new ArrayList<>();
         List<org.librairy.model.domain.resources.Item> items            = new ArrayList<>();
-        List<org.librairy.model.domain.resources.Document> documents    = IntStream.range(0, NUM_DOCUMENTS).mapToObj(i -> org.librairy.model.domain.resources.Resource.newDocument()).collect(Collectors.toList());
+        List<org.librairy.model.domain.resources.Document> documents    = IntStream.range(0, NUM_DOCUMENTS).mapToObj
+                (i -> org.librairy.model.domain.resources.Resource.newDocument(String.valueOf(i))).collect(Collectors
+                .toList
+                ());
         documents.forEach(doc -> {
             udm.save(doc);
             udm.save(Relation.newProvides(source.getUri(),doc.getUri()));
@@ -201,14 +213,18 @@ public class ConsistencyTest {
             docTopics.forEach(topic -> udm.save(Relation.newDealsWithFromDocument(doc.getUri(),topic.getUri())));
 
             // Items
-            List<org.librairy.model.domain.resources.Item> internalItems    = IntStream.range(0, NUM_ITEMS).mapToObj(i -> org.librairy.model.domain.resources.Resource.newItem()).collect(Collectors.toList());
+            List<org.librairy.model.domain.resources.Item> internalItems    = IntStream.range(0, NUM_ITEMS).mapToObj
+                    (i -> org.librairy.model.domain.resources.Resource.newItem(String.valueOf(i))).collect(Collectors
+                    .toList());
             internalItems.forEach(item -> {
                 udm.save(item);
                 udm.save(Relation.newBundles(doc.getUri(),item.getUri()));
                 itemTopics.forEach(topic -> udm.save(Relation.newDealsWithFromItem(item.getUri(),topic.getUri())));
 
                 // Parts
-                List<org.librairy.model.domain.resources.Part> internalParts    = IntStream.range(0, NUM_PARTS).mapToObj(i -> org.librairy.model.domain.resources.Resource.newPart()).collect(Collectors.toList());
+                List<org.librairy.model.domain.resources.Part> internalParts    = IntStream.range(0, NUM_PARTS)
+                        .mapToObj(i -> org.librairy.model.domain.resources.Resource.newPart(String.valueOf(i))).collect
+                                (Collectors.toList());
                 internalParts.forEach(part -> {
                     udm.save(part);
                     udm.save(Relation.newDescribes(part.getUri(),item.getUri()));
@@ -224,7 +240,7 @@ public class ConsistencyTest {
         // -> similar_to document
         documents.forEach(d1 -> {
             documents.forEach(d2 -> {
-                udm.save(Relation.newSimilarToDocuments(d1.getUri(),d2.getUri()));
+                udm.save(Relation.newSimilarToDocuments(d1.getUri(),d2.getUri(), domainUri));
             });
         });
 
@@ -232,14 +248,14 @@ public class ConsistencyTest {
         // -> similar_to item
         items.forEach(i1 ->{
             items.forEach(i2 -> {
-                udm.save(Relation.newSimilarToItems(i1.getUri(),i2.getUri()));
+                udm.save(Relation.newSimilarToItems(i1.getUri(),i2.getUri(), domainUri));
             });
         });
 
         // -> similar_to item
         parts.forEach(p1 ->{
             parts.forEach(p2 -> {
-                udm.save(Relation.newSimilarToParts(p1.getUri(),p2.getUri()));
+                udm.save(Relation.newSimilarToParts(p1.getUri(),p2.getUri(), domainUri));
             });
         });
 

@@ -18,7 +18,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @Category(IntegrationTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ColumnConfig.class)
-@TestPropertySource(properties = { "librairy.eventbus.host = local","librairy.cassandra.contactpoints = drinventor.dia.fi.upm.es", "librairy.cassandra.port = 5011", "librairy.cassandra.keyspace = research" })
+@TestPropertySource(properties = { "librairy.eventbus.host = local","librairy.cassandra.contactpoints = 192.168.99" +
+        ".100", "librairy.cassandra.port = 5011", "librairy.cassandra.keyspace = research" })
 public abstract class BaseColumnRepositoryTest<T extends Resource> {
 
     public abstract BaseColumnRepository<T> getRepository();

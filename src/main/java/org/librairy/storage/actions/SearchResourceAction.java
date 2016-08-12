@@ -1,6 +1,8 @@
 package org.librairy.storage.actions;
 
+import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
+import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.Helper;
 import org.librairy.storage.session.UnifiedTransaction;
 import org.slf4j.Logger;
@@ -27,23 +29,23 @@ public class SearchResourceAction {
     /**
      * Find all resources
      */
-    public List<String> all(){
+    public List<Resource> all(){
         LOG.debug("Finding " + type.name() + "s");
-        List<String> uris = new ArrayList<>();
+        List<Resource> resources = new ArrayList<>();
         try{
 
 
             if (helper.getTemplateFactory().handle(type)){
-                helper.getTemplateFactory().of(type).findAll().forEach(x -> uris.add(x.getUri()));
+                helper.getTemplateFactory().of(type).findAll().forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
             }else{
-                helper.getUnifiedNodeGraphRepository().findAll(type).forEach(x -> uris.add(x.getUri()));
+                helper.getUnifiedNodeGraphRepository().findAll(type).forEach(x -> resources.add(x));
             }
 
-            LOG.trace(type.name() + "s: " + uris);
+            LOG.trace(type.name() + "s: " + resources);
         }catch (Exception e){
             LOG.error("Unexpected error while getting all " + type,e);
         }
-        return uris;
+        return resources;
     }
 
     /**
@@ -52,26 +54,26 @@ public class SearchResourceAction {
      * @param referenceURI
      * @return
      */
-    public List<String> from(Resource.Type referenceType, String referenceURI){
+    public List<Resource> from(Resource.Type referenceType, String referenceURI){
         LOG.debug("Finding " + type.name() + "s in " + referenceType + ": " + referenceURI);
-        List<String> uris = new ArrayList<>();
+        List<Resource> resources = new ArrayList<>();
         try{
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
 
             if (helper.getTemplateFactory().handle(type)){
-                helper.getTemplateFactory().of(type).findFrom(referenceType,referenceURI).forEach(x -> uris.add(x.getUri()));
+                helper.getTemplateFactory().of(type).findFrom(referenceType,referenceURI).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
             }else{
-                helper.getUnifiedNodeGraphRepository().findFrom(type, referenceType,referenceURI).forEach(x -> uris.add(x.getUri()));
+                helper.getUnifiedNodeGraphRepository().findFrom(type, referenceType,referenceURI).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
             }
 
             transaction.commit();
-            LOG.debug("In "+referenceType+": " + referenceURI + " found: ["+type + "]: " + uris);
+            LOG.debug("In "+referenceType+": " + referenceURI + " found: ["+type + "]: " + resources);
         }catch (Exception e){
             LOG.error("Unexpected error while finding " + type +"s in " + referenceType + ": " + referenceURI,e);
         }
-        return uris;
+        return resources;
     }
 
     /**
@@ -80,21 +82,21 @@ public class SearchResourceAction {
      * @param value
      * @return
      */
-    public List<String> by(String field, String value){
+    public List<Resource> by(String field, String value){
         LOG.debug("Finding " + type.name() + "s");
-        List<String> uris = new ArrayList<>();
+        List<Resource> resources = new ArrayList<>();
         try{
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-            helper.getUnifiedColumnRepository().findBy(type, field,value).forEach(x -> uris.add(x.getUri()));
+            helper.getUnifiedColumnRepository().findBy(type, field,value).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
 
             transaction.commit();
-            LOG.debug("By "+field+": '" + value+ "' found: ["+type + "]: " + uris);
+            LOG.debug("By "+field+": '" + value+ "' found: ["+type + "]: " + resources);
         }catch (Exception e){
             LOG.error("Unexpected error while getting all " + type,e);
         }
-        return uris;
+        return resources;
     }
 
 }

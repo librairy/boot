@@ -22,7 +22,7 @@ public class SimilarItemEdgeTemplate extends EdgeTemplate {
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Item)-[r:SIMILAR_TO]->(e:Item)";
-            case DOMAIN:        return "(dom:Domain{uri:{0}})-[:CONTAINS]->(doc:Document)-[:BUNDLES]->(s:Item)-[r:SIMILAR_TO]->(e:Item)";
+            case DOMAIN:        return "(dom:Domain{uri:{0}})-[:CONTAINS]->(doc:Document)-[:BUNDLES]->(s:Item)-[r:SIMILAR_TO{domain:{0}}]->(e:Item)";
             case ITEM:          return "(s:Item{uri:{0}})-[r:SIMILAR_TO]->(e:Item)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }

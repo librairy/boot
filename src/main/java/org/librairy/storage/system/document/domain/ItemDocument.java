@@ -25,26 +25,14 @@ public class ItemDocument extends Resource{
 
     private String domain;
 
-    public static final String AUTHORED_ON=Item.AUTHORED_ON;
-    private String authoredOn;
-
     public static final String AUTHORED_BY=Item.AUTHORED_BY;
     private String authoredBy;
-
-    public static final String CONTRIBUTED_BY=Item.CONTRIBUTED_BY;
-    private String contributedBy;
 
     public static final String FORMAT=Item.FORMAT;
     private String format;
 
     public static final String LANGUAGE=Item.LANGUAGE;
     private String language;
-
-    public static final String TITLE=Item.TITLE;
-    private String title;
-
-    public static final String SUBJECT=Item.SUBJECT;
-    private String subject;
 
     public static final String DESCRIPTION=Item.DESCRIPTION;
     private String description;

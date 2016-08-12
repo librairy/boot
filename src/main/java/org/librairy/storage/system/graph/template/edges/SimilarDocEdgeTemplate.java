@@ -21,7 +21,8 @@ public class SimilarDocEdgeTemplate extends EdgeTemplate {
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Document)-[r:SIMILAR_TO]->(e:Document)";
-            case DOMAIN:        return "(d:Domain{uri:{0}})-[:CONTAINS]->(s:Document)-[r:SIMILAR_TO]->(e:Document)";
+            case DOMAIN:        return "(d:Domain{uri:{0}})-[:CONTAINS]->(s:Document)-[r:SIMILAR_TO{domain:{0}}]->" +
+                    "(e:Document)";
             case DOCUMENT:      return "(s:Document{uri:{0}})-[r:SIMILAR_TO]->(e:Document)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
