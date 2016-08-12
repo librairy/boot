@@ -1,5 +1,6 @@
 package org.librairy.storage.actions;
 
+import com.google.common.base.Strings;
 import org.librairy.model.Event;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;

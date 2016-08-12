@@ -158,14 +158,14 @@ public class ConsistencyTest {
         // hypernym_of
         terms.forEach(t1 ->{
             terms.forEach(t2 ->{
-                udm.save(Relation.newHypernymOf(t1.getUri(),t2.getUri()));
+                udm.save(Relation.newHypernymOf(t1.getUri(),t2.getUri(),domainUri));
             });
         });
 
         // pairs_with
         words.forEach(w1 ->{
             words.forEach(w2 ->{
-                udm.save(Relation.newPairsWith(w1.getUri(),w2.getUri()));
+                udm.save(Relation.newPairsWith(w1.getUri(),w2.getUri(), domainUri));
             });
         });
 

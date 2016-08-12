@@ -17,7 +17,7 @@ public interface HypernymOfEdgeRepository extends RelationGraphRepository<Hypern
     @Query("match (node1{uri:{0}})-[r:PAIRS_WITH]->(node2{uri:{1}}) return r")
     Iterable<HypernymOfEdge> findByNodes(String start, String end);
 
-    @Query("match (:Term)<-[r:HYPERNYM_OF]-(:Term)-[:APPEARED_IN]-(domain{uri:{0}}) return r")
+    @Query("match (:Term)<-[r:HYPERNYM_OF{domain:{0}}]-(:Term) return r")
     Iterable<HypernymOfEdge> findByDomain(String uri);
 
     @Query("match (term{uri:{0}})-[r:HYPERNYM_OF]-(t) return r")

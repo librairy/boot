@@ -94,9 +94,11 @@ public abstract class EdgeTemplate {
         TemplateParameters parameters = paramsFrom(relation);
         String extraParams = Strings.isNullOrEmpty(parameters.toExpression())? "": ","+parameters.toExpression();
         Map<String, Object> params = parameters.getParams();
-        executor.execute("MATCH (a:"+startNodeLabel+"),(b:"+endNodeLabel+") WHERE a.uri = {0} AND b.uri = {1} CREATE " +
+        executor.execute("MATCH (a:"+startNodeLabel+"),(b:"+endNodeLabel+") WHERE a.uri" +
+                " = {0} AND b.uri = {1} " +
+                "CREATE " +
                 "(a)-[r:"+relationLabel+" { uri : {2}, creationTime : {3}, weight : {4} "+extraParams+" } ]->(b) " +
-                "RETURN r", params);
+                "RETURN ID(r)", params);
 
 
         // TODO This should be removed when Neo4j uses Bolt
@@ -120,7 +122,6 @@ public abstract class EdgeTemplate {
                 counter += 1;
             }
         }
-
     }
 
     private void _delete(String path, Map params){

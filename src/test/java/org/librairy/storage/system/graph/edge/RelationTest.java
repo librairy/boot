@@ -4,12 +4,10 @@ import com.google.common.collect.Lists;
 import es.cbadenes.lab.test.IntegrationTest;
 import org.librairy.Config;
 import org.librairy.model.domain.relations.Contains;
+import org.librairy.model.domain.relations.PairsWith;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.relations.SimilarToDocuments;
-import org.librairy.model.domain.resources.Document;
-import org.librairy.model.domain.resources.Domain;
-import org.librairy.model.domain.resources.Resource;
-import org.librairy.model.domain.resources.Term;
+import org.librairy.model.domain.resources.*;
 import org.librairy.model.utils.TimeUtils;
 import org.librairy.storage.UDM;
 import org.junit.Assert;
@@ -248,7 +246,7 @@ public class RelationTest {
     }
 
     @Test
-    public void readRelations(){
+    public void readSimilarRelations(){
 
         udm.find(Resource.Type.DOMAIN).all().stream().forEach(resource -> udm.delete(Resource.Type.DOMAIN).byUri
                 (resource.getUri()));
@@ -280,6 +278,60 @@ public class RelationTest {
 
     }
 
+
+    @Test
+    public void readPairsWithRelations(){
+
+        udm.find(Resource.Type.WORD).all().stream().forEach(resource -> udm.delete(Resource.Type.WORD).byUri
+                (resource.getUri()));
+        udm.find(Relation.Type.PAIRS_WITH).all().stream().forEach(rel -> udm.delete(Relation.Type.PAIRS_WITH).byUri(rel.getUri
+                ()));
+
+
+        Word w1 = Resource.newWord("w1");
+        udm.save(w1);
+
+        Word w2 = Resource.newWord("w2");
+        udm.save(w2);
+
+
+        String domain1 = uriGenerator.basedOnContent(Resource.Type.DOMAIN, "d1");
+        String domain2 = uriGenerator.basedOnContent(Resource.Type.DOMAIN, "d2");
+        List<Relation> rels = udm.find(Relation.Type.PAIRS_WITH).from(Resource.Type.DOMAIN, domain1);
+        Assert.assertTrue(rels.isEmpty());
+
+        PairsWith rel1 = Relation.newPairsWith(w1.getUri(), w2.getUri(), domain1);
+
+        udm.save(rel1);
+
+        rel1 = udm.read(Relation.Type.PAIRS_WITH).byUri(rel1.getUri()).get().asPairsWith();
+        rel1.setWeight(8.0);
+        udm.save(rel1);
+
+        Assert.assertFalse(udm.find(Relation.Type.PAIRS_WITH).from(Resource.Type.DOMAIN, domain1).isEmpty());
+        Assert.assertEquals(1, udm.find(Relation.Type.PAIRS_WITH).from(Resource.Type.DOMAIN, domain1).size());
+        Assert.assertEquals(1, udm.find(Relation.Type.PAIRS_WITH).all().size());
+
+
+        udm.save(Relation.newPairsWith(w1.getUri(), w2.getUri(), domain2));
+
+        Assert.assertFalse(udm.find(Relation.Type.PAIRS_WITH).from(Resource.Type.DOMAIN, domain2).isEmpty());
+        Assert.assertEquals(1, udm.find(Relation.Type.PAIRS_WITH).from(Resource.Type.DOMAIN, domain2).size());
+        Assert.assertEquals(2, udm.find(Relation.Type.PAIRS_WITH).all().size());
+
+    }
+
+
+    @Test
+    public void fixPairsWith(){
+
+        udm.find(Relation.Type.PAIRS_WITH).all().parallelStream().map(rel -> udm.read(Relation.Type.PAIRS_WITH).byUri(rel
+                .getUri()).get().asPairsWith()).forEach(rel -> {
+                        rel.setDomain("http://drinventor.eu/domains/4f56ab24bb6d815a48b8968a3b157470");
+                        udm.save(rel);
+        });
+
+    }
 
     @Test
     public void checkSimilarRelations(){

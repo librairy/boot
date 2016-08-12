@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.librairy.model.domain.resources.Resource;
+import org.librairy.storage.generator.URIGenerator;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -26,6 +27,11 @@ public class PairsWith extends Relation {
     @Getter
     @Setter
     private String domain;
+
+    @Override
+    public String getUriComposition() {
+        return super.getUriComposition()+"-"+ URIGenerator.retrieveId(domain);
+    }
 
     @Override
     public Resource.Type getStartType() {

@@ -56,6 +56,7 @@ public class TemplateExecutor extends RepeatableActionExecutor{
             if (!res.containsUpdates() && (!query.contains("delete"))) {
                 throw new ResultProcessingException("No contains updates", new HttpResponseException(404,"Not found"));
             }
+
             return res;
         });
     }

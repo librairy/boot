@@ -275,10 +275,10 @@ public class UDMTest {
         _saveRelation(Relation.newDescribes("u1","u2"));
         _saveRelation(Relation.newEmbeddedIn("u1","u2"));
         _saveRelation(Relation.newEmergesIn("u1","u2"));
-        _saveRelation(Relation.newHypernymOf("u1","u2"));
+        _saveRelation(Relation.newHypernymOf("u1","u2","d1"));
         _saveRelation(Relation.newMentionsFromTerm("u1","u2"));
         _saveRelation(Relation.newMentionsFromTopic("t1","t2"));
-        _saveRelation(Relation.newPairsWith("u1","u2"));
+        _saveRelation(Relation.newPairsWith("u1","u2","d1"));
         _saveRelation(Relation.newProvides("u1","u2"));
     }
 
@@ -336,7 +336,10 @@ public class UDMTest {
     @Test
     public void hypernym(){
 
-        HypernymOf hypernym = Relation.newHypernymOf("http://librairy.org/terms/3324e10e-87c5-49a5-a9ba-c79adf3beba0", "http://librairy.org/terms/4cbd8d67-05d1-4d0b-b1da-7ccd3244298a");
+        String domainUri = uriGenerator.from(Resource.Type.DOMAIN, "sample-domain");
+        HypernymOf hypernym = Relation.newHypernymOf("http://librairy" +
+                ".org/terms/3324e10e-87c5-49a5-a9ba-c79adf3beba0", "http://librairy" +
+                ".org/terms/4cbd8d67-05d1-4d0b-b1da-7ccd3244298a",domainUri);
         hypernym.setDomain("http://librairy.org/domains/28cd53dc-bc1c-417d-9ae5-2b5a7052d819");
         hypernym.setWeight(0.04766949152542373);
         udm.save(hypernym);

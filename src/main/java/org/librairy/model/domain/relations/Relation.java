@@ -176,8 +176,10 @@ public class Relation extends LinkableElement {
         return newRelation(EmergesIn.class,startUri,endUri);
     }
 
-    public static HypernymOf newHypernymOf(String startUri, String endUri){
-        return newRelation(HypernymOf.class,startUri,endUri);
+    public static HypernymOf newHypernymOf(String startUri, String endUri, String domainUri){
+        HypernymOf rel = newRelation(HypernymOf.class, startUri, endUri);
+        rel.setDomain(domainUri);
+        return rel;
     }
 
     public static MentionsFromTerm newMentionsFromTerm(String startUri, String endUri){
@@ -188,8 +190,10 @@ public class Relation extends LinkableElement {
         return newRelation(MentionsFromTopic.class,startUri,endUri);
     }
 
-    public static PairsWith newPairsWith(String startUri, String endUri){
-        return newRelation(PairsWith.class,startUri,endUri);
+    public static PairsWith newPairsWith(String startUri, String endUri, String domainUri){
+        PairsWith rel = newRelation(PairsWith.class, startUri, endUri);
+        rel.setDomain(domainUri);
+        return rel;
     }
 
     public static Provides newProvides(String startUri, String endUri){

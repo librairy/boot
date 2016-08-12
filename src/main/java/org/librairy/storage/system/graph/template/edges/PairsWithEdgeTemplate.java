@@ -21,7 +21,7 @@ public class PairsWithEdgeTemplate extends EdgeTemplate {
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Word)-[r:PAIRS_WITH]->(e:Word)";
-            case DOMAIN:        return "(d:Domain{uri:{0}})<-[:EMBEDDED_IN]-(s:Word)-[r:PAIRS_WITH]->(e:Word)";
+            case DOMAIN:        return "(s:Word)-[r:PAIRS_WITH{domain:{0}}]->(e:Word)";
             case WORD:          return "(s:Word{uri:{0}})-[r:PAIRS_WITH]->(e:Word)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
@@ -37,7 +37,7 @@ public class PairsWithEdgeTemplate extends EdgeTemplate {
 
     @Override
     protected TemplateParameters paramsFrom(org.librairy.model.domain.relations.Relation relation) {
-        return new TemplateParameters(relation);
+        return new TemplateParameters(relation).add("domain",relation.asPairsWith().getDomain());
     }
 
 }
