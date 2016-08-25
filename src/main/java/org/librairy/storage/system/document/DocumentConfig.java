@@ -32,10 +32,10 @@ public class DocumentConfig {
     private Logger LOG = LoggerFactory.getLogger(DocumentConfig.class);
 
 
-    @Value("${librairy.elasticsearch.contactpoints}")
+    @Value("#{environment['LIBRAIRY_DOCUMENTDB_HOST']?:'${librairy.documentdb.host}'}")
     String hosts;
 
-    @Value("${librairy.elasticsearch.port}")
+    @Value("#{environment['LIBRAIRY_DOCUMENTDB_PORT']?:${librairy.documentdb.port}}")
     Integer port;
 
     @Bean

@@ -55,15 +55,11 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
 @TestPropertySource(properties = {
-        "librairy.cassandra.contactpoints = 192.168.99.100",
-        "librairy.cassandra.port = 5011",
-        "librairy.cassandra.keyspace = research",
-        "librairy.elasticsearch.contactpoints = 192.168.99.100",
-        "librairy.elasticsearch.port = 5021",
-        "librairy.neo4j.contactpoints = 192.168.99.100",
-        "librairy.neo4j.port = 5030",
-        "librairy.eventbus.host = 192.168.99.100",
-        "librairy.eventbus.port=5041"})
+        "librairy.columndb.host= 192.168.99.100",
+        "librairy.documentdb.host = 192.168.99.100",
+        "librairy.graphdb.host = 192.168.99.100",
+        "librairy.eventbus.host = 192.168.99.100"
+})
 public class UDMTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(UDMTest.class);
@@ -104,30 +100,9 @@ public class UDMTest {
 
 
     @Test
-    public void publish(){
-//        Document document = Resource.newDocument();
-//        document.setUri("http://drinventor.eu/documents/c369c917fecf3b4828688bdb6677dd6e");
-//        eventBus.post(Event.from(document),RoutingKey.of(Resource.Type.DOCUMENT,Resource.State.CREATED));
-
-
-//        Topic topic = Resource.newTopic();
-//        topic.setUri("http://drinventor.eu/topics/7ae8a17e15a9b7aec4e58bc42543c5bd");
-//        eventBus.post(Event.from(topic),RoutingKey.of(Resource.Type.TOPIC, Resource.State.CREATED));
-
-
-        // For Comparator
-        org.librairy.model.domain.resources.Analysis analysis = org.librairy.model.domain.resources.Resource.newAnalysis();
-        analysis.setType("topic-model");
-        //analysis.setDescription("item");
-        analysis.setDescription("part");
-        analysis.setDomain("http://drinventor.eu/domains/7df34748-7fad-486e-a799-3bcd86a03499");
-        eventBus.post(Event.from(analysis), org.librairy.model.modules.RoutingKey.of(org.librairy.model.domain.resources.Resource.Type.ANALYSIS, org.librairy.model.domain.resources.Resource.State.CREATED));
-
-
-        // For Modeler
-//        Contains relation = Relation.newContains("http://drinventor.eu/domains/7df34748-7fad-486e-a799-3bcd86a03499", "http://drinventor.eu/documents/c369c917fecf3b4828688bdb6677dd6e");
-//        eventBus.post(Event.from(relation), RoutingKey.of(Relation.Type.CONTAINS,Relation.State.CREATED));
-
+    public void readDomains(){
+        List<Resource> resources = udm.find(Resource.Type.DOMAIN).all();
+        System.out.println(resources);
     }
 
     @Test

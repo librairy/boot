@@ -19,10 +19,10 @@ public class UnifiedSession extends RepeatableActionExecutor{
 
     private static final Logger LOG = LoggerFactory.getLogger(UnifiedSession.class);
 
-    @Value("${librairy.neo4j.contactpoints}")
+    @Value("#{environment['LIBRAIRY_GRAPHDB_HOST']?:'${librairy.graphdb.host}'}")
     String neo4jHost;
 
-    @Value("${librairy.neo4j.port}")
+    @Value("#{environment['LIBRAIRY_GRAPHDB_PORT']?:${librairy.graphdb.port}}")
     String neo4jPort;
 
     @Autowired

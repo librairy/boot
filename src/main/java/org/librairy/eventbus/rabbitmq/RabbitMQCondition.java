@@ -17,19 +17,10 @@ public class RabbitMQCondition implements Condition{
 
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
-        String sysHost  = System.getProperty(Config.EVENT_HOST);
-        String envHost  = System.getenv(Config.EVENT_HOST);
-        String host     = (Strings.isNullOrEmpty(envHost))? sysHost : envHost;
-
-        String propHost = conditionContext.getEnvironment().getProperty("librairy.eventbus.host");
-
-        boolean condition = false;
-        if (propHost  != null && !propHost.startsWith("#")){
-            condition =  !propHost.startsWith("local");
-        }else{
-            condition =  (!Strings.isNullOrEmpty(host) && !host.startsWith("local"));
-        }
-        LOG.debug("RabbitMQ condition for: " + propHost+"|"+host + " is:" + condition);
+        String envVar  = System.getenv("LIBRAIRY_EVENTBUS_HOST");
+        boolean condition = (!Strings.isNullOrEmpty(envVar) && !envVar.startsWith("local"))
+                || (Strings.isNullOrEmpty(envVar)
+                && !conditionContext.getEnvironment().getProperty("librairy.eventbus.host").equalsIgnoreCase("local"));
         return condition;
     }
 }

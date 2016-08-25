@@ -27,10 +27,10 @@ public class GraphConfig extends Neo4jConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphConfig.class);
 
-    @Value("${librairy.neo4j.contactpoints}")
+    @Value("#{environment['LIBRAIRY_GRAPHDB_HOST']?:'${librairy.graphdb.host}'}")
     String hosts;
 
-    @Value("${librairy.neo4j.port}")
+    @Value("#{environment['LIBRAIRY_GRAPHDB_PORT']?:${librairy.graphdb.port}}")
     Integer port;
 
 

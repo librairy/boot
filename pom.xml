@@ -110,7 +110,9 @@
         <springboot.version>1.2.1.RELEASE</springboot.version>
         <spring.data.commons.version>1.12.0.M1</spring.data.commons.version>
         <spring.data.jpa.version>1.10.0.M1</spring.data.jpa.version>
-        <spring.data.cassandra.version>1.4.0.M1</spring.data.cassandra.version>
+        <spring.data.cassandra.version>1.4.0.RELEASE</spring.data.cassandra.version>
+        <cassandra.driver.core.version>2.1.9</cassandra.driver.core.version><!-- 2.1.7.1 -->
+        <cassandra.driver.dse.version>2.1.9</cassandra.driver.dse.version><!-- 2.1.7.1 -->
         <spring.data.elasticsearch.version>1.4.0.M1</spring.data.elasticsearch.version>
         <spring.data.neo4j.version>4.1.0.M1</spring.data.neo4j.version>
         <spring.data.neo4j.ogm.version>2.0.0-M03</spring.data.neo4j.ogm.version>
@@ -216,6 +218,16 @@
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-cassandra</artifactId>
                 <version>${spring.data.cassandra.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-dse</artifactId>
+                <version>${cassandra.driver.dse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-core</artifactId>
+                <version>${cassandra.driver.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xerial.snappy</groupId>

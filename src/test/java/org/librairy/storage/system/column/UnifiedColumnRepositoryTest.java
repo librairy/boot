@@ -22,9 +22,8 @@ import java.util.Optional;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ColumnConfig.class)
 @TestPropertySource(properties = {
-        "librairy.cassandra.contactpoints = 192.168.99.100",
-        "librairy.cassandra.port = 5011",
-        "librairy.cassandra.keyspace = research" })
+        "librairy.columndb.host = 192.168.99.100"
+})
 public class UnifiedColumnRepositoryTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(UnifiedColumnRepositoryTest.class);

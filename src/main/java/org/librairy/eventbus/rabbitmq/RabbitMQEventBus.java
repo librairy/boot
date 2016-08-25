@@ -30,19 +30,19 @@ public class RabbitMQEventBus implements EventBus {
 
     private static final String EXCHANGE = "librairy.eventbus";
 
-    @Value("${librairy.eventbus.host}")
+    @Value("#{environment['LIBRAIRY_EVENTBUS_HOST']?:'${librairy.eventbus.host}'}")
     private String host;
 
-    @Value("${librairy.eventbus.port}")
+    @Value("#{environment['LIBRAIRY_EVENTBUS_PORT']?:'${librairy.eventbus.port}'}")
     private String port;
 
-    @Value("${librairy.eventbus.user}")
+    @Value("#{environment['LIBRAIRY_EVENTBUS_USER_NAME']?:'${librairy.eventbus.user.name}'}")
     private String user;
 
-    @Value("${librairy.eventbus.password}")
+    @Value("#{environment['LIBRAIRY_EVENTBUS_USER_PWD']?:'${librairy.eventbus.user.pwd}'}")
     private String pwd;
 
-    @Value("${librairy.eventbus.keyspace}")
+    @Value("#{environment['LIBRAIRY_EVENTBUS_KEYSPACE']?:'${librairy.eventbus.keyspace}'}")
     private String keyspace;
 
     private Channel channel;

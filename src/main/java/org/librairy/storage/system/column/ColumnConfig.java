@@ -32,10 +32,10 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
     @Autowired
     private Environment env;
 
-    @Value("${librairy.cassandra.contactpoints}")
+    @Value("#{environment['LIBRAIRY_COLUMNDB_HOST']?:'${librairy.columndb.host}'}")
     String hosts;
 
-    @Value("${librairy.cassandra.port}")
+    @Value("#{environment['LIBRAIRY_COLUMNDB_PORT']?:${librairy.columndb.port}}")
     Integer port;
 
     @Bean
