@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.librairy</groupId>
     <artifactId>librairy-boot</artifactId>
-    <version>0.11-SNAPSHOT</version>
+    <version>0.11</version>
     <packaging>jar</packaging>
     <name>Librairy-Boot</name>
     <description>It makes easy to create librairy-powered applications and services with minimum fuss.</description>
@@ -135,7 +135,7 @@
         <wdtk.version>0.4.0</wdtk.version>
         <xml.api.version>1.4.01</xml.api.version>
     </properties>
-   
+
 
     <dependencyManagement>
         <dependencies>
@@ -796,7 +796,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-           
+
 
             <dependency>
                 <groupId>com.sun.jersey</groupId>
@@ -889,7 +889,7 @@
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
-		
+
 		<!-- Logger Dependencies -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
