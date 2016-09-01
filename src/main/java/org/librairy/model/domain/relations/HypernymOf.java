@@ -23,11 +23,6 @@ public class HypernymOf extends ProvenanceRelation {
     String domain;
 
     @Override
-    public String getUriComposition() {
-        return super.getUriComposition()+"-"+ URIGenerator.retrieveId(domain);
-    }
-
-    @Override
     public org.librairy.model.domain.resources.Resource.Type getStartType() {
         return org.librairy.model.domain.resources.Resource.Type.TERM;
     }

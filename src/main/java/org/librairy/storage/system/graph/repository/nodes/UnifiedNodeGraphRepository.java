@@ -3,6 +3,7 @@ package org.librairy.storage.system.graph.repository.nodes;
 import org.apache.commons.lang.WordUtils;
 import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.utils.ResourceUtils;
+import org.librairy.storage.actions.ExecutionResult;
 import org.librairy.storage.actions.RepeatableActionExecutor;
 import org.librairy.storage.system.graph.cache.GraphCache;
 import org.librairy.storage.system.graph.repository.Repository;
@@ -48,27 +49,27 @@ public class UnifiedNodeGraphRepository extends RepeatableActionExecutor impleme
 
     @Override
     public Boolean exists(Resource.Type type, String uri) {
-        Optional<Object> result = performRetries(0, "exists " + type + "[" + uri + "]", () ->
+        Optional<ExecutionResult> result = performRetries(0, "exists " + type + "[" + uri + "]", () ->
                 factory.repositoryOf(type).findOneByUri(uri) != null);
-        return (result.isPresent())? (Boolean) result.get() : Boolean.FALSE;
+        return (result.isPresent())? (Boolean) result.get().getResult() : Boolean.FALSE;
     }
 
     @Override
     public Optional<Resource> read(Resource.Type type, String uri) {
-        Optional<Object> result = performRetries(0, "read " + type + "[" + uri + "]", () -> {
+        Optional<ExecutionResult> result = performRetries(0, "read " + type + "[" + uri + "]", () -> {
             Optional<Resource> resource = Optional.empty();
             Resource node = factory.repositoryOf(type).findOneByUri(uri);
             if (node != null) resource = Optional.of((Resource) ResourceUtils.map(node, Resource.classOf(type)));
             return resource;
         });
-        return (result.isPresent())? (Optional<Resource>) result.get() : Optional.empty();
+        return (result.isPresent())? (Optional<Resource>) result.get().getResult() : Optional.empty();
     }
 
     @Override
     public Iterable<Resource> findAll(Resource.Type type) {
-        Optional<Object> result = performRetries(0, "findAll " + type, () ->
+        Optional<ExecutionResult> result = performRetries(0, "findAll " + type, () ->
                 factory.repositoryOf(type).findAll());
-        return (result.isPresent())? (Iterable<Resource>) result.get() : Collections.EMPTY_LIST;
+        return (result.isPresent())? (Iterable<Resource>) result.get().getResult() : Collections.EMPTY_LIST;
     }
 
     @Override
@@ -82,14 +83,14 @@ public class UnifiedNodeGraphRepository extends RepeatableActionExecutor impleme
     }
 
     private Iterable<Resource> find(String prefix, Resource.Type resultType,String uri,String reference) {
-        Optional<Object> result = performRetries(0, prefix + " " + resultType + "[" + uri + "] and ref: " + reference, () -> {
+        Optional<ExecutionResult> result = performRetries(0, prefix + " " + resultType + "[" + uri + "] and ref: " + reference, () -> {
             ResourceGraphRepository repository = factory.repositoryOf(resultType);
             String methodName = prefix + WordUtils.capitalize(reference.toLowerCase());
             Method method = repository.getClass().getMethod(methodName, String.class);
             Iterable<Resource> resources = (Iterable<Resource>) method.invoke(repository, uri);
             return resources;
         });
-        return (result.isPresent())? (Iterable<Resource>) result.get() : Collections.EMPTY_LIST;
+        return (result.isPresent())? (Iterable<Resource>) result.get().getResult() : Collections.EMPTY_LIST;
     }
 
     @Override

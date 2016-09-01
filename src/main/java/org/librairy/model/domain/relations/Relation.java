@@ -41,10 +41,6 @@ public class Relation extends LinkableElement {
         this.endUri = end.getUri();
     }
 
-    public String getUriComposition(){
-        return URIGenerator.retrieveId(getStartUri()) + "-" + URIGenerator.retrieveId(getEndUri());
-    }
-
     public org.librairy.model.domain.resources.Resource.Type getStartType(){
         return Resource.Type.ANY;
     }

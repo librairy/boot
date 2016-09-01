@@ -94,32 +94,37 @@ public abstract class EdgeTemplate {
         TemplateParameters parameters = paramsFrom(relation);
         String extraParams = Strings.isNullOrEmpty(parameters.toExpression())? "": ","+parameters.toExpression();
         Map<String, Object> params = parameters.getParams();
-        executor.execute("MATCH (a:"+startNodeLabel+"),(b:"+endNodeLabel+") WHERE a.uri" +
+        Optional<Integer> execResult = executor.execute("MATCH (a:" + startNodeLabel + "),(b:" + endNodeLabel + ") " +
+                "WHERE " +
+                "a.uri" +
                 " = {0} AND b.uri = {1} " +
                 "CREATE " +
-                "(a)-[r:"+relationLabel+" { uri : {2}, creationTime : {3}, weight : {4} "+extraParams+" } ]->(b) " +
+                "(a)-[r:" + relationLabel + " { uri : {2}, creationTime : {3}, weight : {4} " + extraParams + " } ]->" +
+                "(b) " +
                 "RETURN ID(r)", params);
 
 
         // TODO This should be removed when Neo4j uses Bolt
-        // Remove duplicated relations
-        String queryRels = "MATCH (a:"+startNodeLabel+")-[r:"+relationLabel+"]->(b:"+endNodeLabel+") WHERE a.uri = " +
-                "{0} AND b.uri = {1} AND r.uri = {2} return ID(r),r.uri,r.creationTime";
-        Optional<Result> result = executor.query(queryRels, params);
-        if (!result.isPresent()) return;
-        Iterator<Map<String, Object>> it = result.get().queryResults().iterator();
-        int counter = 0;
-        while(it.hasNext()){
-            Map<String, Object> resultNode = it.next();
-            boolean matched = ((String) resultNode.get("r.creationTime")).equalsIgnoreCase((String) params.get("3"));
-            if (!matched){
-                // remove
-                executor.execute("start r=rel("+( (Integer) resultNode.get("ID(r)"))+") delete r", ImmutableMap.of());
-            }else if (matched && counter>0){
-                // remove
-                executor.execute("start r=rel("+( (Integer) resultNode.get("ID(r)"))+") delete r", ImmutableMap.of());
-            }else{
-                counter += 1;
+        // Remove duplicated relations if retries have been done
+        if (execResult.isPresent() && execResult.get() > 0){
+            String queryRels = "MATCH (a:"+startNodeLabel+")-[r:"+relationLabel+"]->(b:"+endNodeLabel+") WHERE a.uri = " +
+                    "{0} AND b.uri = {1} AND r.uri = {2} return ID(r),r.uri,r.creationTime";
+            Optional<Result> result = executor.query(queryRels, params);
+            if (!result.isPresent()) return;
+            Iterator<Map<String, Object>> it = result.get().queryResults().iterator();
+            int counter = 0;
+            while(it.hasNext()){
+                Map<String, Object> resultNode = it.next();
+                boolean matched = ((String) resultNode.get("r.creationTime")).equalsIgnoreCase((String) params.get("3"));
+                if (!matched){
+                    // remove
+                    executor.execute("start r=rel("+( (Integer) resultNode.get("ID(r)"))+") delete r", ImmutableMap.of());
+                }else if (matched && counter>0){
+                    // remove
+                    executor.execute("start r=rel("+( (Integer) resultNode.get("ID(r)"))+") delete r", ImmutableMap.of());
+                }else{
+                    counter += 1;
+                }
             }
         }
     }

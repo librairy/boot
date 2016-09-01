@@ -49,6 +49,10 @@ public class URIGenerator {
         return new StringBuilder(base).append(resource.route()).append(SEPARATOR).append(id).toString();
     }
 
+    public String basedOnContent(org.librairy.model.domain.relations.Relation.Type resource, String content){
+        return new StringBuilder(base).append(resource.route()).append(SEPARATOR).append(getMD5(content)).toString();
+    }
+
     public String from(org.librairy.model.domain.relations.Relation.Type resource, String id){
         return new StringBuilder(base).append(resource.route()).append(SEPARATOR).append(id).toString();
     }
@@ -88,8 +92,10 @@ public class URIGenerator {
         return id;
     }
 
-    public Resource.Type getResourceFrom(String uri){
-        String type = StringUtils.substringBefore(StringUtils.substringAfter(uri, base), "/");
+    public static Resource.Type typeFrom(String uri){
+        // "http://drinventor.eu/items/9c8b49fbc507cfe9903fc9f08dc2a8c8",
+
+        String type = StringUtils.substringAfterLast(StringUtils.substringBeforeLast(uri,"/"),"/");
 
         Optional<Resource.Type> resourceType = Arrays.stream(Resource.Type.values()).filter(entry -> type
                 .equalsIgnoreCase
@@ -104,5 +110,6 @@ public class URIGenerator {
         BigInteger id = new BigInteger(idString, 16);
         return id;
     }
+
 
 }

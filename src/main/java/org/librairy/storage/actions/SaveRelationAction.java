@@ -27,7 +27,14 @@ public class SaveRelationAction {
 
         // initialize URI
         if (!relation.hasUri()){
-            relation.setUri(helper.getUriGenerator().from(relation.getType(),relation.getUriComposition()));
+
+            String content = new StringBuilder()
+                    .append(relation.getStartUri())
+                    .append(relation.getEndUri())
+                    .append(relation.getCreationTime())
+                    .toString()
+                    ;
+            relation.setUri(helper.getUriGenerator().basedOnContent(relation.getType(),content));
         }
 
         try{

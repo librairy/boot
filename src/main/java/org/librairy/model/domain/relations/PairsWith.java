@@ -29,11 +29,6 @@ public class PairsWith extends Relation {
     private String domain;
 
     @Override
-    public String getUriComposition() {
-        return super.getUriComposition()+"-"+ URIGenerator.retrieveId(domain);
-    }
-
-    @Override
     public Resource.Type getStartType() {
         return Resource.Type.WORD;
     }

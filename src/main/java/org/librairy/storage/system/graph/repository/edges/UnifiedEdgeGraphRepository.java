@@ -3,6 +3,7 @@ package org.librairy.storage.system.graph.repository.edges;
 import org.apache.commons.lang.WordUtils;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
+import org.librairy.storage.actions.ExecutionResult;
 import org.librairy.storage.actions.RepeatableActionExecutor;
 import org.librairy.storage.system.graph.cache.GraphCache;
 import org.librairy.storage.system.graph.repository.Repository;
@@ -70,31 +71,33 @@ public class UnifiedEdgeGraphRepository extends RepeatableActionExecutor impleme
 
     @Override
     public Boolean exists(org.librairy.model.domain.relations.Relation.Type type, String uri) {
-        Optional<Object> result = performRetries(0, "exists " + type + "[" + uri + "]", () ->
+        Optional<ExecutionResult> result = performRetries(0, "exists " + type + "[" + uri + "]", () ->
                 factory.repositoryOf(type).findOneByUri(uri) != null);
-        return (result.isPresent())? (Boolean) result.get() : Boolean.FALSE;
+        return (result.isPresent())? (Boolean) result.get().getResult() : Boolean.FALSE;
     }
 
     @Override
     public Optional<org.librairy.model.domain.relations.Relation> read(org.librairy.model.domain.relations.Relation.Type type, String uri) {
-        Optional<Object> result = performRetries(0, "read " + type + "[" + uri + "]", () -> {
+        Optional<ExecutionResult> result = performRetries(0, "read " + type + "[" + uri + "]", () -> {
             Optional<org.librairy.model.domain.relations.Relation> relation = Optional.empty();
             Edge edge = (Edge) factory.repositoryOf(type).findOneByUri(uri);
             if (edge != null) relation = Optional.of((org.librairy.model.domain.relations.Relation) org.librairy.model.utils.ResourceUtils.map(edge, org.librairy.model.domain.relations.Relation.classOf(type)));
             return relation;
         });
-        return (result.isPresent())? (Optional<org.librairy.model.domain.relations.Relation>) result.get() : Optional.empty();
+        return (result.isPresent())? (Optional<org.librairy.model.domain.relations.Relation>) result.get().getResult() :
+                Optional.empty();
     }
 
     @Override
     public Iterable<org.librairy.model.domain.relations.Relation> findAll(org.librairy.model.domain.relations.Relation.Type type) {
-        Optional<Object> result = performRetries(0, "findAll " + type, () ->
+        Optional<ExecutionResult> result = performRetries(0, "findAll " + type, () ->
                 factory.repositoryOf(type).findAll());
-        return (result.isPresent())? (Iterable<org.librairy.model.domain.relations.Relation>) result.get() : Collections.EMPTY_LIST;
+        return (result.isPresent())? (Iterable<org.librairy.model.domain.relations.Relation>) result.get().getResult() :
+                Collections.EMPTY_LIST;
     }
 
     public Iterable<org.librairy.model.domain.relations.Relation> findBetween(org.librairy.model.domain.relations.Relation.Type type, String startUri, String endUri) {
-        Optional<Object> result = performRetries(0, "finding " + type + " between [" + startUri+ "] and [" + endUri + "]", () -> {
+        Optional<ExecutionResult> result = performRetries(0, "finding " + type + " between [" + startUri+ "] and [" + endUri + "]", () -> {
             RelationGraphRepository repository = factory.repositoryOf(type);
             String methodName = "findByNodes";
             Method method = repository.getClass().getMethod(methodName, String.class, String.class);
@@ -102,7 +105,8 @@ public class UnifiedEdgeGraphRepository extends RepeatableActionExecutor impleme
 //            Iterable<Relation> relations =  factory.repositoryOf(type).findByNodes(startUri,endUri);
             return relations;
         });
-        return (result.isPresent())? (Iterable<org.librairy.model.domain.relations.Relation>) result.get() : Collections.EMPTY_LIST;
+        return (result.isPresent())? (Iterable<org.librairy.model.domain.relations.Relation>) result.get().getResult() :
+                Collections.EMPTY_LIST;
     }
 
     @Override
@@ -116,14 +120,15 @@ public class UnifiedEdgeGraphRepository extends RepeatableActionExecutor impleme
     }
 
     private Iterable<org.librairy.model.domain.relations.Relation> find(String prefix, org.librairy.model.domain.relations.Relation.Type resultType, String uri, String reference) {
-        Optional<Object> result = performRetries(0, prefix + " " + resultType + "[" + uri + "] and ref: " + reference, () -> {
+        Optional<ExecutionResult> result = performRetries(0, prefix + " " + resultType + "[" + uri + "] and ref: " + reference, () -> {
             RelationGraphRepository repository = factory.repositoryOf(resultType);
             String methodName = prefix + WordUtils.capitalize(reference.toLowerCase());
             Method method = repository.getClass().getMethod(methodName, String.class);
             Iterable<org.librairy.model.domain.relations.Relation> resources = (Iterable<org.librairy.model.domain.relations.Relation>) method.invoke(repository, uri);
             return resources;
         });
-        return (result.isPresent())? (Iterable<org.librairy.model.domain.relations.Relation>) result.get() : Collections.EMPTY_LIST;
+        return (result.isPresent())? (Iterable<org.librairy.model.domain.relations.Relation>) result.get().getResult() :
+                Collections.EMPTY_LIST;
     }
 
     @Override

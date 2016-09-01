@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.librairy.model.domain.resources.Resource;
+import org.librairy.storage.actions.ExecutionResult;
 import org.librairy.storage.actions.RepeatableActionExecutor;
 import org.librairy.storage.generator.URIGenerator;
 import org.librairy.storage.system.graph.domain.nodes.Node;
@@ -41,14 +42,14 @@ public class GraphCache extends RepeatableActionExecutor {
                         new CacheLoader<String, Node>() {
                             public Node load(String uri) {
 
-                                Resource.Type type = uriGenerator.getResourceFrom
+                                Resource.Type type = uriGenerator.typeFrom
                                         (uri);
 
 
-                                Optional<Object> node = performRetries(5, "Getting from cache: " + uri, () ->
+                                Optional<ExecutionResult> node = performRetries(5, "Getting from cache: " + uri, () ->
                                         nodeFactory.repositoryOf(type)
                                                 .findOneByUri(uri));
-                                return (node.isPresent())? (Node) node.get() : null;
+                                return (node.isPresent())? (Node) node.get().getResult() : null;
                             }
                         });
 

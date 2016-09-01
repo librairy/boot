@@ -5,6 +5,7 @@ import org.neo4j.ogm.exception.CypherException;
 import org.neo4j.ogm.exception.ResultProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Tuple;
 
 import java.util.Optional;
 
@@ -37,14 +38,14 @@ public abstract class RepeatableActionExecutor {
      * @param function
      * @return
      */
-    protected Optional<Object> performRetries(Integer retries, String id, RepeatableAction function){
+    protected Optional<ExecutionResult> performRetries(Integer retries, String id, RepeatableAction function){
         try {
-            return Optional.of(function.run());
+            return Optional.of(new ExecutionResult(retries,function.run()));
         }catch (ResultProcessingException | NullPointerException e){
             if (( e.getCause() != null) &&
                     ( e.getCause() instanceof CypherException) &&
                     (e.getCause().getMessage().contains("ConstraintViolation"))){
-                LOG.warn("Constraint Violation trying to execute: " + id + "=> " + ((CypherException) e.getCause()).getDescription());
+                LOG.debug("Constraint Violation trying to execute: " + id + "=> " + ((CypherException) e.getCause()).getDescription());
                 return Optional.empty();
             }
             else if (retries > MAX_RETRIES){

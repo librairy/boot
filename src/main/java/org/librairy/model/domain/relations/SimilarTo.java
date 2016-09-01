@@ -19,11 +19,6 @@ public abstract class SimilarTo extends Relation{
     @Getter @Setter
     private String domain;
 
-    @Override
-    public String getUriComposition() {
-        return super.getUriComposition()+"-"+ URIGenerator.retrieveId(domain);
-    }
-
     public abstract org.librairy.model.domain.resources.Resource.Type getResourceType();
 
     @Override

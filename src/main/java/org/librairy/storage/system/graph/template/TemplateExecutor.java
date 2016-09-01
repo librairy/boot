@@ -1,6 +1,7 @@
 package org.librairy.storage.system.graph.template;
 
 import org.apache.http.client.HttpResponseException;
+import org.librairy.storage.actions.ExecutionResult;
 import org.librairy.storage.actions.RepeatableActionExecutor;
 import org.joda.time.Interval;
 import org.joda.time.Period;
@@ -39,16 +40,18 @@ public class TemplateExecutor extends RepeatableActionExecutor{
 
 
     public Optional<Result> query(String query, Map<String, ?> parameters){
-        Optional<Object> result = performRetries(0, query + " => PARAMS: " + Arrays.toString(parameters.entrySet().toArray()), () -> {
+        Optional<ExecutionResult> result = performRetries(0, query + " => PARAMS: " + Arrays.toString(parameters.entrySet().toArray
+                ()), () -> {
             Result res = template.query(query, parameters);
             return res;
         });
-        return (result.isPresent())? Optional.of((Result)result.get()) : Optional.empty();
+        return (result.isPresent())? Optional.of((Result)result.get().getResult()) : Optional.empty();
     }
 
 
-    public void execute(String query, Map<String, Object> parameters){
-        Optional<Object> result = performRetries(0, query + " => PARAMS: " + Arrays.toString(parameters.entrySet().toArray()),
+    public Optional<Integer> execute(String query, Map<String, Object> parameters){
+        Optional<ExecutionResult> result = performRetries(0, query + " => PARAMS: " + Arrays.toString(parameters.entrySet().toArray
+                ()),
                 () -> {
             template.clear();
             QueryStatistics res = template.execute(query, parameters);
@@ -59,6 +62,7 @@ public class TemplateExecutor extends RepeatableActionExecutor{
 
             return res;
         });
+        return (result.isPresent())? Optional.of(result.get().getRetries()) : Optional.empty();
     }
 
 
