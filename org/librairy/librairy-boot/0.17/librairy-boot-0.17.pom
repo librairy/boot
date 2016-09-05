@@ -444,6 +444,10 @@
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-ogm-compiler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j</groupId>
             <artifactId>neo4j-ogm-api</artifactId>
         </dependency>
         <dependency>
