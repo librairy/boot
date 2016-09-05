@@ -4,8 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.librairy.model.domain.relations.Aggregates;
-import org.librairy.model.domain.relations.Contains;
-import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
 
 /**
@@ -19,7 +17,5 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class AggregateColumn extends Aggregates {
 
-    @PrimaryKey
-    private String uri;
 
 }

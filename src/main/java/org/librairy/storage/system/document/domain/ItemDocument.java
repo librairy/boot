@@ -20,9 +20,6 @@ public class ItemDocument extends Resource{
     @Override
     public Resource.Type getResourceType() {return Type.ITEM;}
 
-    @Id
-    private String uri;
-
     private String domain;
 
     public static final String AUTHORED_BY=Item.AUTHORED_BY;

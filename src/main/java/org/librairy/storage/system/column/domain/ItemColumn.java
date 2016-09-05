@@ -16,7 +16,4 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class ItemColumn extends Item {
 
-    @PrimaryKey
-    private String uri;
-
 }

@@ -19,6 +19,4 @@ public class DomainDocument extends Domain {
     @Override
     public org.librairy.model.domain.resources.Resource.Type getResourceType() {return org.librairy.model.domain.resources.Resource.Type.DOMAIN;}
 
-    @Id
-    private String uri;
 }

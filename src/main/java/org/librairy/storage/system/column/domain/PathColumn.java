@@ -17,7 +17,5 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class PathColumn extends Path {
 
-    @PrimaryKey
-    private String uri;
 
 }

@@ -5,6 +5,8 @@ import org.librairy.storage.actions.ExecutionResult;
 import org.librairy.storage.actions.RepeatableActionExecutor;
 import org.joda.time.Interval;
 import org.joda.time.Period;
+import org.librairy.storage.exception.ConstraintException;
+import org.neo4j.ogm.exception.CypherException;
 import org.neo4j.ogm.exception.ResultProcessingException;
 import org.neo4j.ogm.model.QueryStatistics;
 import org.neo4j.ogm.model.Result;
@@ -54,13 +56,19 @@ public class TemplateExecutor extends RepeatableActionExecutor{
                 ()),
                 () -> {
             template.clear();
-            QueryStatistics res = template.execute(query, parameters);
-            // TODO This part of code should be removed when Neo4j uses Bolt
-            if (!res.containsUpdates() && (!query.contains("delete"))) {
-                throw new ResultProcessingException("No contains updates", new HttpResponseException(404,"Not found"));
+            try{
+                QueryStatistics res = template.execute(query, parameters);
+                // TODO This part of code should be removed when Neo4j uses Bolt
+                if (!res.containsUpdates() && (!query.contains("delete"))) {
+                    throw new ResultProcessingException("No contains updates", new HttpResponseException(404,"Not found"));
+                }
+                return res;
+            }catch (CypherException e){
+                if (e.getMessage().contains("Neo.ClientError.Schema.ConstraintViolation")){
+                    throw new ConstraintException("Already existing node by query: " +query+" -> " + parameters);
+                }
+                throw e;
             }
-
-            return res;
         });
         return (result.isPresent())? Optional.of(result.get().getRetries()) : Optional.empty();
     }

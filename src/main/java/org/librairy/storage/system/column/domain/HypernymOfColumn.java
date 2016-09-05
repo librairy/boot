@@ -19,6 +19,4 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class HypernymOfColumn extends HypernymOf {
 
-    @PrimaryKey
-    private String uri;
 }

@@ -20,9 +20,6 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class SimilarToColumn extends SimilarTo {
 
-    @PrimaryKey
-    private String uri;
-
     @Override
     public Resource.Type getResourceType() {
         return null;

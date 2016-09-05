@@ -15,6 +15,4 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class PartColumn extends org.librairy.model.domain.resources.Part {
 
-    @PrimaryKey
-    private String uri;
 }

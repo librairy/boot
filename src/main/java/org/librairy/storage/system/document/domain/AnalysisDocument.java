@@ -19,7 +19,4 @@ public class AnalysisDocument extends Analysis{
 
     @Override
     public Resource.Type getResourceType() {return Type.ANALYSIS;}
-
-    @Id
-    private String uri;
 }

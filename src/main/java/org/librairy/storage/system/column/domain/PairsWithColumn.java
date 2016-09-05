@@ -19,6 +19,4 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class PairsWithColumn extends PairsWith {
 
-    @PrimaryKey
-    private String uri;
 }

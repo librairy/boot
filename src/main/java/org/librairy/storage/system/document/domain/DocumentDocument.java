@@ -18,8 +18,5 @@ public class DocumentDocument extends org.librairy.model.domain.resources.Docume
     @Override
     public Type getResourceType() {return Type.DOCUMENT;}
 
-    @Id
-    private String uri;
-
     private String domain;
 }

@@ -20,7 +20,4 @@ public class FilterDocument extends Filter {
     @Override
     public Type getResourceType() {return Type.FILTER;}
 
-    @Id
-    private String uri;
-
 }

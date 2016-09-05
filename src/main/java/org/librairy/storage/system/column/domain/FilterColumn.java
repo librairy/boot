@@ -17,7 +17,4 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class FilterColumn extends Filter {
 
-    @PrimaryKey
-    private String uri;
-
 }

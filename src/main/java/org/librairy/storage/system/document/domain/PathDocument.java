@@ -20,7 +20,4 @@ public class PathDocument extends Path {
     @Override
     public Type getResourceType() {return Type.PATH;}
 
-    @Id
-    private String uri;
-
 }

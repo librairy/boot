@@ -19,8 +19,5 @@ public class TopicDocument extends org.librairy.model.domain.resources.Topic {
     @Override
     public Resource.Type getResourceType() {return Type.TOPIC;}
 
-    @Id
-    private String uri;
-
     private String domain;
 }

@@ -18,8 +18,5 @@ public class PartDocument extends org.librairy.model.domain.resources.Part {
     @Override
     public Type getResourceType() {return Type.PART;}
 
-    @Id
-    private String uri;
-
     private String domain;
 }

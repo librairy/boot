@@ -15,7 +15,4 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class TermColumn extends org.librairy.model.domain.resources.Term {
 
-    @PrimaryKey
-    private String uri;
-
 }

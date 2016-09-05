@@ -19,7 +19,4 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class ComposeColumn extends Composes {
 
-    @PrimaryKey
-    private String uri;
-
 }

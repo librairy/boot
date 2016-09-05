@@ -3,9 +3,7 @@ package org.librairy.storage.system.column.domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.librairy.model.domain.relations.Describes;
 import org.librairy.model.domain.relations.EmergesIn;
-import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
 
 /**
@@ -19,6 +17,4 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class EmergeInColumn extends EmergesIn {
 
-    @PrimaryKey
-    private String uri;
 }

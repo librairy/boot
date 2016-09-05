@@ -19,8 +19,5 @@ public class SourceDocument extends Source{
     @Override
     public org.librairy.model.domain.resources.Resource.Type getResourceType() {return org.librairy.model.domain.resources.Resource.Type.SOURCE;}
 
-    @Id
-    private String uri;
-
     private String domain;
 }

@@ -1,5 +1,6 @@
 package org.librairy.storage.actions;
 
+import org.librairy.storage.exception.ConstraintException;
 import org.librairy.storage.exception.RepositoryNotFound;
 import org.neo4j.ogm.exception.CypherException;
 import org.neo4j.ogm.exception.ResultProcessingException;
@@ -60,6 +61,9 @@ public abstract class RepeatableActionExecutor {
                 return performRetries(++retries,id,function);
             }
         }catch (RepositoryNotFound e){
+            LOG.warn(e.getMessage());
+            return Optional.empty();
+        }catch (ConstraintException e){
             LOG.warn(e.getMessage());
             return Optional.empty();
         }catch (Exception e){

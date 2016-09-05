@@ -20,8 +20,5 @@ public class WordDocument extends Word {
     @Override
     public Resource.Type getResourceType() {return Type.WORD;}
 
-    @Id
-    private String uri;
-
     private String domain;
 }

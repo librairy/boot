@@ -19,8 +19,5 @@ public class TermDocument extends Term {
     @Override
     public org.librairy.model.domain.resources.Resource.Type getResourceType() {return org.librairy.model.domain.resources.Resource.Type.TERM;}
 
-    @Id
-    private String uri;
-
     private String domain;
 }

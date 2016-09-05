@@ -19,6 +19,4 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class EmbeddedInColumn extends EmbeddedIn {
 
-    @PrimaryKey
-    private String uri;
 }

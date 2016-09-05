@@ -23,9 +23,6 @@ public class SerializedObjectColumn extends org.librairy.model.domain.resources.
 
     private static final Logger LOG = LoggerFactory.getLogger(SerializedObjectColumn.class);
 
-    @PrimaryKey
-    private String uri;
-
     @Override
     public void setInstance(Object instance) {
         String hexString="";

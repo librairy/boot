@@ -16,7 +16,4 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class DomainColumn extends Domain {
 
-    @PrimaryKey
-    private String uri;
-
 }

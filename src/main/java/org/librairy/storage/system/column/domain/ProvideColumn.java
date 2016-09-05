@@ -19,7 +19,5 @@ import org.springframework.data.cassandra.mapping.Table;
 @ToString(callSuper = true)
 public class ProvideColumn extends Provides {
 
-    @PrimaryKey
-    private String uri;
 
 }

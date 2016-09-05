@@ -27,12 +27,6 @@ import java.util.stream.IntStream;
 @Category(IntegrationTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
-@TestPropertySource(properties = {
-        "librairy.columndb.host= 192.168.99.100",
-        "librairy.documentdb.host = 192.168.99.100",
-        "librairy.graphdb.host = 192.168.99.100",
-        "librairy.eventbus.host = 192.168.99.100"
-})
 public class ConsistencyTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConsistencyTest.class);
