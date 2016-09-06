@@ -20,6 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,6 +88,15 @@ public class ConsistencyTest {
         udm.delete(org.librairy.model.domain.resources.Resource.Type.ANY).all();
     }
 
+    @Test
+    public void findDomain(){
+
+
+        List<Resource> domains = udm.find(Resource.Type.DOMAIN).from(Resource.Type.TOPIC, "http://librairy.org/topics/af4781f5f4e20aff9e07c2eafeb4c55b");
+
+        LOG.info("Domains: " + domains);
+
+    }
 
     @Test
     public void pairWord() throws InterruptedException {
@@ -109,6 +119,74 @@ public class ConsistencyTest {
             LOG.error("error",e);
         }
 
+    }
+
+    @Test
+    public void readPair(){
+        String weightValue = "2.8801920240370055E-5";
+        Double value = Double.valueOf((String) weightValue);
+        LOG.info("Value: " + value);
+    }
+
+    @Test
+    public void validate(){
+
+        int numSources = 1;
+        int numDomains = 1;
+        int numDocs = 99;
+
+        Assert.assertEquals(numSources, udm.find(Resource.Type.SOURCE).all().size());
+
+        Assert.assertEquals(numDomains, udm.find(Resource.Type.DOMAIN).all().size());
+        Assert.assertEquals(numDomains*numSources, udm.find(Relation.Type.COMPOSES).all().size());
+        Assert.assertEquals(numDocs, udm.find(Relation.Type.CONTAINS).all().size());
+
+        Assert.assertEquals(numDocs, udm.find(Relation.Type.PROVIDES).all().size());
+        Assert.assertEquals(numDocs, udm.find(Resource.Type.DOCUMENT).all().size());
+        Assert.assertEquals(numDocs, udm.find(Relation.Type.BUNDLES).all().size());
+        Assert.assertEquals(numDocs, udm.find(Resource.Type.ITEM).all().size());
+
+
+        // Topics
+        int numTopics = Double.valueOf(2*Math.sqrt(numDocs/2)).intValue();
+        Assert.assertEquals(numTopics, udm.find(Resource.Type.TOPIC).all().size());
+        Assert.assertEquals(numTopics, udm.find(Relation.Type.EMERGES_IN).all().size());
+        Assert.assertEquals(numDocs*numTopics, udm.find(Relation.Type.DEALS_WITH_FROM_DOCUMENT).all().size());
+        Assert.assertEquals(numDocs*numTopics, udm.find(Relation.Type.DEALS_WITH_FROM_ITEM).all().size());
+
+
+        // SIMILAR_TO
+
+        BigInteger fd = factorial(BigInteger.valueOf(numDocs));
+        BigInteger fc = factorial(BigInteger.valueOf(2));
+        BigInteger fs = factorial(BigInteger.valueOf(numDocs-2));
+
+        int combinations = fd.divide(fc.multiply(fs)).intValue();
+        Assert.assertEquals(combinations, udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).all().size());
+        Assert.assertEquals(combinations, udm.find(Relation.Type.SIMILAR_TO_ITEMS).all().size());
+
+        int numWords = udm.find(Resource.Type.WORD).all().size();
+        Assert.assertEquals(numWords, udm.find(Relation.Type.EMBEDDED_IN).all().size());
+
+        int numMentions = udm.find(Relation.Type.MENTIONS_FROM_TOPIC).all().size();
+        Assert.assertTrue(numMentions < numWords);
+
+        int numPairs = udm.find(Relation.Type.PAIRS_WITH).all().size();
+        Assert.assertTrue(numMentions < numPairs);
+
+    }
+
+
+    public static void main(String[] args){
+
+        System.out.println(factorial(BigInteger.valueOf(40)));
+    }
+
+    public static BigInteger factorial(BigInteger n) {
+        if (n.compareTo(BigInteger.valueOf(1)) < 0)
+            return BigInteger.valueOf(1);
+        else
+            return n.multiply(factorial(n.subtract(BigInteger.valueOf(1))));
     }
 
     @Test
