@@ -10,11 +10,16 @@ import org.librairy.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Created by cbadenes on 22/12/15.
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(of={"uri"}, exclude = {"startUri","endUri","weight"},callSuper = true)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Relation extends LinkableElement {
 
     private static final Logger LOG = LoggerFactory.getLogger(Relation.class);

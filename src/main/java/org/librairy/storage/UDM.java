@@ -59,7 +59,7 @@ public class UDM {
      * Save a resource
      * @param resource
      */
-    public SaveResourceAction save(org.librairy.model.domain.resources.Resource resource){return new SaveResourceAction(helper,resource);
+    public SaveResourceAction save(Resource resource){return new SaveResourceAction(helper,resource);
     }
 
 
@@ -94,7 +94,8 @@ public class UDM {
      * @param type
      * @return resource
      */
-    public ReadResourceAction read(org.librairy.model.domain.resources.Resource.Type type){return new ReadResourceAction(helper,type);
+    public ReadResourceAction read(org.librairy.model.domain.resources.Resource.Type type){
+        return new ReadResourceAction(helper,type);
     }
 
     /**

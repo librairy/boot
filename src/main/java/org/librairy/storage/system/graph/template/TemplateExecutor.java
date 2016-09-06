@@ -65,7 +65,7 @@ public class TemplateExecutor extends RepeatableActionExecutor{
                 return res;
             }catch (CypherException e){
                 if (e.getMessage().contains("Neo.ClientError.Schema.ConstraintViolation")){
-                    throw new ConstraintException("Already existing node by query: " +query+" -> " + parameters);
+                    throw new ConstraintException("Already exists node by query: " +query+" -> " + parameters);
                 }
                 throw e;
             }

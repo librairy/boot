@@ -16,9 +16,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @EqualsAndHashCode(of={"uri"}, callSuper = true)
 public abstract class DealsWith extends Relation{
 
-    @Getter @Setter
-    Double weight;
-
     @Override
     public org.librairy.model.domain.resources.Resource.Type getEndType() {
         return org.librairy.model.domain.resources.Resource.Type.TOPIC;

@@ -9,6 +9,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.librairy.model.domain.resources.Domain;
+import org.librairy.model.domain.resources.Resource;
+import org.librairy.model.domain.resources.Word;
+import org.librairy.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,10 +79,49 @@ public class ConsistencyTest {
     @Autowired
     UDM udm;
 
+    @Autowired
+    URIGenerator uriGenerator;
+
     @Test
     public void deleteAll() throws InterruptedException {
         udm.delete(org.librairy.model.domain.resources.Resource.Type.ANY).all();
     }
+
+
+    @Test
+    public void pairWord() throws InterruptedException {
+        try{
+            Word w1 = Resource.newWord("test1");
+            udm.save(w1);
+
+            Word w2 = Resource.newWord("test2");
+            udm.save(w2);
+
+            String domainUri = "http://librairy.org/domains/default";
+
+            Domain domain = Resource.newDomain("d2");
+            udm.save(domain);
+
+            Relation pair = Relation.newPairsWith(w1.getUri(),w2.getUri(),domain.getUri());
+            pair.setWeight(5.3);
+            udm.save(pair);
+        }catch (Exception e){
+            LOG.error("error",e);
+        }
+
+    }
+
+    @Test
+    public void deleteWordPairs() throws InterruptedException {
+        try{
+            udm.find(Relation.Type.PAIRS_WITH).all().forEach(rel -> udm.delete(Relation.Type.PAIRS_WITH).byUri(rel.getUri()));
+        }catch (Exception e){
+            LOG.error("error",e);
+        }
+
+    }
+
+
 
     @Test
     public void transitiveRelationships() throws InterruptedException {

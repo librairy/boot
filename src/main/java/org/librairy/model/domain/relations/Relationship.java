@@ -7,7 +7,6 @@ import java.io.Serializable;
 /**
  * Created by cbadenes on 13/01/16.
  */
-//TODO This class should be removed
 @Data
 public class Relationship implements Serializable{
 

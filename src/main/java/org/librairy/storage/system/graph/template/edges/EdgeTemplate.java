@@ -174,7 +174,15 @@ public abstract class EdgeTemplate {
                 instance.setCreationTime((String) relationship.get("r.creationTime"));
                 instance.setStartUri((String) relationship.get("s.uri"));
                 instance.setEndUri((String) relationship.get("e.uri"));
-                instance.setWeight((Double) relationship.get("r.weight"));
+
+                Object weightValue = relationship.get("r.weight");
+                Double weight = -1.0;
+                try{
+                    weight = Double.valueOf((String)weightValue);
+                }catch (ClassCastException e){
+                     LOG.warn("Weight value is undefined: " + weightValue);
+                }
+                instance.setWeight(weight);
                 relations.add(instance);
             } catch (InstantiationException | IllegalAccessException e) {
                 LOG.error("Error reading relations by: " + query,e);

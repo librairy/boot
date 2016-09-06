@@ -19,10 +19,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Aggregates extends Relation {
 
-    @Getter
-    @Setter
-    private Double weight;
-
     @Override
     public Resource.Type getStartType() {
         return Resource.Type.DOCUMENT;

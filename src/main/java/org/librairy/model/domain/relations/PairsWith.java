@@ -22,10 +22,6 @@ public class PairsWith extends Relation {
 
     @Getter
     @Setter
-    private Double weight;
-
-    @Getter
-    @Setter
     private String domain;
 
     @Override

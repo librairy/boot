@@ -64,6 +64,17 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
         return false;
     }
 
+
+    public Boolean exists(Relation.Type type, String uri){
+
+        try{
+            return factory.repositoryOf(type).exists(BasicMapId.id(ResourceUtils.URI, uri));
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        }
+        return false;
+    }
+
     @Override
     public Optional<Resource> read(Resource.Type type, String uri){
         Optional<Resource> result = Optional.empty();

@@ -14,9 +14,6 @@ import org.librairy.storage.generator.URIGenerator;
 public abstract class SimilarTo extends Relation{
 
     @Getter @Setter
-    private Double weight;
-
-    @Getter @Setter
     private String domain;
 
     public abstract org.librairy.model.domain.resources.Resource.Type getResourceType();
