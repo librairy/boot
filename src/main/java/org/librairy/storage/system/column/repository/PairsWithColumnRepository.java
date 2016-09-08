@@ -13,4 +13,7 @@ public interface PairsWithColumnRepository extends BaseColumnRepository<PairsWit
     @Query("select * from pairsWith where endUri = ?0")
     Iterable<PairsWithColumn> findByWord(String uri);
 
+    @Query("select * from pairsWith where domain = ?0")
+    Iterable<PairsWithColumn> findByDomain(String uri);
+
 }

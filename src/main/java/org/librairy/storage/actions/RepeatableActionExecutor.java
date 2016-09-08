@@ -42,29 +42,34 @@ public abstract class RepeatableActionExecutor {
     protected Optional<ExecutionResult> performRetries(Integer retries, String id, RepeatableAction function){
         try {
             return Optional.of(new ExecutionResult(retries,function.run()));
-        }catch (ResultProcessingException | NullPointerException e){
+        }catch (IndexOutOfBoundsException | ResultProcessingException | NullPointerException e){
             if (( e.getCause() != null) &&
                     ( e.getCause() instanceof CypherException) &&
                     (e.getCause().getMessage().contains("ConstraintViolation"))){
                 LOG.debug("Constraint Violation trying to execute: " + id + "=> " + ((CypherException) e.getCause()).getDescription());
                 return Optional.empty();
             }
-            else if (retries > MAX_RETRIES){
+            else if ((retries > MAX_RETRIES) || (e.getMessage().contains("No contains updates"))){
                 LOG.error("Error executing "+id+" after " + MAX_RETRIES + " retries",e);
-                // TODO Remove retries
                 return Optional.empty();
             }
             else{
-                LOG.warn("Trying to retry "+id+": " + retries);
+                LOG.debug("Trying to retry "+id+": " + retries);
                 waitForRetry(retries);
-                // TODO Remove retries
                 return performRetries(++retries,id,function);
             }
-        }catch (RepositoryNotFound e){
+        }catch (RepositoryNotFound e) {
             LOG.warn(e.getMessage());
             return Optional.empty();
+        }catch (CypherException e) {
+            if (e.getMessage().contains("Neo.ClientError.Statement.EntityNotFound")) {
+                LOG.debug("Error on operation: " + id, e);
+            } else {
+                LOG.error("Error on operation: " + id, e);
+            }
+            return Optional.empty();
         }catch (ConstraintException e){
-            LOG.warn(e.getMessage());
+            LOG.debug(e.getMessage());
             return Optional.empty();
         }catch (Exception e){
             LOG.error("Error on operation: " + id, e);

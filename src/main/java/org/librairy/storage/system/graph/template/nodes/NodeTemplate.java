@@ -104,7 +104,7 @@ public abstract class NodeTemplate {
     }
 
     public void deleteOne(String uri){
-        _delete( "(n: {uri: {0} })", ImmutableMap.of("0",uri));
+        _delete( "( n { uri : {0} })", ImmutableMap.of("0",uri));
     }
 
     public void deleteAll(){
@@ -116,7 +116,8 @@ public abstract class NodeTemplate {
     }
 
     private void _delete(String path, Map params){
-        String query = new StringBuilder().append("match ").append(path).append(" detach delete n").toString();
+        String query = new StringBuilder().append("match ").append(path).append(" detach delete n return count(*) ")
+                .toString();
         executor.execute(query, params);
     }
 

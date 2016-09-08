@@ -1,6 +1,7 @@
 package org.librairy.storage;
 
 import es.cbadenes.lab.test.IntegrationTest;
+import org.apache.commons.beanutils.BeanUtils;
 import org.librairy.Config;
 import org.librairy.model.domain.relations.Relation;
 import org.joda.time.Interval;
@@ -9,10 +10,16 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.librairy.model.domain.relations.SimilarToItems;
 import org.librairy.model.domain.resources.Domain;
 import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.domain.resources.Word;
+import org.librairy.storage.executor.ParallelExecutor;
 import org.librairy.storage.generator.URIGenerator;
+import org.librairy.storage.system.column.domain.SimilarToColumn;
+import org.librairy.storage.system.column.repository.UnifiedColumnRepository;
+import org.librairy.storage.system.graph.domain.edges.SimilarToItemsEdge;
+import org.librairy.storage.system.graph.template.TemplateFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +27,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -83,6 +93,12 @@ public class ConsistencyTest {
     @Autowired
     URIGenerator uriGenerator;
 
+    @Autowired
+    TemplateFactory factory;
+
+    @Autowired
+    UnifiedColumnRepository columnRepository;
+
     @Test
     public void deleteAll() throws InterruptedException {
         udm.delete(org.librairy.model.domain.resources.Resource.Type.ANY).all();
@@ -95,6 +111,9 @@ public class ConsistencyTest {
         List<Resource> domains = udm.find(Resource.Type.DOMAIN).from(Resource.Type.TOPIC, "http://librairy.org/topics/af4781f5f4e20aff9e07c2eafeb4c55b");
 
         LOG.info("Domains: " + domains);
+
+
+
 
     }
 
@@ -122,10 +141,15 @@ public class ConsistencyTest {
     }
 
     @Test
-    public void readPair(){
-        String weightValue = "2.8801920240370055E-5";
-        Double value = Double.valueOf((String) weightValue);
-        LOG.info("Value: " + value);
+    public void deleteSimilar(){
+        String domainUri = "http://librairy.org/domains/default";
+        List<Relation> result = udm.find(Relation.Type.SIMILAR_TO_ITEMS).from(Resource.Type.DOMAIN, domainUri);
+        System.out.println(result.size());
+
+
+        udm.find(Relation.Type.SIMILAR_TO_ITEMS).from(Resource.Type.DOMAIN, domainUri).parallelStream()
+                .forEach(relation -> udm.delete(Relation.Type.SIMILAR_TO_ITEMS).byUri(relation.getUri()));
+
     }
 
     @Test
@@ -156,7 +180,6 @@ public class ConsistencyTest {
 
 
         // SIMILAR_TO
-
         BigInteger fd = factorial(BigInteger.valueOf(numDocs));
         BigInteger fc = factorial(BigInteger.valueOf(2));
         BigInteger fs = factorial(BigInteger.valueOf(numDocs-2));
@@ -165,17 +188,141 @@ public class ConsistencyTest {
         Assert.assertEquals(combinations, udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).all().size());
         Assert.assertEquals(combinations, udm.find(Relation.Type.SIMILAR_TO_ITEMS).all().size());
 
+        // WORDS
         int numWords = udm.find(Resource.Type.WORD).all().size();
         Assert.assertEquals(numWords, udm.find(Relation.Type.EMBEDDED_IN).all().size());
 
         int numMentions = udm.find(Relation.Type.MENTIONS_FROM_TOPIC).all().size();
         Assert.assertTrue(numMentions < numWords);
 
-        int numPairs = udm.find(Relation.Type.PAIRS_WITH).all().size();
-        Assert.assertTrue(numMentions < numPairs);
+//        int numPairs = udm.find(Relation.Type.PAIRS_WITH).all().size();
+//        Assert.assertTrue(numMentions < numPairs);
 
     }
 
+    @Test
+    public void findDuplicates() throws InterruptedException {
+        try{
+            List<Relation> rels = udm.find(Relation.Type.EMBEDDED_IN).all();
+
+            Set<String> records = new HashSet<>();
+
+            for (Relation relation: rels){
+                String direct = relation.getStartUri()+relation.getEndUri();
+                if (records.contains(direct)){
+                    LOG.info("Duplicated direct: " +relation);
+                }
+                records.add(direct);
+                String inverse = relation.getEndUri()+relation.getStartUri();
+                if (records.contains(direct)){
+                    LOG.info("Duplicated inverse: " +relation);
+                }
+                records.add(inverse);
+            }
+
+        }catch (Exception e){
+            LOG.error("error",e);
+        }
+    }
+
+
+    @Test
+    public void findSimilar() throws InvocationTargetException, IllegalAccessException {
+        String domainUri = "http://librairy.org/domains/default";
+        LOG.info("reading all similar items..");
+//        Iterable<Relation> rels = columnRepository.findBy(Relation.Type.SIMILAR_TO_ITEMS, "domain", domainUri);
+//        LOG.info("all similar items read");
+//        SimilarToColumn simColumRel = (SimilarToColumn) rels.iterator().next();
+//        SimilarToItems rel = new SimilarToItems();
+//        BeanUtils.copyProperties(rel,simColumRel);
+//        LOG.info("trying to save on graph-db..");
+//        factory.of(Relation.Type.SIMILAR_TO_ITEMS).save(rel);
+
+
+        Instant start  = Instant.now();
+        columnRepository.findBy(Relation.Type.SIMILAR_TO_ITEMS, "domain", domainUri).forEach(rel-> {
+
+            if (!URIGenerator.typeFrom(rel.getStartUri()).equals(Resource.Type.ITEM)) return;
+
+            SimilarToColumn columnRel = (SimilarToColumn) rel;
+            SimilarToItems simRel = new SimilarToItems();
+            try {
+                BeanUtils.copyProperties(simRel,columnRel);
+                factory.of(Relation.Type.SIMILAR_TO_ITEMS).save(simRel);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        });
+        Instant end  = Instant.now();
+        LOG.info("Completed in: " + ChronoUnit.MINUTES.between(start,end) + "min " + (ChronoUnit.SECONDS.between(start,end)%60) + "secs");
+    }
+
+    @Test
+    public void deleteTopics(){
+        String domainUri = "http://librairy.org/domains/default";
+        Iterable<Relation> rels = columnRepository.findBy(Relation.Type.EMERGES_IN,"domain",domainUri);
+
+        if (rels.iterator().hasNext()){
+            LOG.info("Deleting previous topics in domain: " + domainUri);
+
+            ParallelExecutor pExecutor = new ParallelExecutor();
+            for (Relation rel: rels){
+
+                pExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        String topicUri = rel.getStartUri();
+
+                        LOG.info("Deleting topic: " + topicUri);
+
+
+                        clean(Relation.Type.MENTIONS_FROM_TOPIC, topicUri);
+//                        columnRepository.findBy(Relation.Type.MENTIONS_FROM_TOPIC,"topic",topicUri)
+//                                .forEach(mention -> udm.delete(Relation.Type.MENTIONS_FROM_TOPIC).byUri(mention.getUri()));
+
+                        clean(Relation.Type.DEALS_WITH_FROM_DOCUMENT, topicUri);
+//                        columnRepository.findBy(Relation.Type.DEALS_WITH_FROM_DOCUMENT,"topic",topicUri)
+//                                .forEach(deals -> udm.delete(Relation.Type.DEALS_WITH_FROM_DOCUMENT).byUri(deals.getUri()));
+
+                        clean(Relation.Type.DEALS_WITH_FROM_ITEM, topicUri);
+//                        columnRepository.findBy(Relation.Type.DEALS_WITH_FROM_ITEM,"topic",topicUri)
+//                                .forEach(deals -> udm.delete(Relation.Type.DEALS_WITH_FROM_ITEM).byUri(deals.getUri()));
+
+                        clean(Relation.Type.DEALS_WITH_FROM_PART, topicUri);
+//                        columnRepository.findBy(Relation.Type.DEALS_WITH_FROM_PART,"topic",topicUri)
+//                                .forEach(deals -> udm.delete(Relation.Type.DEALS_WITH_FROM_PART).byUri(deals.getUri()));
+
+                        LOG.info("Deleting EMERGES_IN from: " + topicUri);
+                        udm.delete(Relation.Type.EMERGES_IN).byUri(rel.getUri());
+
+//                        udm.delete(Resource.Type.TOPIC).byUri(topicUri);
+                    }
+                });
+            }
+            pExecutor.awaitTermination(30, TimeUnit.MINUTES);
+            LOG.info("Topics (almost) deleted");
+
+
+            Iterator<Relation> it = rels.iterator();
+            while(it.hasNext()){
+                String topicUri = it.next().getStartUri();
+                udm.delete(Resource.Type.TOPIC).byUri(topicUri);
+            }
+            LOG.info("Topics deleted");
+        }else{
+            LOG.info("No topics in domain");
+        }
+    }
+
+    private void clean(Relation.Type relType, String uri){
+        LOG.info("Deleting " + relType.route() + " from: " + uri);
+        Iterable<Relation> list = columnRepository.findBy(relType,"topic",uri);
+        if (list.iterator().hasNext()) {
+            columnRepository.delete(relType,list);
+        }
+    }
 
     public static void main(String[] args){
 
@@ -190,9 +337,39 @@ public class ConsistencyTest {
     }
 
     @Test
-    public void deleteWordPairs() throws InterruptedException {
+    public void findDomainFromTopic() throws InterruptedException {
         try{
-            udm.find(Relation.Type.PAIRS_WITH).all().forEach(rel -> udm.delete(Relation.Type.PAIRS_WITH).byUri(rel.getUri()));
+
+
+            String topicUri ="http://librairy.org/topics/3ddfe7c9d4cbde4e75700b75b44635d1";
+            Iterable<Relation> rels = columnRepository.findBy(Relation.Type.EMERGES_IN, "topic", topicUri);
+
+            for (Relation rel: rels){
+                LOG.info("Relation: " + rel);
+            }
+
+            List<Resource> rels2 = udm.find(Resource.Type.DOMAIN).from(Resource.Type.TOPIC, topicUri);
+
+            for (Resource rel: rels2){
+                LOG.info("Resource: " + rel);
+            }
+        }catch (Exception e){
+            LOG.error("error",e);
+        }
+
+    }
+
+    @Test
+    public void findDomainFromDocument() throws InterruptedException {
+        try{
+
+            String documentUri ="http://librairy.org/documents/f7c71cd15c54e367263de18bc657cdcb";
+            Iterable<Relation> rels = columnRepository.findBy(Relation.Type.CONTAINS, "document", documentUri);
+
+            for (Relation rel: rels){
+                LOG.info("Relation: " + rel);
+            }
+
         }catch (Exception e){
             LOG.error("error",e);
         }

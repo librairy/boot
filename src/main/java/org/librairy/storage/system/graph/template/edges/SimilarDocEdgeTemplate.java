@@ -20,9 +20,9 @@ public class SimilarDocEdgeTemplate extends EdgeTemplate {
     @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
-            case ANY:           return "(s:Document)-[r:SIMILAR_TO]-(e:Document)";
-            case DOMAIN:        return "(s:Document)-[r:SIMILAR_TO{domain:{0}}]-(e:Document)";
-            case DOCUMENT:      return "(s:Document{uri:{0}})-[r:SIMILAR_TO]-(e:Document)";
+            case ANY:           return "(s:Document)-[r:SIMILAR_TO]->(e:Document)";
+            case DOMAIN:        return "(s:Document)-[r:SIMILAR_TO{domain:{0}}]->(e:Document)";
+            case DOCUMENT:      return "(s:Document{uri:{0}})-[r:SIMILAR_TO]->(e:Document)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }
@@ -30,7 +30,7 @@ public class SimilarDocEdgeTemplate extends EdgeTemplate {
     @Override
     protected String pathBy(org.librairy.model.domain.relations.Relation.Type type) {
         switch (type){
-            case SIMILAR_TO_DOCUMENTS:      return "(s:Document{uri:{0}})-[r:SIMILAR_TO]-(e:Document{uri:{1}})";
+            case SIMILAR_TO_DOCUMENTS:      return "(s:Document{uri:{0}})-[r:SIMILAR_TO]->(e:Document{uri:{1}})";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

@@ -39,6 +39,9 @@ public class UDM {
     @Autowired
     DocumentTemplate documentTemplate;
 
+    @Autowired
+    TemplateExecutor executor;
+
     public Iterator<Map<String, Object>> queryGraph(String query){
         Optional<Result> result = neo4jExecutor.query(query, ImmutableMap.of());
         if (!result.isPresent()) return Collections.EMPTY_LIST.iterator();
@@ -62,6 +65,16 @@ public class UDM {
     public SaveResourceAction save(Resource resource){return new SaveResourceAction(helper,resource);
     }
 
+
+    /**
+     * Temporal solution to avoid Neo4j bug for duplicated relations
+     * @param uri
+     * @return
+     */
+    public Optional<Result> fixDuplicates(String uri){
+        return executor.query("MATCH ()-[r {uri : {0}}]->() WITH TAIL (COLLECT (r)) as rr FOREACH (r IN rr | " +
+                "DELETE r)", ImmutableMap.of("0",uri));
+    }
 
     /**
      * Save a relation

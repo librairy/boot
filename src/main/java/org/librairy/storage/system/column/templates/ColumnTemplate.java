@@ -24,4 +24,8 @@ public class ColumnTemplate {
         return cassandraTemplate.queryForList(select, LinkableElement.class);
     }
 
+    public void execute(String query){
+        cassandraTemplate.execute(query);
+    }
+
 }

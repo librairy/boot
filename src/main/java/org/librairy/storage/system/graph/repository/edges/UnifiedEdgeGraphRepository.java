@@ -69,6 +69,10 @@ public class UnifiedEdgeGraphRepository extends RepeatableActionExecutor impleme
         });
     }
 
+    public void save(Relation.Type type, Iterable<Edge> relations){
+        factory.repositoryOf(type).save(relations);
+    }
+
     @Override
     public Boolean exists(org.librairy.model.domain.relations.Relation.Type type, String uri) {
         Optional<ExecutionResult> result = performRetries(0, "exists " + type + "[" + uri + "]", () ->

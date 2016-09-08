@@ -79,7 +79,12 @@ public class DeleteResourceAction {
 
             helper.getUnifiedColumnRepository().delete(type,uri);
             helper.getUnifiedDocumentRepository().delete(type,uri);
-            helper.getUnifiedNodeGraphRepository().delete(type,uri);
+
+            if (helper.getTemplateFactory().handle(type)){
+                helper.getTemplateFactory().of(type).deleteOne(uri);
+            }else{
+                helper.getUnifiedNodeGraphRepository().delete(type,uri);
+            }
 
             transaction.commit();
 

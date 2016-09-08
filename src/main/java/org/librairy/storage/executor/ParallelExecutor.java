@@ -21,7 +21,7 @@ public class ParallelExecutor {
 
     public ParallelExecutor(){
         int cpus = Runtime.getRuntime().availableProcessors();
-        int maxThreads = cpus * 2;
+        int maxThreads = cpus;//cpus * 2;
         pool = new ThreadPoolExecutor(
                 maxThreads, // core thread pool size
                 maxThreads, // maximum thread pool size
@@ -41,6 +41,7 @@ public class ParallelExecutor {
     }
 
     public boolean awaitTermination(long time, TimeUnit unit) {
+        pool.shutdown();
         try {
             return pool.awaitTermination(time,unit);
         } catch (InterruptedException e) {

@@ -53,6 +53,15 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
         }
     }
 
+    public void save(Relation.Type type, Iterable relations){
+        try{
+            factory.repositoryOf(type).save(relations);
+            LOG.debug("Relations saved");
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        }
+    }
+
     @Override
     public Boolean exists(Resource.Type type, String uri){
 
@@ -168,6 +177,15 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
         }
     }
 
+    public void delete(Resource.Type type,Iterable<Resource> relations){
+        try{
+            factory.repositoryOf(type).delete(relations);
+            LOG.debug("Resources deleted");
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        }
+    }
+
     public void delete(Relation.Type type, String uri){
         try{
             factory.repositoryOf(type).delete(BasicMapId.id(ResourceUtils.URI, uri));
@@ -176,6 +194,18 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
             LOG.warn(e.getMessage());
         }
     }
+
+    public void delete(Relation.Type type,Iterable<Relation> relations){
+        try{
+            factory.repositoryOf(type).delete(relations);
+            LOG.debug("Relations deleted");
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+        }
+    }
+
+
+
 
     @Override
     public void deleteAll(Resource.Type type){

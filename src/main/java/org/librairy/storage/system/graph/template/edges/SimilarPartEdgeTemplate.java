@@ -21,9 +21,9 @@ public class SimilarPartEdgeTemplate extends EdgeTemplate {
     @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
-            case ANY:           return "(s:Part)-[r:SIMILAR_TO]-(e:Part)";
-            case DOMAIN:        return "(s:Part)-[r:SIMILAR_TO{domain:{0}}]-(e:Part)";
-            case PART:          return "(s:Part{uri:{0}})-[r:SIMILAR_TO]-(e:Part)";
+            case ANY:           return "(s:Part)-[r:SIMILAR_TO]->(e:Part)";
+            case DOMAIN:        return "(s:Part)-[r:SIMILAR_TO{domain:{0}}]->(e:Part)";
+            case PART:          return "(s:Part{uri:{0}})-[r:SIMILAR_TO]->(e:Part)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }
@@ -31,7 +31,7 @@ public class SimilarPartEdgeTemplate extends EdgeTemplate {
     @Override
     protected String pathBy(Relation.Type type) {
         switch (type){
-            case SIMILAR_TO_PARTS:      return "(s:Part{uri:{0}})-[r:SIMILAR_TO]-(e:Part{uri:{1}})";
+            case SIMILAR_TO_PARTS:      return "(s:Part{uri:{0}})-[r:SIMILAR_TO]->(e:Part{uri:{1}})";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

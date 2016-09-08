@@ -21,11 +21,11 @@ public class RoutingKey {
     }
 
     public static RoutingKey of(Resource.Type resource, Resource.State state){
-        return new RoutingKey(resource.key()+"."+state.key());
+        return new RoutingKey(resource.name()+"."+state.key());
     }
 
     public static RoutingKey of(Relation.Type resource, Relation.State state){
-        return new RoutingKey(resource.key()+"."+state.key());
+        return new RoutingKey(resource.name()+"."+state.key());
     }
 
     public static RoutingKey of(String key){

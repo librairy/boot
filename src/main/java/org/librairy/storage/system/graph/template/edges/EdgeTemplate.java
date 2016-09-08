@@ -74,6 +74,11 @@ public abstract class EdgeTemplate {
          _delete(pathBy(this.type), ImmutableMap.of("0",startUri,"1",endUri));
     }
 
+    public void update(Relation relation){
+        delete(relation.getUri());
+        save(relation);
+    }
+
     public void deleteAll(){
         _delete(pathBy(org.librairy.model.domain.resources.Resource.Type.ANY), ImmutableMap.of());
     }
@@ -83,7 +88,7 @@ public abstract class EdgeTemplate {
     }
 
     public void delete(String uri){
-        _delete( "(a)-[r: " + label() + " {uri: {0} }]->(b)", ImmutableMap.of("0",uri));
+        _delete( "()-[r: " + label() + " {uri: {0} }]->()", ImmutableMap.of("0",uri));
     }
 
     public void save(Relation relation) {
@@ -107,25 +112,9 @@ public abstract class EdgeTemplate {
         // TODO This should be removed when Neo4j uses Bolt
         // Remove duplicated relations if retries have been done
         if (execResult.isPresent() && execResult.get() > 0){
-            String queryRels = "MATCH (a:"+startNodeLabel+")-[r:"+relationLabel+"]->(b:"+endNodeLabel+") WHERE a.uri = " +
-                    "{0} AND b.uri = {1} AND r.uri = {2} return ID(r),r.uri,r.creationTime";
-            Optional<Result> result = executor.query(queryRels, params);
-            if (!result.isPresent()) return;
-            Iterator<Map<String, Object>> it = result.get().queryResults().iterator();
-            int counter = 0;
-            while(it.hasNext()){
-                Map<String, Object> resultNode = it.next();
-                boolean matched = ((String) resultNode.get("r.creationTime")).equalsIgnoreCase((String) params.get("3"));
-                if (!matched){
-                    // remove
-                    executor.execute("start r=rel("+( (Integer) resultNode.get("ID(r)"))+") delete r", ImmutableMap.of());
-                }else if (matched && counter>0){
-                    // remove
-                    executor.execute("start r=rel("+( (Integer) resultNode.get("ID(r)"))+") delete r", ImmutableMap.of());
-                }else{
-                    counter += 1;
-                }
-            }
+            LOG.warn("trying to clean duplicates in : " + relation.getType().name());
+            executor.query("MATCH ()-[r {uri : {0}}]->() WITH TAIL (COLLECT (r)) as rr FOREACH (r IN rr | " +
+                    "DELETE r)", ImmutableMap.of("0",params.get("2")));
         }
     }
 

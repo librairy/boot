@@ -65,22 +65,11 @@ public class SaveRelationAction {
         try{
             LOG.debug("trying to save :" + relation);
 
-
-
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-
-            if (!helper.getUnifiedColumnRepository().exists(relation.getType(),relation.getUri())){
-                // Graph Database
-                if (helper.getTemplateFactory().handle(relation.getType())){
-                    helper.getTemplateFactory().of(relation.getType()).save(relation);
-                }else{
-                    helper.getUnifiedEdgeGraphRepository().save(relation);
-                }
-            }else{
-                LOG.warn("Already exists relation: " + relation.getUri());
-            }
+            // Graph Database (Neo4j bug avoid update values)
+            helper.getTemplateFactory().of(relation.getType()).save(relation);
 
             // Column Database (save or update values)
             helper.getUnifiedColumnRepository().save(relation);
