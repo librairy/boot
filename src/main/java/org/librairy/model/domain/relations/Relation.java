@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.model.domain.relations;
 
 import lombok.EqualsAndHashCode;
@@ -6,13 +13,11 @@ import lombok.Setter;
 import lombok.ToString;
 import org.librairy.model.domain.LinkableElement;
 import org.librairy.model.domain.resources.Resource;
-import org.librairy.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by cbadenes on 22/12/15.

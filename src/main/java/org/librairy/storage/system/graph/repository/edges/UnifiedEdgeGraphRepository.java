@@ -1,14 +1,20 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.storage.system.graph.repository.edges;
 
 import org.apache.commons.lang.WordUtils;
 import org.librairy.model.domain.relations.Relation;
-import org.librairy.model.domain.resources.Resource;
 import org.librairy.storage.actions.ExecutionResult;
 import org.librairy.storage.actions.RepeatableActionExecutor;
 import org.librairy.storage.system.graph.cache.GraphCache;
-import org.librairy.storage.system.graph.repository.Repository;
 import org.librairy.storage.system.graph.domain.edges.Edge;
 import org.librairy.storage.system.graph.domain.nodes.Node;
+import org.librairy.storage.system.graph.repository.Repository;
 import org.librairy.storage.system.graph.repository.nodes.UnifiedNodeGraphRepositoryFactory;
 import org.neo4j.ogm.session.Session;
 import org.slf4j.Logger;

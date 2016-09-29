@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.model.domain;
 
 import lombok.EqualsAndHashCode;
@@ -7,7 +14,6 @@ import lombok.ToString;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.cassandra.mapping.PrimaryKey;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import java.io.Serializable;
 
 /**

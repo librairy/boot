@@ -1,19 +1,24 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.storage.system.graph.domain.nodes;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.librairy.storage.system.graph.domain.edges.BundlesEdge;
+import org.librairy.storage.system.graph.domain.edges.DealsWithFromDocumentEdge;
 import org.librairy.storage.system.graph.domain.edges.Edge;
 import org.librairy.storage.system.graph.domain.edges.SimilarToDocumentsEdge;
-import org.librairy.storage.system.graph.domain.edges.DealsWithFromDocumentEdge;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Relationship;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.librairy.model.domain.relations.Relation.Type.*;
 
 /**
  * Created by cbadenes on 22/12/15.

@@ -1,7 +1,13 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.storage.system.column.repository;
 
 import org.librairy.storage.system.column.domain.FilterColumn;
-import org.librairy.storage.system.column.domain.TermColumn;
 import org.springframework.data.cassandra.repository.Query;
 
 /**

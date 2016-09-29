@@ -1,10 +1,17 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.storage.system.document.repository;
 
 import org.apache.commons.lang.WordUtils;
 import org.librairy.model.domain.resources.Resource;
+import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.exception.RepositoryNotFound;
 import org.librairy.storage.system.graph.repository.Repository;
-import org.librairy.model.utils.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

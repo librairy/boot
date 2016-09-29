@@ -1,20 +1,23 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.storage.actions;
 
 import org.librairy.model.Event;
 import org.librairy.model.domain.relations.Relation;
-import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.modules.RoutingKey;
-import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.Helper;
 import org.librairy.storage.exception.RepositoryNotFound;
 import org.librairy.storage.session.UnifiedTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 /**
  * Created by cbadenes on 04/02/16.

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.storage.actions;
 
 import com.google.common.base.Strings;
@@ -7,7 +14,6 @@ import org.librairy.model.modules.RoutingKey;
 import org.librairy.model.utils.ResourceUtils;
 import org.librairy.model.utils.TimeUtils;
 import org.librairy.storage.Helper;
-import org.librairy.storage.executor.QueryTask;
 import org.librairy.storage.session.UnifiedTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

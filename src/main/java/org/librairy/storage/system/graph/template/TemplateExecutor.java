@@ -1,10 +1,15 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.storage.system.graph.template;
 
 import org.apache.http.client.HttpResponseException;
 import org.librairy.storage.actions.ExecutionResult;
 import org.librairy.storage.actions.RepeatableActionExecutor;
-import org.joda.time.Interval;
-import org.joda.time.Period;
 import org.librairy.storage.exception.ConstraintException;
 import org.neo4j.ogm.exception.CypherException;
 import org.neo4j.ogm.exception.ResultProcessingException;

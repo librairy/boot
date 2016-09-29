@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.storage.system.graph.template.edges;
 
 import com.google.common.base.CaseFormat;
@@ -5,12 +12,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
 import org.librairy.model.domain.relations.Relation;
-import org.librairy.model.domain.resources.Resource;
 import org.librairy.storage.system.graph.repository.edges.UnifiedEdgeGraphRepositoryFactory;
 import org.librairy.storage.system.graph.template.TemplateExecutor;
-import org.neo4j.ogm.model.Property;
 import org.neo4j.ogm.model.Result;
-import org.neo4j.ogm.response.model.RelationshipModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

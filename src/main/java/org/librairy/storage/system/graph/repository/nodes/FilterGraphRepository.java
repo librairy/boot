@@ -1,8 +1,13 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.storage.system.graph.repository.nodes;
 
 import org.librairy.storage.system.graph.domain.nodes.FilterNode;
-import org.librairy.storage.system.graph.domain.nodes.WordNode;
-import org.springframework.data.neo4j.annotation.Query;
 import org.springframework.stereotype.Repository;
 
 /**

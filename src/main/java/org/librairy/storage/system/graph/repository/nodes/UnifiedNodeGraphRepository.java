@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.storage.system.graph.repository.nodes;
 
 import org.apache.commons.lang.WordUtils;
@@ -6,8 +13,8 @@ import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.actions.ExecutionResult;
 import org.librairy.storage.actions.RepeatableActionExecutor;
 import org.librairy.storage.system.graph.cache.GraphCache;
-import org.librairy.storage.system.graph.repository.Repository;
 import org.librairy.storage.system.graph.domain.nodes.Node;
+import org.librairy.storage.system.graph.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

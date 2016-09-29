@@ -1,12 +1,15 @@
+/*
+ * Copyright (c) 2016. Universidad Politecnica de Madrid
+ *
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
+ *
+ */
+
 package org.librairy.storage.system.graph.template.nodes;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
-import org.librairy.model.utils.ResourceUtils;
-import org.librairy.storage.system.column.repository.UnifiedColumnRepository;
 import org.librairy.storage.system.graph.repository.nodes.UnifiedNodeGraphRepositoryFactory;
 import org.librairy.storage.system.graph.template.TemplateExecutor;
 import org.neo4j.ogm.model.Result;
