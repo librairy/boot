@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Created by cbadenes on 15/03/16.
  */
-@Configuration
+@Configuration("librairy.boot.test")
 @ComponentScan({"org.librairy"})
 public class ConfigTest {
 }

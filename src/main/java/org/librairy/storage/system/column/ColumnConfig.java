@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * Created by cbadenes on 21/12/15.
  */
-@Configuration
+@Configuration("org.librairy.storage.system.column")
 @ComponentScan({"org.librairy.storage.system.column.repository"})
 @EnableCassandraRepositories(basePackages = {"org.librairy.storage.system.column.repository"})
 @EnableTransactionManagement
@@ -63,12 +63,12 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
         return cluster;
     }
 
-    @Bean
+    @Bean(name = "cassandraMappingContext")
     public CassandraMappingContext mappingContext() {
         return new BasicCassandraMappingContext();
     }
 
-    @Bean
+    @Bean(name = "cassandraConverter")
     public CassandraConverter converter() {
         return new MappingCassandraConverter(mappingContext());
     }

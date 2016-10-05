@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * Created by cbadenes on 21/12/15.
  */
-@Configuration
+@Configuration("org.librairy.storage.system.graph")
 @ComponentScan({"org.librairy.storage.system.graph.repository"})
 @EnableNeo4jRepositories(basePackages = {"org.librairy.storage.system.graph.repository"})
 @EnableTransactionManagement

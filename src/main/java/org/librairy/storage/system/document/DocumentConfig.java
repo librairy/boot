@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by cbadenes on 21/12/15.
  */
-@Configuration
+@Configuration("org.librairy.storage.system.document")
 @ComponentScan({"org.librairy.storage.system.document.repository"})
 @EnableElasticsearchRepositories(basePackages = {"org.librairy.storage.system.document.repository"})
 @EnableTransactionManagement
@@ -43,7 +43,7 @@ public class DocumentConfig {
     @Value("#{environment['LIBRAIRY_DOCUMENTDB_PORT']?:${librairy.documentdb.port}}")
     Integer port;
 
-    @Bean
+    @Bean(name = "elasticsearchClient")
     public TransportClient client(){
 
         LOG.info("Initializying Elasticsearch connection to: " + hosts + " " + port + " ..");
@@ -62,7 +62,7 @@ public class DocumentConfig {
         return client;
     }
 
-    @Bean
+    @Bean(name = "elasticsearchTemplate")
     public ElasticsearchOperations elasticsearchTemplate() {
         return new ElasticsearchTemplate(client());
     }

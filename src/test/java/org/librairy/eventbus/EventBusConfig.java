@@ -16,7 +16,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 /**
  * Created by cbadenes on 14/03/16.
  */
-@Configuration("eventbus")
+@Configuration("org.librairy.eventbus.test")
 @ComponentScan({"org.librairy.eventbus"})
 @PropertySource({"classpath:boot.properties"})
 public class EventBusConfig {
