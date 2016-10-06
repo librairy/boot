@@ -40,11 +40,14 @@ public class URIGenerator {
         df = new SimpleDateFormat("yyyyMMddHHmmssSSS");
     }
 
-    @Value("${LIBRAIRY_URI:http://librairy.org/}")
+    @Value("#{environment['LIBRAIRY_URI']?:'${librairy.uri}'}")
+    String domainUri;
+
     String base;
 
     @PostConstruct
     public void setup(){
+        base = "http://"+domainUri+"/";
         LOG.info("Uri Generator initialized successfully");
     }
 
