@@ -72,6 +72,12 @@ public class UDM {
     public SaveResourceAction save(Resource resource){return new SaveResourceAction(helper,resource);
     }
 
+    /**
+     * Save a resource
+     * @param resource
+     */
+    public UpdateResourceAction update(Resource resource){return new UpdateResourceAction(helper,resource);
+    }
 
     /**
      * Temporal solution to avoid Neo4j bug for duplicated relations

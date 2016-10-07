@@ -29,6 +29,7 @@ import org.neo4j.ogm.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -39,6 +40,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -48,10 +50,14 @@ import java.util.stream.Collectors;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
 @TestPropertySource(properties = {
-        "librairy.columndb.host= 192.168.99.100",
-        "librairy.documentdb.host = 192.168.99.100",
-        "librairy.graphdb.host = 192.168.99.100",
-        "librairy.eventbus.host = 192.168.99.100"
+        "librairy.columndb.host= wiener.dia.fi.upm.es",
+        "librairy.columndb.port= 5011",
+        "librairy.documentdb.host = wiener.dia.fi.upm.es",
+        "librairy.documentdb.port = 5021",
+        "librairy.graphdb.host = wiener.dia.fi.upm.es",
+        "librairy.graphdb.port = 5030",
+        "librairy.eventbus.host = local",
+        "librairy.eventbus.port = 5041"
 })
 public class ListDocumentsTest {
 
@@ -90,6 +96,8 @@ public class ListDocumentsTest {
     @Autowired
     UnifiedNodeGraphRepositoryFactory factory;
 
+    @Autowired
+    ElasticsearchTemplate documentDBRepository;
 
     @Test
     public void listOfDocuments() throws IOException, URISyntaxException {
@@ -188,6 +196,15 @@ public class ListDocumentsTest {
         mapper.writeValue(new File("new-documents.json"), references);
 
 
+    }
+
+    @Test
+    public void findDocByTitle(){
+
+        String title="Thin skin elastodynamics";
+        List<Resource> res = udm.find(Resource.Type.DOCUMENT).by("title", title.toLowerCase());
+
+        System.out.println(res);
     }
 
 }
