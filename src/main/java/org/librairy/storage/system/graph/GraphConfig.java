@@ -16,6 +16,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.data.neo4j.conversion.MetaDataDrivenConversionService;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
@@ -67,11 +69,18 @@ public class GraphConfig extends Neo4jConfiguration {
     }
 
 
-    @Bean
-    public ConversionService springConversionService() {
-        return new MetaDataDrivenConversionService(getSessionFactory().metaData());
-    }
+//    @Bean
+//    public ConversionService springConversionService() {
+//        return new MetaDataDrivenConversionService(getSessionFactory().metaData());
+//    }
 
+
+    @Bean
+    public ConversionService conversionService() {
+        ConversionService conversionService = new MetaDataDrivenConversionService(getSessionFactory().metaData());
+        DefaultConversionService.addDefaultConverters((GenericConversionService) conversionService);
+        return conversionService;
+    }
 
     //To resolve ${} in @Value
     @Bean
