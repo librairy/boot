@@ -77,7 +77,7 @@ public class SaveRelationAction {
 
             // Graph Database (Neo4j bug avoid update values)
             if (helper.getUnifiedColumnRepository().exists(relation.getType(),relation.getUri())){
-                helper.getUnifiedColumnRepository().delete(relation.getType(),relation.getUri());
+                helper.getTemplateFactory().of(relation.getType()).delete(relation.getUri());
             }
 
             helper.getTemplateFactory().of(relation.getType()).save(relation);
