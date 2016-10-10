@@ -69,18 +69,18 @@ public class GraphConfig extends Neo4jConfiguration {
     }
 
 
-//    @Bean
-//    public ConversionService springConversionService() {
-//        return new MetaDataDrivenConversionService(getSessionFactory().metaData());
-//    }
-
-
     @Bean
-    public ConversionService conversionService() {
-        ConversionService conversionService = new MetaDataDrivenConversionService(getSessionFactory().metaData());
-        DefaultConversionService.addDefaultConverters((GenericConversionService) conversionService);
-        return conversionService;
+    public ConversionService springConversionService() {
+        return new MetaDataDrivenConversionService(getSessionFactory().metaData());
     }
+
+
+//    @Bean
+//    public ConversionService conversionService() {
+//        ConversionService conversionService = new MetaDataDrivenConversionService(getSessionFactory().metaData());
+//        DefaultConversionService.addDefaultConverters((GenericConversionService) conversionService);
+//        return conversionService;
+//    }
 
     //To resolve ${} in @Value
     @Bean
