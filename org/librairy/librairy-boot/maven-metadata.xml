@@ -3,10 +3,10 @@
   <groupId>org.librairy</groupId>
   <artifactId>librairy-boot</artifactId>
   <versioning>
-    <release>0.26</release>
+    <release>0.27</release>
     <versions>
-      <version>0.26</version>
+      <version>0.27</version>
     </versions>
-    <lastUpdated>20161010150110</lastUpdated>
+    <lastUpdated>20161011144405</lastUpdated>
   </versioning>
 </metadata>
