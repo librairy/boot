@@ -42,4 +42,7 @@ public class File extends Resource {
     public static final String AGGREGATEDFROM="aggregatedFrom";
     private String aggregatedFrom;
 
+    public static final String METAINFORMATION="metaInformation";
+    private MetaInformation metaInformation;
+
 }
