@@ -9,9 +9,15 @@ package org.librairy.storage;
 
 import com.datastax.driver.core.querybuilder.Select;
 import com.google.common.collect.ImmutableMap;
+import org.librairy.eventbus.EventBusHelper;
+import org.librairy.eventbus.RelationEventHandler;
+import org.librairy.eventbus.ResourceEventHandler;
 import org.librairy.model.domain.LinkableElement;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
+import org.librairy.model.modules.BindingKey;
+import org.librairy.model.modules.EventBus;
+import org.librairy.model.modules.RoutingKey;
 import org.librairy.storage.actions.*;
 import org.librairy.storage.system.column.templates.ColumnTemplate;
 import org.librairy.storage.system.document.templates.DocumentTemplate;
@@ -36,6 +42,8 @@ public class UDM {
     @Autowired
     Helper helper;
 
+    @Autowired
+    EventBusHelper eventBus;
 
     @Autowired
     TemplateExecutor neo4jExecutor;
@@ -49,6 +57,33 @@ public class UDM {
     @Autowired
     TemplateExecutor executor;
 
+    /**
+     * Relation Event Handler
+     * @param type
+     * @param state
+     * @param label
+     * @param handler
+     */
+    public void listenFor(Relation.Type type, Relation.State state, String label, RelationEventHandler handler){
+        eventBus.subscribe(type, state, label, handler);
+    }
+
+    /**
+     * Resource Event Handler
+     * @param type
+     * @param state
+     * @param label
+     * @param handler
+     */
+    public void listenFor(Resource.Type type, Resource.State state, String label, ResourceEventHandler handler){
+        eventBus.subscribe(type, state, label, handler);
+    }
+
+    /**
+     * Native Graph Queries
+     * @param query
+     * @return
+     */
     public Iterator<Map<String, Object>> queryGraph(String query){
         Optional<Result> result = neo4jExecutor.query(query, ImmutableMap.of());
         if (!result.isPresent()) return Collections.EMPTY_LIST.iterator();
@@ -56,11 +91,21 @@ public class UDM {
     }
 
 
+    /**
+     * Native Column Queries
+     * @param select
+     * @return
+     */
     public List<LinkableElement> queryColumn(Select select){
         return columnTemplate.query(select);
     }
 
 
+    /**
+     * Native Document Queries
+     * @param select
+     * @return
+     */
     public List<String> queryDocument(SearchQuery select){
         return documentTemplate.query(select);
     }
