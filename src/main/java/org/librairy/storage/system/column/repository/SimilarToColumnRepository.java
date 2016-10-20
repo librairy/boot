@@ -29,4 +29,5 @@ public interface SimilarToColumnRepository extends BaseColumnRepository<SimilarT
     @Query("select * from similarTo where domain = ?0")
     Iterable<SimilarToColumn> findByDomain(String uri);
 
+
 }
