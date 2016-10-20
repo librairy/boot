@@ -88,6 +88,11 @@ public class Resource extends LinkableElement {
 		return document;
 	}
 
+	public static org.librairy.model.domain.resources.Document newDocument(){
+		Document document = new Document();
+		return document;
+	}
+
 	public static org.librairy.model.domain.resources.Domain newDomain(String name){
 		Domain domain = new Domain();
 		domain.setName(name);
