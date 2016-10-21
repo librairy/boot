@@ -70,6 +70,14 @@ public abstract class RepeatableActionExecutor {
         }catch (CypherException e) {
             if (e.getMessage().contains("Neo.ClientError.Statement.EntityNotFound")) {
                 LOG.debug("Error on operation: " + id, e);
+            } else if (e.getMessage().contains("Neo.DatabaseError.Transaction.CouldNotCommit")) {
+                LOG.warn("Could not commit on operation: " + id + ". Trying to retry..");
+                waitForRetry(retries);
+                return performRetries(++retries, id, function);
+            } else if (e.getMessage().contains("Neo.TransientError.Transaction.DeadlockDetected")){
+                LOG.warn("Deadlock on operation: " + id  + ". Trying to retry..");
+                waitForRetry(retries);
+                return performRetries(++retries, id, function);
             } else {
                 LOG.error("Error on operation: " + id, e);
             }

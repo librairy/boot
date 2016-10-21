@@ -107,6 +107,7 @@ public abstract class EdgeTemplate {
                 "WHERE " +
                 "a.uri" +
                 " = {0} AND b.uri = {1} " +
+                "set a.uri = {0} " +
                 "CREATE " +
                 "(a)-[r:" + relationLabel + " { uri : {2}, creationTime : {3}, weight : {4} " + extraParams + " } ]->" +
                 "(b) " +
@@ -116,7 +117,7 @@ public abstract class EdgeTemplate {
         // TODO This should be removed when Neo4j uses Bolt
         // Remove duplicated relations if retries have been done
         if (execResult.isPresent() && execResult.get() > 0){
-            LOG.warn("trying to clean duplicates in : " + relation.getType().name());
+            LOG.debug("trying to clean duplicates in : " + relation.getType().name());
             executor.query("MATCH ()-[r {uri : {0}}]->() WITH TAIL (COLLECT (r)) as rr FOREACH (r IN rr | " +
                     "DELETE r)", ImmutableMap.of("0",params.get("2")));
         }

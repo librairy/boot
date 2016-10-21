@@ -177,7 +177,7 @@ public class RabbitMQClient {
         //maybe better externalize to config file
         //a non-durable, non-exclusive, autodelete queue with a well-known name and a maximum length of 1000 messages
         Map<String, Object> args = new HashMap<>();
-        args.put("x-max-length", 1000000); // x-max-length-bytes
+        args.put("x-max-length", 100000000); // x-max-length-bytes
         boolean durable     = true;
         boolean exclusive   = false;
         boolean autodelete  = true;

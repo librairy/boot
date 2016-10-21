@@ -12,12 +12,11 @@ import com.google.common.collect.ImmutableMap;
 import org.librairy.eventbus.EventBusHelper;
 import org.librairy.eventbus.RelationEventHandler;
 import org.librairy.eventbus.ResourceEventHandler;
+import org.librairy.model.Event;
 import org.librairy.model.domain.LinkableElement;
 import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
-import org.librairy.model.modules.BindingKey;
 import org.librairy.model.modules.EventBus;
-import org.librairy.model.modules.RoutingKey;
 import org.librairy.storage.actions.*;
 import org.librairy.storage.system.column.templates.ColumnTemplate;
 import org.librairy.storage.system.document.templates.DocumentTemplate;
@@ -29,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 /**
@@ -43,7 +43,7 @@ public class UDM {
     Helper helper;
 
     @Autowired
-    EventBusHelper eventBus;
+    EventBusHelper eventBusHelper;
 
     @Autowired
     TemplateExecutor neo4jExecutor;
@@ -57,6 +57,15 @@ public class UDM {
     @Autowired
     TemplateExecutor executor;
 
+    @Autowired
+    EventBus eventBus;
+
+    @PostConstruct
+    public void setup(){
+        LOG.info("Event-Bus initialized: " + eventBus);
+        LOG.info("UDM initialized: " + this);
+    }
+
     /**
      * Relation Event Handler
      * @param type
@@ -65,7 +74,7 @@ public class UDM {
      * @param handler
      */
     public void listenFor(Relation.Type type, Relation.State state, String label, RelationEventHandler handler){
-        eventBus.subscribe(type, state, label, handler);
+        eventBusHelper.subscribe(type, state, label, handler);
     }
 
     /**
@@ -76,7 +85,7 @@ public class UDM {
      * @param handler
      */
     public void listenFor(Resource.Type type, Resource.State state, String label, ResourceEventHandler handler){
-        eventBus.subscribe(type, state, label, handler);
+        eventBusHelper.subscribe(type, state, label, handler);
     }
 
     /**

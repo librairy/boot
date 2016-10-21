@@ -32,6 +32,7 @@ public class Resource extends LinkableElement {
 		TERM("term","terms"),
 		FILTER("filter","filters"),
 		PATH("path","paths"),
+		FILE("file","files"),
 		ANY("*","*");
 
 		String plural;
