@@ -103,12 +103,14 @@ public class Resource extends LinkableElement {
 	public static org.librairy.model.domain.resources.Item newItem(String content){
 		Item item = new Item();
 		item.setContent(content);
+		item.setTokens("");
 		return item;
 	}
 
 	public static org.librairy.model.domain.resources.Part newPart(String content){
 		Part part =  new org.librairy.model.domain.resources.Part();
 		part.setContent(content);
+		part.setTokens("");
 		return part;
 	}
 
