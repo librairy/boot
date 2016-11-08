@@ -35,7 +35,9 @@ public class SaveRelationAction {
                 case APPEARED_IN:
                 case BUNDLES:
                 case COMPOSES:
-                case CONTAINS:
+                case CONTAINS_TO_DOCUMENT:
+                case CONTAINS_TO_ITEM:
+                case CONTAINS_TO_PART:
                 case DEALS_WITH_FROM_DOCUMENT:
                 case DEALS_WITH_FROM_ITEM:
                 case DEALS_WITH_FROM_PART:

@@ -26,8 +26,8 @@ public class DomainNodeTemplate extends NodeTemplate {
             case SOURCE:    return "(n:Domain)<-[:COMPOSES]-(source{uri:{0}})";
             case DOMAIN:    return "(n{uri:{0}})";
             case DOCUMENT:  return "(n:Domain)-[:CONTAINS]->(document{uri:{0}})";
-            case ITEM:      return "(n:Domain)-[:CONTAINS]->(:Document)-[:BUNDLES]->(item{uri:{0}})";
-            case PART:      return "(n:Domain)-[:CONTAINS]->(:Document)-[:BUNDLES]->(:Item)<-[:DESCRIBES]-(part{uri:{0}})";
+            case ITEM:      return "(n:Domain)-[:CONTAINS]->(item{uri:{0}})";
+            case PART:      return "(n:Domain)-[:CONTAINS]->(part{uri:{0}})";
             case TOPIC:     return "(n:Domain)<-[:EMERGES_IN]-(topic{uri:{0}})";
             case WORD:      return " n where (n:Domain)<-[:EMBEDDED_IN]-(:Word{uri:{0}}) or (n:Domain)" +
                     "<-[:EMERGES_IN]-(:Topic)-[:MENTIONS]->(:Word{uri:{0}}) or (n:Domain)<-[:APPEARED_IN]-(:Term)" +

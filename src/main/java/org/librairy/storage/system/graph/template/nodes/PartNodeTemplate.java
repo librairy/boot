@@ -25,8 +25,7 @@ public class PartNodeTemplate extends NodeTemplate {
         switch (type){
             case SOURCE:    return "(n:Part)-[:DESCRIBES]->(:Item)<-[:BUNDLES]-(:Document)<-[:PROVIDES]-" +
                     "(source{uri:{0}})";
-            case DOMAIN:    return "(n:Part)-[:DESCRIBES]->(:Item)<-[:BUNDLES]-(:Document)<-[:CONTAINS]-" +
-                    "(domain{uri:{0}})";
+            case DOMAIN:    return "(n:Part)<-[:CONTAINS]-(domain{uri:{0}})";
             case DOCUMENT:  return "(n:Part)-[:DESCRIBES]->(:Item)<-[:BUNDLES]-(document{uri:{0}})";
             case ITEM:      return "(n:Part)-[:DESCRIBES]->(item{uri:{0}})";
             case PART:      return "(n:Part)-[:SIMILAR_TO]-(part{uri:{0}})";

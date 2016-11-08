@@ -30,7 +30,7 @@ public class DescribesEdgeTemplate extends EdgeTemplate {
     protected String pathBy(Resource.Type type) {
         switch (type){
             case ANY:           return "(s:Part)-[r:DESCRIBES]->(e:Item)";
-            case DOMAIN:        return "(d:Domain{uri:{0}})-[:CONTAINS]->(doc:Document)-[:BUNDLES]->(e:Item)<-[r:DESCRIBES]-(s:Part)";
+            case DOMAIN:        return "(d:Domain{uri:{0}})-[:CONTAINS]->(e:Item)<-[r:DESCRIBES]-(s:Part)";
             case PART:          return "(s:Part{uri:{0}})-[r:DESCRIBES]->(e:Item)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }

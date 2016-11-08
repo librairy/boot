@@ -30,10 +30,10 @@ public interface DomainGraphRepository extends ResourceGraphRepository<DomainNod
     @Query("match (d:Domain)-[:CONTAINS]->(doc{uri:{0}}) return d")
     Iterable<DomainNode> findByDocument(String uri);
 
-    @Query("match (d:Domain)-[:CONTAINS]->(doc:Document)-[:BUNDLES]->(it{uri:{0}}) return d")
+    @Query("match (d:Domain)-[:CONTAINS]->(it{uri:{0}}) return d")
     Iterable<DomainNode> findByItem(String uri);
 
-    @Query("match (d:Domain)-[:CONTAINS]->(doc:Document)-[:BUNDLES]->(it:Item)<-[:DESCRIBES]-(p{uri:{0}}) return d")
+    @Query("match (d:Domain)-[:CONTAINS]->(p{uri:{0}}) return d")
     Iterable<DomainNode> findByPart(String uri);
 
     @Query("match (d:Domain)<-[:EMBEDDED_IN]-(w{uri:{0}}) return d")

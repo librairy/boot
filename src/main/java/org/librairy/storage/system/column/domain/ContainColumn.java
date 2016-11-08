@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.librairy.model.domain.relations.Contains;
+import org.librairy.model.domain.relations.ContainsDoc;
 import org.springframework.data.cassandra.mapping.Table;
 
 /**

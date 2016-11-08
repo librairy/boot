@@ -25,13 +25,11 @@ import org.librairy.storage.executor.ParallelExecutor;
 import org.librairy.storage.generator.URIGenerator;
 import org.librairy.storage.system.column.domain.SimilarToColumn;
 import org.librairy.storage.system.column.repository.UnifiedColumnRepository;
-import org.librairy.storage.system.graph.domain.edges.SimilarToItemsEdge;
 import org.librairy.storage.system.graph.template.TemplateFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.lang.reflect.InvocationTargetException;
@@ -170,7 +168,7 @@ public class ConsistencyTest {
 
         Assert.assertEquals(numDomains, udm.find(Resource.Type.DOMAIN).all().size());
         Assert.assertEquals(numDomains*numSources, udm.find(Relation.Type.COMPOSES).all().size());
-        Assert.assertEquals(numDocs, udm.find(Relation.Type.CONTAINS).all().size());
+        Assert.assertEquals(numDocs, udm.find(Relation.Type.CONTAINS_TO_DOCUMENT).all().size());
 
         Assert.assertEquals(numDocs, udm.find(Relation.Type.PROVIDES).all().size());
         Assert.assertEquals(numDocs, udm.find(Resource.Type.DOCUMENT).all().size());
@@ -371,7 +369,7 @@ public class ConsistencyTest {
         try{
 
             String documentUri ="http://librairy.org/documents/f7c71cd15c54e367263de18bc657cdcb";
-            Iterable<Relation> rels = columnRepository.findBy(Relation.Type.CONTAINS, "document", documentUri);
+            Iterable<Relation> rels = columnRepository.findBy(Relation.Type.CONTAINS_TO_DOCUMENT, "document", documentUri);
 
             for (Relation rel: rels){
                 LOG.info("Relation: " + rel);
@@ -398,7 +396,7 @@ public class ConsistencyTest {
         System.out.println("====");
         System.out.println("Number of Provides: "   + numProvides);
         System.out.println("Number of Composes: "   + numComposes);
-        System.out.println("Number of Contains: "   + numContains);
+        System.out.println("Number of ContainsDoc: "   + numContains);
         System.out.println("Number of Bundles: "    + numBundles);
         System.out.println("Number of Describes: "  + numDescribes);
         System.out.println("Number of Deals_With from Docs: "   + numDealsWithDoc);
@@ -646,7 +644,7 @@ public class ConsistencyTest {
 
     private void evaluate(){
         LOG.info("Evaluating Num Docs...");
-        Assert.assertEquals(numDocs,            udm.count(Relation.Type.CONTAINS).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domainUri));
+        Assert.assertEquals(numDocs,            udm.count(Relation.Type.CONTAINS_TO_DOCUMENT).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domainUri));
         LOG.info("Evaluating Num Words...");
         Assert.assertEquals(numWords,           udm.count(Relation.Type.EMBEDDED_IN).in(org.librairy.model.domain.resources.Resource.Type.DOMAIN,domainUri));
         LOG.info("Evaluating Num Terms...");

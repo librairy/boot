@@ -122,7 +122,9 @@ public class UnifiedColumnRepositoryFactory {
             case AGGREGATES: return aggregateColumnRepository;
             case APPEARED_IN: return appearedInColumnRepository;
             case COMPOSES: return composeColumnRepository;
-            case CONTAINS: return containColumnRepository;
+            case CONTAINS_TO_DOCUMENT:
+            case CONTAINS_TO_ITEM:
+            case CONTAINS_TO_PART: return containColumnRepository;
             case DEALS_WITH_FROM_DOCUMENT:
             case DEALS_WITH_FROM_ITEM:
             case DEALS_WITH_FROM_PART: return dealsWithColumnRepository;
@@ -165,7 +167,9 @@ public class UnifiedColumnRepositoryFactory {
             case AGGREGATES: return AggregateColumn.class;
             case APPEARED_IN: return AppearedInColumn.class;
             case COMPOSES: return ComposeColumn.class;
-            case CONTAINS: return ContainColumn.class;
+            case CONTAINS_TO_DOCUMENT:
+            case CONTAINS_TO_ITEM:
+            case CONTAINS_TO_PART:return ContainColumn.class;
             case DEALS_WITH_FROM_DOCUMENT:
             case DEALS_WITH_FROM_ITEM:
             case DEALS_WITH_FROM_PART: return DealsWithColumn.class;

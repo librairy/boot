@@ -21,7 +21,7 @@ public interface PartGraphRepository extends ResourceGraphRepository<PartNode> {
     @Override
     PartNode findOneByUri(String uri);
 
-    @Query("match (part)-[:DESCRIBES]->(item)<-[:BUNDLES]-(document)<-[:CONTAINS]-(domain{uri:{0}}) return part")
+    @Query("match (part)<-[:CONTAINS]-(domain{uri:{0}}) return part")
     Iterable<PartNode> findByDomain(String uri);
 
     @Query("match (part)-[:DESCRIBES]->(item{uri:{0}}) return part")

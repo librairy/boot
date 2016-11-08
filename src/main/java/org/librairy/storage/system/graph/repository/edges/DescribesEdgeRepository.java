@@ -24,7 +24,7 @@ public interface DescribesEdgeRepository extends RelationGraphRepository<Describ
     @Query("match (node1{uri:{0}})-[r:DESCRIBES]->(node2{uri:{1}}) return r")
     Iterable<DescribesEdge> findByNodes(String start, String end);
 
-    @Query("match (:Part)-[r:DESCRIBES]->(:Item)<-[:BUNDLES]-(:Document)<-[:CONTAINS]-(domain{uri:{0}}) return r")
+    @Query("match (domain{uri:{0}})-[:CONTAINS]->(:Part)-[r:DESCRIBES]->(:Item) return r")
     Iterable<DescribesEdge> findByDomain(String uri);
 
     @Query("match (part{uri:{0}})-[r:DESCRIBES]->(item) return r")

@@ -78,6 +78,18 @@ public abstract class NodeTemplate {
         return resources;
     }
 
+    public Iterable<Resource> findFromIterable(Resource.Type type, String uri){
+
+        String query = "match " + pathTo(type) + " return n";
+        Map params = ImmutableMap.of("0",uri);
+
+        Optional<Iterable> results = executor.queryForObjects(Resource.classOf(type), query, params);
+
+        if (!results.isPresent()) return Collections.EMPTY_LIST;
+
+        return results.get();
+    }
+
     public Long countAll(){
         String query = new StringBuilder().append("match (n: "+typeId()+") return count(n)").toString();
         Optional<Result> result = executor.query(query, ImmutableMap.of());

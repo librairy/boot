@@ -55,6 +55,15 @@ public class TemplateExecutor extends RepeatableActionExecutor{
         return (result.isPresent())? Optional.of((Result)result.get().getResult()) : Optional.empty();
     }
 
+    public Optional<Iterable> queryForObjects(Class objectType, String query, Map<String, ?> parameters){
+        Optional<ExecutionResult> result = performRetries(0, query + " => PARAMS: " + Arrays.toString(parameters.entrySet().toArray
+                ()), () -> {
+            Iterable res = template.queryForObjects(objectType, query, parameters);
+            return res;
+        });
+        return (result.isPresent())? Optional.of((Iterable)result.get().getResult()) : Optional.empty();
+    }
+
 
     public Optional<Integer> execute(String query, Map<String, Object> parameters){
         Optional<ExecutionResult> result = performRetries(0, query + " => PARAMS: " + Arrays.toString(parameters.entrySet().toArray

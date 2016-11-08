@@ -21,7 +21,7 @@ public interface ItemGraphRepository extends ResourceGraphRepository<ItemNode> {
     @Override
     ItemNode findOneByUri(String uri);
 
-    @Query("match (item)<-[:BUNDLES]-(document)<-[:CONTAINS]-(domain{uri:{0}}) return item")
+    @Query("match (item)<-[:CONTAINS]-(domain{uri:{0}}) return item")
     Iterable<ItemNode> findByDomain(String uri);
 
     @Query("match (item)<-[:BUNDLES]-(document{uri:{0}}) return item")

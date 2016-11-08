@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.librairy.model.domain.LinkableElement;
 import org.librairy.model.domain.resources.Resource;
+import org.librairy.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,9 @@ public class Relation extends LinkableElement {
         AGGREGATES("aggregates","aggregations"),
         PROVIDES("provides","provisions"),
         COMPOSES("composes","compositions"),
-        CONTAINS("contains","contains"),
+        CONTAINS_TO_DOCUMENT("contains","contains"),
+        CONTAINS_TO_ITEM("contains","contains"),
+        CONTAINS_TO_PART("contains","contains"),
         BUNDLES("bundles","bundles"),
         SIMILAR_TO_DOCUMENTS("similarTo","similarities"),
         SIMILAR_TO_ITEMS("similarTo","similarities"),
@@ -119,7 +122,9 @@ public class Relation extends LinkableElement {
             case APPEARED_IN: return AppearedIn.class;
             case BUNDLES: return Bundles.class;
             case COMPOSES: return Composes.class;
-            case CONTAINS: return Contains.class;
+            case CONTAINS_TO_DOCUMENT: return ContainsDoc.class;
+            case CONTAINS_TO_ITEM: return ContainsItem.class;
+            case CONTAINS_TO_PART: return ContainsPart.class;
             case DEALS_WITH_FROM_DOCUMENT: return DealsWithFromDocument.class;
             case DEALS_WITH_FROM_ITEM: return DealsWithFromItem.class;
             case DEALS_WITH_FROM_PART: return DealsWithFromPart.class;
@@ -155,7 +160,14 @@ public class Relation extends LinkableElement {
     }
 
     public static Contains newContains(String startUri, String endUri){
-        return newRelation(Contains.class,startUri,endUri);
+
+        switch(URIGenerator.typeFrom(endUri)){
+            case DOCUMENT: return newRelation(ContainsDoc.class,startUri,endUri);
+            case ITEM: return newRelation(ContainsItem.class,startUri,endUri);
+            case PART: return newRelation(ContainsPart.class,startUri,endUri);
+            default: throw new RuntimeException("Invalid start uri for CONTAINS relation: " + startUri);
+        }
+
     }
 
     public static DealsWithFromDocument newDealsWithFromDocument(String startUri, String endUri){

@@ -28,7 +28,13 @@ public class UnifiedEdgeGraphRepositoryFactory {
     SimilarToEdgeRepository similarToEdgeRepository;
 
     @Autowired
-    ContainsEdgeRepository containsEdgeRepository;
+    ContainsToDocumentEdgeRepository containsToDocumentEdgeRepository;
+
+    @Autowired
+    ContainsToItemEdgeRepository containsToItemEdgeRepository;
+
+    @Autowired
+    ContainsToPartEdgeRepository containsToPartEdgeRepository;
 
     @Autowired
     DealsWithFromItemEdgeRepository dealsWithFromItemEdgeRepository;
@@ -72,7 +78,9 @@ public class UnifiedEdgeGraphRepositoryFactory {
             case BUNDLES: return bundlesEdgeRepository;
             case DEALS_WITH_FROM_DOCUMENT: return dealsWithFromDocumentEdgeRepository;
             case SIMILAR_TO_DOCUMENTS: return similarToEdgeRepository;
-            case CONTAINS: return containsEdgeRepository;
+            case CONTAINS_TO_DOCUMENT: return containsToDocumentEdgeRepository;
+            case CONTAINS_TO_ITEM: return containsToItemEdgeRepository;
+            case CONTAINS_TO_PART: return containsToPartEdgeRepository;
             case DEALS_WITH_FROM_ITEM: return dealsWithFromItemEdgeRepository;
             case SIMILAR_TO_ITEMS: return similarToEdgeRepository;
             case DEALS_WITH_FROM_PART: return dealsWithFromPartEdgeRepository;
@@ -96,7 +104,9 @@ public class UnifiedEdgeGraphRepositoryFactory {
             case BUNDLES: return BundlesEdge.class;
             case DEALS_WITH_FROM_DOCUMENT: return DealsWithFromDocumentEdge.class;
             case SIMILAR_TO_DOCUMENTS: return SimilarToDocumentsEdge.class;
-            case CONTAINS: return ContainsEdge.class;
+            case CONTAINS_TO_DOCUMENT: return ContainsToDocumentEdge.class;
+            case CONTAINS_TO_ITEM: return ContainsToItemEdge.class;
+            case CONTAINS_TO_PART: return ContainsToPartEdge.class;
             case DEALS_WITH_FROM_ITEM: return DealsWithFromItemEdge.class;
             case SIMILAR_TO_ITEMS: return SimilarToItemsEdge.class;
             case DEALS_WITH_FROM_PART: return DealsWithFromPartEdge.class;

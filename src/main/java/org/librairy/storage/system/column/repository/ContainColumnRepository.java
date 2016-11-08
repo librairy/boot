@@ -23,5 +23,10 @@ public interface ContainColumnRepository extends BaseColumnRepository<ContainCol
     @Query("select * from contains where endUri = ?0")
     Iterable<ContainColumn> findByDocument(String uri);
 
+    @Query("select * from contains where endUri = ?0")
+    Iterable<ContainColumn> findByItem(String uri);
+
+    @Query("select * from contains where endUri = ?0")
+    Iterable<ContainColumn> findByPart(String uri);
 
 }

@@ -11,8 +11,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.librairy.model.domain.resources.Resource;
-import org.librairy.storage.system.graph.domain.nodes.DocumentNode;
 import org.librairy.storage.system.graph.domain.nodes.DomainNode;
+import org.librairy.storage.system.graph.domain.nodes.ItemNode;
+import org.librairy.storage.system.graph.domain.nodes.PartNode;
 import org.neo4j.ogm.annotation.RelationshipEntity;
 
 /**
@@ -22,7 +23,7 @@ import org.neo4j.ogm.annotation.RelationshipEntity;
 @Data
 @EqualsAndHashCode(of={"uri"}, callSuper = true)
 @ToString(of = {"uri"},callSuper = true)
-public class ContainsEdge extends Edge<DomainNode,DocumentNode>{
+public class ContainsToPartEdge extends Edge<DomainNode,PartNode>{
 
 
     @Override
@@ -32,6 +33,6 @@ public class ContainsEdge extends Edge<DomainNode,DocumentNode>{
 
     @Override
     public Resource.Type getEndType() {
-        return Resource.Type.DOCUMENT;
+        return Resource.Type.PART;
     }
 }

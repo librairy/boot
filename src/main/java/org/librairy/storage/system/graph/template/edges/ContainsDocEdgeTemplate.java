@@ -14,24 +14,22 @@ import org.springframework.stereotype.Component;
  * Created by cbadenes on 28/02/16.
  */
 @Component
-public class DealsItemEdgeTemplate extends EdgeTemplate {
+public class ContainsDocEdgeTemplate extends EdgeTemplate {
 
-    public DealsItemEdgeTemplate() {
-        super(Relation.Type.DEALS_WITH_FROM_ITEM);
+    public ContainsDocEdgeTemplate() {
+        super(Relation.Type.CONTAINS_TO_DOCUMENT);
     }
 
     @Override
     protected String label() {
-        return "DEALS_WITH";
+        return "CONTAINS";
     }
 
     @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
-            case ANY:           return "(s:Item)-[r:DEALS_WITH]->(e:Topic)";
-            case DOMAIN:        return "(domain:Domain{uri:{0}})-[c:CONTAINS]->(s:Item)-[r:DEALS_WITH]->(e:Topic)";
-            case TOPIC:         return "(e:Topic{uri:{0}})<-[r:DEALS_WITH]-(s:Item)";
-            case ITEM:          return "(e:Topic)<-[r:DEALS_WITH]-(s:Item{uri:{0}})";
+            case ANY:           return "(s:Domain)-[r:CONTAINS]->(e:Document)";
+            case DOMAIN:        return "(s:Domain{uri:{0}})-[r:CONTAINS]->(e:Document)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }
@@ -39,7 +37,7 @@ public class DealsItemEdgeTemplate extends EdgeTemplate {
     @Override
     protected String pathBy(Relation.Type type) {
         switch (type){
-            case DEALS_WITH_FROM_ITEM:      return "(s:Item{uri:{0}})-[r:DEALS_WITH]->(e:Topic{uri:{1}})";
+            case CONTAINS_TO_DOCUMENT:      return "(s:Domain{uri:{0}})-[r:CONTAINS]->(e:Document{uri:{1}})";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }
@@ -48,4 +46,6 @@ public class DealsItemEdgeTemplate extends EdgeTemplate {
     protected TemplateParameters paramsFrom(Relation relation) {
         return new TemplateParameters(relation);
     }
+
+
 }

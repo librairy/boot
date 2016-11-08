@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
  * Created by cbadenes on 28/02/16.
  */
 @Component
-public class ContainsEdgeTemplate extends EdgeTemplate {
+public class ContainsPartEdgeTemplate extends EdgeTemplate {
 
-    public ContainsEdgeTemplate() {
-        super(Relation.Type.CONTAINS);
+    public ContainsPartEdgeTemplate() {
+        super(Relation.Type.CONTAINS_TO_PART);
     }
 
     @Override
@@ -28,8 +28,8 @@ public class ContainsEdgeTemplate extends EdgeTemplate {
     @Override
     protected String pathBy(org.librairy.model.domain.resources.Resource.Type type) {
         switch (type){
-            case ANY:           return "(s:Domain)-[r:CONTAINS]->(e:Document)";
-            case DOMAIN:        return "(s:Domain{uri:{0}})-[r:CONTAINS]->(e:Document)";
+            case ANY:           return "(s:Domain)-[r:CONTAINS]->(e:Part)";
+            case DOMAIN:        return "(s:Domain{uri:{0}})-[r:CONTAINS]->(e:Part)";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }
@@ -37,7 +37,7 @@ public class ContainsEdgeTemplate extends EdgeTemplate {
     @Override
     protected String pathBy(Relation.Type type) {
         switch (type){
-            case CONTAINS:      return "(s:Domain{uri:{0}})-[r:CONTAINS]->(e:Document{uri:{1}})";
+            case CONTAINS_TO_PART:      return "(s:Domain{uri:{0}})-[r:CONTAINS]->(e:Part{uri:{1}})";
             default: throw new RuntimeException("Path for " + type.name() + " not implemented yet");
         }
     }

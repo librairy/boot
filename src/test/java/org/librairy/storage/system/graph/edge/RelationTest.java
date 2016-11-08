@@ -9,6 +9,10 @@ package org.librairy.storage.system.graph.edge;
 
 import com.google.common.collect.Lists;
 import es.cbadenes.lab.test.IntegrationTest;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
 import org.librairy.Config;
 import org.librairy.model.domain.relations.Contains;
 import org.librairy.model.domain.relations.PairsWith;
@@ -17,10 +21,6 @@ import org.librairy.model.domain.relations.SimilarToDocuments;
 import org.librairy.model.domain.resources.*;
 import org.librairy.model.utils.TimeUtils;
 import org.librairy.storage.UDM;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
 import org.librairy.storage.generator.URIGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -130,7 +130,7 @@ public class RelationTest {
                 (resource.getUri()));
         udm.find(Resource.Type.DOCUMENT).all().stream().forEach(resource -> udm.delete(Resource.Type.DOCUMENT).byUri
                 (resource.getUri()));
-        udm.find(Relation.Type.CONTAINS).all().stream().forEach(rel -> udm.delete(Relation.Type.CONTAINS).byUri(rel.getUri()));
+        udm.find(Relation.Type.CONTAINS_TO_DOCUMENT).all().stream().forEach(rel -> udm.delete(Relation.Type.CONTAINS_TO_DOCUMENT).byUri(rel.getUri()));
 
         Domain domain = Resource.newDomain("d");
         udm.save(domain);
@@ -141,14 +141,14 @@ public class RelationTest {
         Document doc = Resource.newDocument("d1");
         udm.save(doc);
 
-        String relUri = uriGenerator.from(Relation.Type.CONTAINS,"sample");
+        String relUri = uriGenerator.from(Relation.Type.CONTAINS_TO_DOCUMENT,"sample");
         String creationTime = TimeUtils.asISO();
         Contains contains = Relation.newContains(domain.getUri(), doc.getUri());
         contains.setUri(relUri);
         contains.setCreationTime(creationTime);
         udm.save(contains);
 
-        List<Relation> rels = udm.find(Relation.Type.CONTAINS).btw(domain.getUri(), doc.getUri());
+        List<Relation> rels = udm.find(Relation.Type.CONTAINS_TO_DOCUMENT).btw(domain.getUri(), doc.getUri());
         Assert.assertFalse(rels.isEmpty());
         Assert.assertEquals(1,rels.size());
         Assert.assertEquals(relUri,rels.get(0).getUri());
@@ -159,7 +159,7 @@ public class RelationTest {
         contains2.setCreationTime(creationTime);
         udm.save(contains2);
 
-        rels = udm.find(Relation.Type.CONTAINS).btw(domain.getUri(), doc.getUri());
+        rels = udm.find(Relation.Type.CONTAINS_TO_DOCUMENT).btw(domain.getUri(), doc.getUri());
         Assert.assertFalse(rels.isEmpty());
         Assert.assertEquals(1,rels.size());
         Assert.assertEquals(relUri,rels.get(0).getUri());
@@ -171,7 +171,7 @@ public class RelationTest {
         contains3.setCreationTime(TimeUtils.asISO());
         udm.save(contains3);
 
-        rels = udm.find(Relation.Type.CONTAINS).btw(domain.getUri(), doc.getUri());
+        rels = udm.find(Relation.Type.CONTAINS_TO_DOCUMENT).btw(domain.getUri(), doc.getUri());
         Assert.assertFalse(rels.isEmpty());
         Assert.assertEquals(1,rels.size());
         Assert.assertEquals(relUri,rels.get(0).getUri());
@@ -179,14 +179,14 @@ public class RelationTest {
 
 
         // Different uri and creationTime
-        String relUri2 = uriGenerator.from(Relation.Type.CONTAINS,"sample2");
+        String relUri2 = uriGenerator.from(Relation.Type.CONTAINS_TO_DOCUMENT,"sample2");
         String creationTime2 = TimeUtils.asISO();
         Contains contains4 = Relation.newContains(domain.getUri(), doc.getUri());
         contains4.setUri(relUri2);
         contains4.setCreationTime(creationTime2);
         udm.save(contains4);
 
-        rels = udm.find(Relation.Type.CONTAINS).btw(domain.getUri(), doc.getUri());
+        rels = udm.find(Relation.Type.CONTAINS_TO_DOCUMENT).btw(domain.getUri(), doc.getUri());
         Assert.assertFalse(rels.isEmpty());
         Assert.assertEquals(2,rels.size());
         Assert.assertTrue(rels.stream().map(rel -> rel.getUri()).collect(Collectors.toList()).contains(relUri));
@@ -202,7 +202,7 @@ public class RelationTest {
                 (resource.getUri()));
         udm.find(Resource.Type.DOCUMENT).all().stream().forEach(resource -> udm.delete(Resource.Type.DOCUMENT).byUri
                 (resource.getUri()));
-        udm.find(Relation.Type.CONTAINS).all().stream().forEach(rel -> udm.delete(Relation.Type.CONTAINS).byUri(rel.getUri()));
+        udm.find(Relation.Type.CONTAINS_TO_DOCUMENT).all().stream().forEach(rel -> udm.delete(Relation.Type.CONTAINS_TO_DOCUMENT).byUri(rel.getUri()));
         udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).all().stream().forEach(rel -> udm.delete(Relation.Type.SIMILAR_TO_DOCUMENTS).byUri
                 (rel.getUri
                 ()));
@@ -257,7 +257,7 @@ public class RelationTest {
                 (resource.getUri()));
         udm.find(Resource.Type.DOCUMENT).all().stream().forEach(resource -> udm.delete(Resource.Type.DOCUMENT).byUri
                 (resource.getUri()));
-        udm.find(Relation.Type.CONTAINS).all().stream().forEach(rel -> udm.delete(Relation.Type.CONTAINS).byUri(rel.getUri()));
+        udm.find(Relation.Type.CONTAINS_TO_DOCUMENT).all().stream().forEach(rel -> udm.delete(Relation.Type.CONTAINS_TO_DOCUMENT).byUri(rel.getUri()));
         udm.find(Relation.Type.SIMILAR_TO_DOCUMENTS).all().stream().forEach(rel -> udm.delete(Relation.Type.SIMILAR_TO_DOCUMENTS).byUri
                 (rel.getUri
                         ()));

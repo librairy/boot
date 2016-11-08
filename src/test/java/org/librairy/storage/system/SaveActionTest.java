@@ -12,12 +12,17 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.librairy.Config;
+import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.domain.resources.Source;
 import org.librairy.storage.UDM;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
 
 /**
  * Created on 05/09/16:
@@ -29,6 +34,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(classes = Config.class)
 public class SaveActionTest {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SaveActionTest.class);
+
     @Autowired
     UDM udm;
 
@@ -39,4 +46,42 @@ public class SaveActionTest {
         udm.save(source);
 
     }
+
+
+    @Test
+    public void readContainsRelations(){
+
+        String domainUri = "http://librairy.org/domains/default";
+
+        LOG.info("Getting docs from domain: " + domainUri);
+        LOG.info(udm.find(Resource.Type.DOCUMENT).from(Resource.Type.DOMAIN, domainUri).size() + " found!");
+
+        LOG.info("Getting items from domain: " + domainUri);
+        LOG.info(udm.find(Resource.Type.ITEM).from(Resource.Type.DOMAIN, domainUri).size() + " found!");
+
+        LOG.info("Getting parts from domain: " + domainUri);
+        LOG.info(udm.find(Resource.Type.PART).from(Resource.Type.DOMAIN, domainUri).size() + " found!");
+
+
+    }
+
+    @Test
+    public void saveItemContainsRelations(){
+
+        String domainUri = "http://librairy.org/domains/default";
+
+        udm.find(Resource.Type.ITEM).all().forEach(item -> udm.save(Relation.newContains(domainUri,item.getUri())));
+
+    }
+
+
+    @Test
+    public void savePartContainsRelations(){
+
+        String domainUri = "http://librairy.org/domains/default";
+
+        udm.find(Resource.Type.PART).all().forEach(item -> udm.save(Relation.newContains(domainUri,item.getUri())));
+
+    }
+
 }

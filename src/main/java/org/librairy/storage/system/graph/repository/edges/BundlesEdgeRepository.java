@@ -24,7 +24,7 @@ public interface BundlesEdgeRepository extends RelationGraphRepository<BundlesEd
     @Query("match (node1{uri:{0}})-[r:BUNDLES]->(node2{uri:{1}}) return r")
     Iterable<BundlesEdge> findByNodes(String start, String end);
 
-    @Query("match (domain{uri:{0}})-[:CONTAINS]->(:Document)-[r:BUNDLES]->(:Item) return r")
+    @Query("match (:Document)-[r:BUNDLES]->(:Item)<-[:CONTAINS]-(domain{uri:{0}}) return r")
     Iterable<BundlesEdge> findByDomain(String uri);
 
     @Query("match (document{uri:{0}})-[r:BUNDLES]->(:Item) return r")

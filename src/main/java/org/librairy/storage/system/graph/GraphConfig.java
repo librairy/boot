@@ -27,7 +27,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Created by cbadenes on 21/12/15.
  */
 @Configuration("org.librairy.storage.system.graph")
-@ComponentScan({"org.librairy.storage.system.graph.repository"})
+@ComponentScan({
+        "org.librairy.storage.system.graph",
+        "org.librairy.storage.generator"
+})
 @EnableNeo4jRepositories(basePackages = {"org.librairy.storage.system.graph.repository"})
 @EnableTransactionManagement
 public class GraphConfig extends Neo4jConfiguration {
