@@ -7,6 +7,7 @@
 
 package org.librairy.storage.generator;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.librairy.model.domain.resources.Resource;
 import org.slf4j.Logger;
@@ -45,10 +46,22 @@ public class URIGenerator {
 
     String base;
 
+    private static String baseUri = "";
+
     @PostConstruct
     public void setup(){
         base = "http://"+domainUri+"/";
         LOG.info("Uri Generator initialized successfully");
+    }
+
+    public static String apply(org.librairy.model.domain.resources.Resource.Type resource, String content){
+
+        if (Strings.isNullOrEmpty(baseUri)){
+            String librairyUri = System.getenv("LIBRAIRY_URI");
+            baseUri = Strings.isNullOrEmpty(librairyUri)? "http://librairy.org/" : "http://"+librairyUri+"/";
+        }
+
+        return new StringBuilder(baseUri).append(resource.route()).append(SEPARATOR).append(getMD5(content)).toString();
     }
 
     public String basedOnContent(org.librairy.model.domain.resources.Resource.Type resource, String content){
@@ -89,7 +102,7 @@ public class URIGenerator {
         return UUID.randomUUID().toString();
     }
 
-    private String getMD5(String text){
+    private static String getMD5(String text){
         String id;
         try {
             MessageDigest m = MessageDigest.getInstance("MD5");

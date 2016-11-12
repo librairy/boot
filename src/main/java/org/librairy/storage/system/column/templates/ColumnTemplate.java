@@ -34,5 +34,6 @@ public class ColumnTemplate {
     public void execute(String query){
         cassandraTemplate.execute(query);
     }
+    
 
 }

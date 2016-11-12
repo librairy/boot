@@ -60,6 +60,7 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
         }catch (Exception e){
             LOG.error("Error configuring cassandra connection parameters: ",e);
         }
+
         return cluster;
     }
 
