@@ -54,14 +54,21 @@ public class URIGenerator {
         LOG.info("Uri Generator initialized successfully");
     }
 
-    public static String apply(org.librairy.model.domain.resources.Resource.Type resource, String content){
+    public static String fromContent(org.librairy.model.domain.resources.Resource.Type resource, String content){
+        initializeBaseUri();
+        return new StringBuilder(baseUri).append(resource.route()).append(SEPARATOR).append(getMD5(content)).toString();
+    }
 
+    public static String fromId(org.librairy.model.domain.resources.Resource.Type resource, String id){
+        initializeBaseUri();
+        return new StringBuilder(baseUri).append(resource.route()).append(SEPARATOR).append(id).toString();
+    }
+
+    private static void initializeBaseUri(){
         if (Strings.isNullOrEmpty(baseUri)){
             String librairyUri = System.getenv("LIBRAIRY_URI");
             baseUri = Strings.isNullOrEmpty(librairyUri)? "http://librairy.org/" : "http://"+librairyUri+"/";
         }
-
-        return new StringBuilder(baseUri).append(resource.route()).append(SEPARATOR).append(getMD5(content)).toString();
     }
 
     public String basedOnContent(org.librairy.model.domain.resources.Resource.Type resource, String content){
