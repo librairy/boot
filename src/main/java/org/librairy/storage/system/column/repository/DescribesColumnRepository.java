@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.DealsWithColumn;
 import org.librairy.storage.system.column.domain.DescribeColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -22,5 +23,11 @@ public interface DescribesColumnRepository extends BaseColumnRepository<Describe
 
     @Query("select * from describes where endUri = ?0")
     Iterable<DescribeColumn> findByItem(String uri);
+
+    @Query("select * from describes where startUri = ?0")
+    Iterable<DescribeColumn> findByStart(String uri);
+
+    @Query("select * from describes where endUri = ?0")
+    Iterable<DescribeColumn> findByEnd(String uri);
 
 }

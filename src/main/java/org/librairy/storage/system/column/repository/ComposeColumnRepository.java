@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.BundleColumn;
 import org.librairy.storage.system.column.domain.ComposeColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -23,5 +24,10 @@ public interface ComposeColumnRepository extends BaseColumnRepository<ComposeCol
     @Query("select * from composes where endUri = ?0")
     Iterable<ComposeColumn> findByDomain(String uri);
 
+    @Query("select * from composes where startUri = ?0")
+    Iterable<ComposeColumn> findByStart(String uri);
+
+    @Query("select * from composes where endUri = ?0")
+    Iterable<ComposeColumn> findByEnd(String uri);
 
 }

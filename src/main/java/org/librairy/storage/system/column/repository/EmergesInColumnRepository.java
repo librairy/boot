@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.EmbeddedInColumn;
 import org.librairy.storage.system.column.domain.EmergeInColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -22,5 +23,11 @@ public interface EmergesInColumnRepository extends BaseColumnRepository<EmergeIn
 
     @Query("select * from emergesIn where endUri = ?0")
     Iterable<EmergeInColumn> findByDomain(String uri);
+
+    @Query("select * from emergesIn where startUri = ?0")
+    Iterable<EmergeInColumn> findByStart(String uri);
+
+    @Query("select * from emergesIn where endUri = ?0")
+    Iterable<EmergeInColumn> findByEnd(String uri);
 
 }

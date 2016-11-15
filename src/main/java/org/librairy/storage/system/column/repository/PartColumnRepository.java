@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.PairsWithColumn;
 import org.librairy.storage.system.column.domain.PartColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -31,5 +32,11 @@ public interface PartColumnRepository extends BaseColumnRepository<PartColumn> {
 
     @Query("select * from parts where tokens = ?0")
     Iterable<PartColumn> findByTokens(String tokens);
+
+    @Query("select * from parts where startUri = ?0")
+    Iterable<PartColumn> findByStart(String uri);
+
+    @Query("select * from parts where endUri = ?0")
+    Iterable<PartColumn> findByEnd(String uri);
 
 }

@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.ItemColumn;
 import org.librairy.storage.system.column.domain.MentionsColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -25,5 +26,11 @@ public interface MentionsColumnRepository extends BaseColumnRepository<MentionsC
 
     @Query("select * from mentions where endUri = ?0")
     Iterable<MentionsColumn> findByWord(String uri);
+
+    @Query("select * from mentions where startUri = ?0")
+    Iterable<MentionsColumn> findByStart(String uri);
+
+    @Query("select * from mentions where endUri = ?0")
+    Iterable<MentionsColumn> findByEnd(String uri);
 
 }

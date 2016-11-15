@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.PartColumn;
 import org.librairy.storage.system.column.domain.ProvideColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -22,5 +23,11 @@ public interface ProvideColumnRepository extends BaseColumnRepository<ProvideCol
 
     @Query("select * from provides where startUri = ?0")
     Iterable<ProvideColumn> findBySource(String uri);
+
+    @Query("select * from provides where startUri = ?0")
+    Iterable<ProvideColumn> findByStart(String uri);
+
+    @Query("select * from provides where endUri = ?0")
+    Iterable<ProvideColumn> findByEnd(String uri);
 
 }

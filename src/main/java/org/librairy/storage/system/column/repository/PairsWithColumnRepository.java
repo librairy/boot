@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.MentionsColumn;
 import org.librairy.storage.system.column.domain.PairsWithColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -23,4 +24,11 @@ public interface PairsWithColumnRepository extends BaseColumnRepository<PairsWit
     @Query("select * from pairsWith where domain = ?0")
     Iterable<PairsWithColumn> findByDomain(String uri);
 
+    @Query("select * from pairsWith where startUri = ?0")
+    Iterable<PairsWithColumn> findByStart(String uri);
+
+    @Query("select * from pairsWith where endUri = ?0")
+    Iterable<PairsWithColumn> findByEnd(String uri);
+
 }
+

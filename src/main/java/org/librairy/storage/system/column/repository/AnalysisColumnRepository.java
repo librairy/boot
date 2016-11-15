@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.AggregateColumn;
 import org.librairy.storage.system.column.domain.AnalysisColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -34,5 +35,11 @@ public interface AnalysisColumnRepository extends BaseColumnRepository<AnalysisC
 
     @Query("select * from analyses where domain = ?0")
     Iterable<AnalysisColumn> findByDomain(String domain);
+
+    @Query("select * from analyses where startUri = ?0")
+    Iterable<AnalysisColumn> findByStart(String uri);
+
+    @Query("select * from analyses where endUri = ?0")
+    Iterable<AnalysisColumn> findByEnd(String uri);
 
 }

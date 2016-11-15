@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.AppearedInColumn;
 import org.librairy.storage.system.column.domain.BundleColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -22,5 +23,11 @@ public interface BundleColumnRepository extends BaseColumnRepository<BundleColum
 
     @Query("select * from bundles where endUri = ?0")
     Iterable<BundleColumn> findByItem(String uri);
+
+    @Query("select * from bundles where startUri = ?0")
+    Iterable<BundleColumn> findByStart(String uri);
+
+    @Query("select * from bundles where endUri = ?0")
+    Iterable<BundleColumn> findByEnd(String uri);
 
 }

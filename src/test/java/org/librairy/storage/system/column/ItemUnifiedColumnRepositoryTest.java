@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column;
 
+import org.junit.Test;
 import org.librairy.storage.system.column.domain.ItemColumn;
 import org.librairy.storage.system.column.repository.BaseColumnRepository;
 import org.librairy.storage.system.column.repository.ItemColumnRepository;

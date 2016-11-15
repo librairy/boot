@@ -8,6 +8,7 @@
 package org.librairy.storage.system.column.repository;
 
 import org.librairy.storage.system.column.domain.SimilarToColumn;
+import org.librairy.storage.system.column.domain.WordColumn;
 import org.springframework.data.cassandra.repository.Query;
 
 /**
@@ -29,5 +30,10 @@ public interface SimilarToColumnRepository extends BaseColumnRepository<SimilarT
     @Query("select * from similarTo where domain = ?0")
     Iterable<SimilarToColumn> findByDomain(String uri);
 
+    @Query("select * from similarTo where startUri = ?0")
+    Iterable<SimilarToColumn> findByStart(String uri);
+
+    @Query("select * from similarTo where endUri = ?0")
+    Iterable<SimilarToColumn> findByEnd(String uri);
 
 }

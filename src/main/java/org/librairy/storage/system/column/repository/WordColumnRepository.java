@@ -37,4 +37,10 @@ public interface WordColumnRepository extends BaseColumnRepository<WordColumn> {
 
     @Query("select * from words where type = ?0")
     Iterable<WordColumn> findByType(String type);
+
+    @Query("select * from words where startUri = ?0")
+    Iterable<WordColumn> findByStart(String uri);
+
+    @Query("select * from words where endUri = ?0")
+    Iterable<WordColumn> findByEnd(String uri);
 }

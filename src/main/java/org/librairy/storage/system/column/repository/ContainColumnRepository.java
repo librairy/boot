@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.ComposeColumn;
 import org.librairy.storage.system.column.domain.ContainColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -28,5 +29,11 @@ public interface ContainColumnRepository extends BaseColumnRepository<ContainCol
 
     @Query("select * from contains where endUri = ?0")
     Iterable<ContainColumn> findByPart(String uri);
+
+    @Query("select * from contains where startUri = ?0")
+    Iterable<ContainColumn> findByStart(String uri);
+
+    @Query("select * from contains where endUri = ?0")
+    Iterable<ContainColumn> findByEnd(String uri);
 
 }

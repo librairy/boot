@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.EmergeInColumn;
 import org.librairy.storage.system.column.domain.FilterColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -25,5 +26,11 @@ public interface FilterColumnRepository extends BaseColumnRepository<FilterColum
 
     @Query("select * from filters where content = ?0")
     Iterable<FilterColumn> findByContent(String content);
+
+    @Query("select * from filters where startUri = ?0")
+    Iterable<FilterColumn> findByStart(String uri);
+
+    @Query("select * from filters where endUri = ?0")
+    Iterable<FilterColumn> findByEnd(String uri);
 
 }

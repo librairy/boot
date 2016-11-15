@@ -29,4 +29,5 @@ public interface PathColumnRepository extends BaseColumnRepository<PathColumn> {
     @Query("select * from paths where end = ?0")
     Iterable<PathColumn> findByEnd(String end);
 
+
 }

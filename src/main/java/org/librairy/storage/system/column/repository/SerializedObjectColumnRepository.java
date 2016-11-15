@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.ProvideColumn;
 import org.librairy.storage.system.column.domain.SerializedObjectColumn;
 import org.librairy.storage.system.column.domain.WordColumn;
 import org.springframework.data.cassandra.repository.Query;
@@ -23,5 +24,11 @@ public interface SerializedObjectColumnRepository extends BaseColumnRepository<S
 
     @Query("select * from serializations where creationTime = ?0")
     Iterable<WordColumn> findByCreationTime(String creationTime);
+
+    @Query("select * from serializations where startUri = ?0")
+    Iterable<WordColumn> findByStart(String uri);
+
+    @Query("select * from serializations where endUri = ?0")
+    Iterable<WordColumn> findByEnd(String uri);
 
 }

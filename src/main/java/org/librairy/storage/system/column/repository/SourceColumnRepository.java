@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.SimilarToColumn;
 import org.librairy.storage.system.column.domain.SourceColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -34,5 +35,11 @@ public interface SourceColumnRepository extends BaseColumnRepository<SourceColum
 
     @Query("select * from sources where protocol = ?0")
     Iterable<SourceColumn> findByProtocol(String protocol);
+
+    @Query("select * from sources where startUri = ?0")
+    Iterable<SourceColumn> findByStart(String uri);
+
+    @Query("select * from sources where endUri = ?0")
+    Iterable<SourceColumn> findByEnd(String uri);
 
 }

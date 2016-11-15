@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.HypernymOfColumn;
 import org.librairy.storage.system.column.domain.ItemColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -58,4 +59,10 @@ public interface ItemColumnRepository extends BaseColumnRepository<ItemColumn> {
 
     @Query("select * from items where tokens = ?0")
     Iterable<ItemColumn> findByTokens(String tokens);
+
+    @Query("select * from items where startUri = ?0")
+    Iterable<ItemColumn> findByStart(String uri);
+
+    @Query("select * from items where endUri = ?0")
+    Iterable<ItemColumn> findByEnd(String uri);
 }

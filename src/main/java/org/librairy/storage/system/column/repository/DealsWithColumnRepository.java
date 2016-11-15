@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.ContainColumn;
 import org.librairy.storage.system.column.domain.DealsWithColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -28,5 +29,11 @@ public interface DealsWithColumnRepository extends BaseColumnRepository<DealsWit
 
     @Query("select * from dealsWith where endUri = ?0")
     Iterable<DealsWithColumn> findByTopic(String uri);
+
+    @Query("select * from dealsWith where startUri = ?0")
+    Iterable<DealsWithColumn> findByStart(String uri);
+
+    @Query("select * from dealsWith where endUri = ?0")
+    Iterable<DealsWithColumn> findByEnd(String uri);
 
 }

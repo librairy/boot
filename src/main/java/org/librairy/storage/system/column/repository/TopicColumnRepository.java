@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.TermColumn;
 import org.librairy.storage.system.column.domain.TopicColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -28,4 +29,10 @@ public interface TopicColumnRepository extends BaseColumnRepository<TopicColumn>
 
     @Query("select * from topics where content = ?0")
     Iterable<TopicColumn> findByContent(String content);
+
+    @Query("select * from topics where startUri = ?0")
+    Iterable<TopicColumn> findByStart(String uri);
+
+    @Query("select * from topics where endUri = ?0")
+    Iterable<TopicColumn> findByEnd(String uri);
 }

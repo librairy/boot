@@ -20,4 +20,11 @@ public interface AggregateColumnRepository extends BaseColumnRepository<Aggregat
     @Query("select * from aggregates where endUri = ?0")
     Iterable<AggregateColumn> findByDocument(String uri);
 
+
+    @Query("select * from aggregates where startUri = ?0")
+    Iterable<AggregateColumn> findByStart(String uri);
+
+    @Query("select * from aggregates where endUri = ?0")
+    Iterable<AggregateColumn> findByEnd(String uri);
+
 }

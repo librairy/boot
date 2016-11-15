@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.DocumentColumn;
 import org.librairy.storage.system.column.domain.DomainColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -28,5 +29,11 @@ public interface DomainColumnRepository extends BaseColumnRepository<DomainColum
 
     @Query("select * from domains where description = ?0")
     Iterable<DomainColumn> findByDescription(String description);
+
+    @Query("select * from domains where startUri = ?0")
+    Iterable<DomainColumn> findByStart(String uri);
+
+    @Query("select * from domains where endUri = ?0")
+    Iterable<DomainColumn> findByEnd(String uri);
 
 }

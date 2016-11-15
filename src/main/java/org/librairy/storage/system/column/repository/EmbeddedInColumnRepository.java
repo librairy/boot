@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.DomainColumn;
 import org.librairy.storage.system.column.domain.EmbeddedInColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -22,5 +23,11 @@ public interface EmbeddedInColumnRepository extends BaseColumnRepository<Embedde
 
     @Query("select * from embeddedIn where endUri = ?0")
     Iterable<EmbeddedInColumn> findByDomain(String uri);
+
+    @Query("select * from embeddedIn where startUri = ?0")
+    Iterable<EmbeddedInColumn> findByStart(String uri);
+
+    @Query("select * from embeddedIn where endUri = ?0")
+    Iterable<EmbeddedInColumn> findByEnd(String uri);
 
 }

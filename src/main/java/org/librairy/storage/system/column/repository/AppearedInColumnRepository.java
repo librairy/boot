@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.AnalysisColumn;
 import org.librairy.storage.system.column.domain.AppearedInColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -22,5 +23,11 @@ public interface AppearedInColumnRepository extends BaseColumnRepository<Appeare
 
     @Query("select * from appearedIn where endUri = ?0")
     Iterable<AppearedInColumn> findByDomain(String uri);
+
+    @Query("select * from appearedIn where startUri = ?0")
+    Iterable<AppearedInColumn> findByStart(String uri);
+
+    @Query("select * from appearedIn where endUri = ?0")
+    Iterable<AppearedInColumn> findByEnd(String uri);
 
 }

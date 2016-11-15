@@ -7,6 +7,7 @@
 
 package org.librairy.storage.system.column.repository;
 
+import org.librairy.storage.system.column.domain.DescribeColumn;
 import org.librairy.storage.system.column.domain.DocumentColumn;
 import org.springframework.data.cassandra.repository.Query;
 
@@ -70,4 +71,10 @@ public interface DocumentColumnRepository extends BaseColumnRepository<DocumentC
 
     @Query("select * from documents where tokens = ?0")
     Iterable<DocumentColumn> findByTokens(String tokens);
+
+    @Query("select * from documents where startUri = ?0")
+    Iterable<DocumentColumn> findByStart(String uri);
+
+    @Query("select * from documents where endUri = ?0")
+    Iterable<DocumentColumn> findByEnd(String uri);
 }
