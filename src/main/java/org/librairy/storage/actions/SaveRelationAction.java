@@ -77,12 +77,13 @@ public class SaveRelationAction {
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
+            // TODO remove it
             // Graph Database (Neo4j bug avoid update values)
-            if (helper.getUnifiedColumnRepository().exists(relation.getType(),relation.getUri())){
-                helper.getTemplateFactory().of(relation.getType()).delete(relation.getUri());
-            }
-
-            helper.getTemplateFactory().of(relation.getType()).save(relation);
+//            if (helper.getUnifiedColumnRepository().exists(relation.getType(),relation.getUri())){
+//                helper.getTemplateFactory().of(relation.getType()).delete(relation.getUri());
+//            }
+//
+//            helper.getTemplateFactory().of(relation.getType()).save(relation);
 
             // Column Database (save or update values)
             helper.getUnifiedColumnRepository().save(relation);

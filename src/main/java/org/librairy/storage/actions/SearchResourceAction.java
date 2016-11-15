@@ -7,10 +7,12 @@
 
 package org.librairy.storage.actions;
 
+import org.librairy.model.domain.relations.Relation;
 import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.Helper;
 import org.librairy.storage.session.UnifiedTransaction;
+import org.librairy.storage.utils.RelationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +41,15 @@ public class SearchResourceAction {
         LOG.debug("Finding " + type.name() + "s");
         List<Resource> resources = new ArrayList<>();
         try{
+                //TODO remove it
+//
+//            if (helper.getTemplateFactory().handle(type)){
+//                helper.getTemplateFactory().of(type).findAll().forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
+//            }else{
+//                helper.getUnifiedNodeGraphRepository().findAll(type).forEach(x -> resources.add(x));
+//            }
 
-
-            if (helper.getTemplateFactory().handle(type)){
-                helper.getTemplateFactory().of(type).findAll().forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
-            }else{
-                helper.getUnifiedNodeGraphRepository().findAll(type).forEach(x -> resources.add(x));
-            }
+            helper.getUnifiedColumnRepository().findAll(type).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
 
             LOG.trace(type.name() + "s: " + resources);
         }catch (Exception e){
@@ -67,12 +71,16 @@ public class SearchResourceAction {
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
+            //TODO remove it
+//            if (helper.getTemplateFactory().handle(type)){
+//                helper.getTemplateFactory().of(type).findFrom(referenceType,referenceURI).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
+//            }else{
+//                helper.getUnifiedNodeGraphRepository().findFrom(type, referenceType,referenceURI).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
+//            }
 
-            if (helper.getTemplateFactory().handle(type)){
-                helper.getTemplateFactory().of(type).findFrom(referenceType,referenceURI).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
-            }else{
-                helper.getUnifiedNodeGraphRepository().findFrom(type, referenceType,referenceURI).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
-            }
+            Relation.Type relType = RelationUtils.getRelationBetween(type,referenceType);
+            String field = RelationUtils.getFieldFromRelation(relType, referenceType);
+            helper.getUnifiedColumnRepository().findBy(relType, field, referenceURI );
 
             transaction.commit();
             LOG.debug("In "+referenceType+": " + referenceURI + " found: ["+type + "]: " + resources);
@@ -81,6 +89,8 @@ public class SearchResourceAction {
         }
         return resources;
     }
+
+
 
     /**
      * Find resources by a field value

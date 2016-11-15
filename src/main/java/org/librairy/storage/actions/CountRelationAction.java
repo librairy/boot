@@ -37,7 +37,10 @@ public class CountRelationAction {
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-            size = helper.getTemplateFactory().of(type).countAll();
+            //TODO remove it
+//            size = helper.getTemplateFactory().of(type).countAll();
+
+            size = helper.getUnifiedColumnRepository().count(type);
 
             transaction.commit();
 
@@ -51,14 +54,15 @@ public class CountRelationAction {
     public long in(org.librairy.model.domain.resources.Resource.Type refType, String uri){
         long size = 0;
         try{
-            helper.getSession().clean();
-            UnifiedTransaction transaction = helper.getSession().beginTransaction();
+//            helper.getSession().clean();
+//            UnifiedTransaction transaction = helper.getSession().beginTransaction();
+//
+//            size = helper.getTemplateFactory().of(type).countIn(refType,uri);
+//
+//            transaction.commit();
+            throw new RuntimeException("Method not implemented");
 
-            size = helper.getTemplateFactory().of(type).countIn(refType,uri);
-
-            transaction.commit();
-
-            LOG.debug("Count: "+type.name()+" in " + refType + "[" + uri+"]");
+//            LOG.debug("Count: "+type.name()+" in " + refType + "[" + uri+"]");
         }catch (Exception e){
             LOG.error("Unexpected error during counting of relations '"+ type + " in " + refType +" by uri "+uri,e);
         }

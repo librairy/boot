@@ -8,9 +8,12 @@
 package org.librairy.storage.actions;
 
 import org.librairy.model.domain.relations.Relation;
+import org.librairy.model.domain.resources.Resource;
 import org.librairy.model.utils.ResourceUtils;
 import org.librairy.storage.Helper;
+import org.librairy.storage.generator.URIGenerator;
 import org.librairy.storage.session.UnifiedTransaction;
+import org.librairy.storage.utils.RelationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +43,14 @@ public class SearchRelationAction {
         List<Relation> relations = new ArrayList<>();
         try{
 
-            if (helper.getTemplateFactory().handle(type)){
-                helper.getTemplateFactory().of(type).findAll().forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
-            }else{
-                helper.getUnifiedEdgeGraphRepository().findAll(type).forEach(x -> relations.add(Relation.class.cast(x)));
-            }
+            // TODO remove it
+//            if (helper.getTemplateFactory().handle(type)){
+//                helper.getTemplateFactory().of(type).findAll().forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+//            }else{
+//                helper.getUnifiedEdgeGraphRepository().findAll(type).forEach(x -> relations.add(Relation.class.cast(x)));
+//            }
+
+            helper.getUnifiedColumnRepository().findAll(type).forEach(x -> relations.add(Relation.class.cast(x)));
 
             LOG.trace(type.name() + "s: " + relations);
         }catch (Exception e){
@@ -64,17 +70,20 @@ public class SearchRelationAction {
         LOG.debug("Finding " + type.name() + "s between " + startUri + " and " + endUri);
         List<Relation> relations = new ArrayList<>();
         try{
-            helper.getSession().clean();
-            UnifiedTransaction transaction = helper.getSession().beginTransaction();
+//            helper.getSession().clean();
+//            UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-            if (helper.getTemplateFactory().handle(type)){
-                helper.getTemplateFactory().of(type).findOne(startUri,endUri).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
-            }else{
-                helper.getUnifiedEdgeGraphRepository().findBetween(type, startUri, endUri).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
-            }
+            // TODO remove it
+//            if (helper.getTemplateFactory().handle(type)){
+//                helper.getTemplateFactory().of(type).findOne(startUri,endUri).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+//            }else{
+//                helper.getUnifiedEdgeGraphRepository().findBetween(type, startUri, endUri).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+//            }
 
-            transaction.commit();
-            return relations;
+            throw new RuntimeException("Method not implemented");
+
+//            transaction.commit();
+//            return relations;
         }catch (Exception e){
             LOG.error("Unexpected error while finding " + type +"s between " + startUri+ " and " + endUri,e);
         }
@@ -94,11 +103,17 @@ public class SearchRelationAction {
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-            if (helper.getTemplateFactory().handle(type)){
-                helper.getTemplateFactory().of(type).findIn(referenceType,referenceURI).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
-            }else{
-                helper.getUnifiedEdgeGraphRepository().findFrom(type, referenceType, referenceURI).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
-            }
+            String field = RelationUtils.getFieldFromRelation(type, referenceType);
+
+            helper.getUnifiedColumnRepository().findBy(type, field, referenceURI).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+
+
+            //TODO remove it
+//            if (helper.getTemplateFactory().handle(type)){
+//                helper.getTemplateFactory().of(type).findIn(referenceType,referenceURI).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+//            }else{
+//                helper.getUnifiedEdgeGraphRepository().findFrom(type, referenceType, referenceURI).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+//            }
 
             transaction.commit();
             return relations;
@@ -107,6 +122,7 @@ public class SearchRelationAction {
         }
         return relations;
     }
+
 
     /**
      * Find relations by a field value
@@ -121,7 +137,10 @@ public class SearchRelationAction {
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-            helper.getUnifiedEdgeGraphRepository().findBy(type, field, value).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+            // TODO remove it
+//            helper.getUnifiedEdgeGraphRepository().findBy(type, field, value).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+
+            helper.getUnifiedColumnRepository().findBy(type, field, value).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
 
             transaction.commit();
             return relations;

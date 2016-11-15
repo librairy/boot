@@ -49,11 +49,13 @@ public class DeleteRelationAction {
 
             types.stream().filter(x -> !x.equals(Relation.Type.ANY)).forEach(t ->{
                 try{
-                    if (helper.getTemplateFactory().handle(t)){
-                        helper.getTemplateFactory().of(t).deleteAll();
-                    }else{
-                        helper.getUnifiedEdgeGraphRepository().deleteAll(t);
-                    }
+
+                    // TODO remove it
+//                    if (helper.getTemplateFactory().handle(t)){
+//                        helper.getTemplateFactory().of(t).deleteAll();
+//                    }else{
+//                        helper.getUnifiedEdgeGraphRepository().deleteAll(t);
+//                    }
 
                     // Column Database
                     helper.getUnifiedColumnRepository().deleteAll(t);
@@ -84,11 +86,12 @@ public class DeleteRelationAction {
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
-            if (helper.getTemplateFactory().handle(type)) {
-                helper.getTemplateFactory().of(type).delete(uri);
-            }else{
-                helper.getUnifiedEdgeGraphRepository().delete(type,uri);
-            }
+            // todo remove it
+//            if (helper.getTemplateFactory().handle(type)) {
+//                helper.getTemplateFactory().of(type).delete(uri);
+//            }else{
+//                helper.getUnifiedEdgeGraphRepository().delete(type,uri);
+//            }
 
             // Column Database
             helper.getUnifiedColumnRepository().delete(type,uri);

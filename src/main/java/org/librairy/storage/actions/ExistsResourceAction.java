@@ -32,7 +32,7 @@ public class ExistsResourceAction {
      */
     public boolean withUri(String uri){
         try{
-            return helper.getUnifiedDocumentRepository().exists(type,uri);
+            return helper.getUnifiedColumnRepository().exists(type,uri);
         }catch (Exception e){
             LOG.error("Unexpected error while checking resource: "+uri,e);
         }

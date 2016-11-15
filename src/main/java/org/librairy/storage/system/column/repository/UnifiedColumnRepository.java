@@ -39,6 +39,9 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
         return factory.repositoryOf(type).count();
     }
 
+    public long count(Relation.Type type){
+        return factory.repositoryOf(type).count();
+    }
 
     @Override
     public void save(Resource resource){
@@ -119,6 +122,16 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
 
     @Override
     public Iterable<Resource> findAll(Resource.Type type){
+        try{
+            return factory.repositoryOf(type).findAll();
+        }catch (RuntimeException e){
+            LOG.warn(e.getMessage());
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+
+    public Iterable<Relation> findAll(Relation.Type type){
         try{
             return factory.repositoryOf(type).findAll();
         }catch (RuntimeException e){

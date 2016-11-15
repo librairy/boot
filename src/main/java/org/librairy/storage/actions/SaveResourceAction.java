@@ -89,11 +89,12 @@ public class SaveResourceAction {
             LOG.debug("trying to save: " + resource);
 
             // graph
-            if (helper.getTemplateFactory().handle(resource.getResourceType())){
-                helper.getTemplateFactory().of(resource.getResourceType()).save(resource);
-            }else{
-                helper.getUnifiedNodeGraphRepository().save(resource);
-            }
+            // TODO remove it
+//            if (helper.getTemplateFactory().handle(resource.getResourceType())){
+//                helper.getTemplateFactory().of(resource.getResourceType()).save(resource);
+//            }else{
+//                helper.getUnifiedNodeGraphRepository().save(resource);
+//            }
 
             // column
             helper.getUnifiedColumnRepository().save(resource);

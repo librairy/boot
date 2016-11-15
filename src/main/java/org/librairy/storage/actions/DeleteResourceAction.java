@@ -51,12 +51,12 @@ public class DeleteResourceAction {
                     helper.getUnifiedColumnRepository().deleteAll(t);
                     helper.getUnifiedDocumentRepository().deleteAll(t);
 
-
-                    if (helper.getTemplateFactory().handle(t)){
-                        helper.getTemplateFactory().of(t).deleteAll();
-                    }else{
-                        helper.getUnifiedNodeGraphRepository().deleteAll(t);
-                    }
+                    //TODO remove it
+//                    if (helper.getTemplateFactory().handle(t)){
+//                        helper.getTemplateFactory().of(t).deleteAll();
+//                    }else{
+//                        helper.getUnifiedNodeGraphRepository().deleteAll(t);
+//                    }
 
                 }catch (RepositoryNotFound e){
                     LOG.warn("" + e.getMessage());
@@ -87,11 +87,13 @@ public class DeleteResourceAction {
             helper.getUnifiedColumnRepository().delete(type,uri);
             helper.getUnifiedDocumentRepository().delete(type,uri);
 
-            if (helper.getTemplateFactory().handle(type)){
-                helper.getTemplateFactory().of(type).deleteOne(uri);
-            }else{
-                helper.getUnifiedNodeGraphRepository().delete(type,uri);
-            }
+
+            // TODO remove it
+//            if (helper.getTemplateFactory().handle(type)){
+//                helper.getTemplateFactory().of(type).deleteOne(uri);
+//            }else{
+//                helper.getUnifiedNodeGraphRepository().delete(type,uri);
+//            }
 
             transaction.commit();
 
