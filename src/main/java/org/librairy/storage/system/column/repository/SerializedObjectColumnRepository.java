@@ -20,15 +20,15 @@ public interface SerializedObjectColumnRepository extends BaseColumnRepository<S
     //Future Version of Spring-Data-Cassandra will implements native queries
 
     @Query("select * from serializations where uri = ?0")
-    Iterable<WordColumn> findByUri(String uri);
+    Iterable<SerializedObjectColumn> findByUri(String uri);
 
     @Query("select * from serializations where creationTime = ?0")
-    Iterable<WordColumn> findByCreationTime(String creationTime);
+    Iterable<SerializedObjectColumn> findByCreationTime(String creationTime);
 
     @Query("select * from serializations where startUri = ?0")
-    Iterable<WordColumn> findByStart(String uri);
+    Iterable<SerializedObjectColumn> findByStart(String uri);
 
     @Query("select * from serializations where endUri = ?0")
-    Iterable<WordColumn> findByEnd(String uri);
+    Iterable<SerializedObjectColumn> findByEnd(String uri);
 
 }
