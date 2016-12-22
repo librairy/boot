@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -30,7 +31,7 @@ import java.util.UUID;
  * Created by cbadenes on 04/01/16.
  */
 @Component
-public class URIGenerator {
+public class URIGenerator implements Serializable{
 
     private static final Logger LOG = LoggerFactory.getLogger(URIGenerator.class);
 
@@ -55,9 +56,34 @@ public class URIGenerator {
         LOG.info("Uri Generator initialized successfully");
     }
 
+    public static String compositeFromContent(Resource.Type resource1, String id1, Resource.Type resource2, String
+            content ){
+        initializeBaseUri();
+        return new StringBuilder(baseUri)
+                .append(resource1.route())
+                .append(SEPARATOR)
+                .append(id1)
+                .append(SEPARATOR)
+                .append(resource2.route())
+                .append(SEPARATOR)
+                .append(getMD5(content))
+                .toString();
+    }
+
     public static String fromContent(Resource.Type resource, String content){
         initializeBaseUri();
         return new StringBuilder(baseUri).append(resource.route()).append(SEPARATOR).append(getMD5(content)).toString();
+    }
+
+    public static String compositionFromId(Resource.Type resource1, String id1, Resource.Type resource2, String id2){
+        initializeBaseUri();
+        return new StringBuilder(baseUri)
+                .append(resource1.route())
+                .append(SEPARATOR)
+                .append(id1).append(SEPARATOR)
+                .append(resource2.route())
+                .append(SEPARATOR)
+                .append(id2).toString();
     }
 
     public static String fromId(Resource.Type resource, String id){
@@ -133,6 +159,19 @@ public class URIGenerator {
                         (entry.route())).findFirst();
 
         if (resourceType.isPresent()) return resourceType.get();
+        throw new RuntimeException("No resource type found in uri: " + uri);
+    }
+
+    public static Relation.Type typeFromRelation(String uri){
+        // "http://drinventor.eu/items/9c8b49fbc507cfe9903fc9f08dc2a8c8",
+
+        String type = StringUtils.substringAfterLast(StringUtils.substringBeforeLast(uri,"/"),"/");
+
+        Optional<Relation.Type> relationType = Arrays.stream(Relation.Type.values()).filter(entry -> type
+                .equalsIgnoreCase
+                        (entry.route())).findFirst();
+
+        if (relationType.isPresent()) return relationType.get();
         throw new RuntimeException("No resource type found in uri: " + uri);
     }
 

@@ -7,8 +7,10 @@
 
 package org.librairy.boot.storage;
 
+import lombok.Data;
 import lombok.Getter;
 import org.librairy.boot.model.modules.EventBus;
+import org.librairy.boot.storage.dao.*;
 import org.librairy.boot.storage.executor.QueryExecutor;
 import org.librairy.boot.storage.generator.URIGenerator;
 import org.librairy.boot.storage.system.column.repository.UnifiedColumnRepository;
@@ -24,33 +26,49 @@ import org.springframework.stereotype.Component;
  * Created by cbadenes on 04/02/16.
  */
 @Component
+@Data
 public class Helper {
 
-    @Autowired @Getter
+    @Autowired 
     UnifiedColumnRepository unifiedColumnRepository;
 
-    @Autowired @Getter
+    @Autowired 
     UnifiedDocumentRepository unifiedDocumentRepository;
 
-    @Autowired @Getter
+    @Autowired 
     UnifiedNodeGraphRepository unifiedNodeGraphRepository;
 
-    @Autowired @Getter
+    @Autowired 
     UnifiedEdgeGraphRepository unifiedEdgeGraphRepository;
 
-    @Autowired @Getter
+    @Autowired 
     UnifiedSession session;
 
-    @Autowired @Getter
+    @Autowired 
     EventBus eventBus;
 
-    @Autowired @Getter
+    @Autowired 
     TemplateFactory templateFactory;
 
-    @Autowired @Getter
+    @Autowired 
     URIGenerator uriGenerator;
 
-    @Autowired @Getter
+    @Autowired 
     QueryExecutor queryExecutor;
+
+    @Autowired 
+    KeyspaceDao keyspaceDao;
+
+    @Autowired
+    ParametersDao parametersDao;
+
+    @Autowired
+    ItemsDao itemsDao;
+
+    @Autowired
+    PartsDao partsDao;
+
+    @Autowired 
+    CounterDao counterDao;
 
 }

@@ -11,6 +11,7 @@ import org.librairy.boot.model.Event;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.storage.exception.RepositoryNotFound;
+import org.librairy.boot.storage.generator.URIGenerator;
 import org.librairy.boot.storage.session.UnifiedTransaction;
 import org.librairy.boot.storage.Helper;
 import org.slf4j.Logger;
@@ -41,6 +42,10 @@ public class DeleteResourceAction {
         try{
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
+
+            // delete all counters
+            helper.getCounterDao().remove();
+            helper.getCounterDao().initialize();
 
             List<Resource.Type> types = (type.equals(Resource.Type.ANY)) ? Arrays.asList(Resource.Type.values()) : Arrays.asList(new Resource.Type[]{type});
 
@@ -83,6 +88,15 @@ public class DeleteResourceAction {
         try{
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
+
+            // decrement global counter
+            helper.getCounterDao().decrement(URIGenerator.typeFrom(uri).route());
+
+            switch (type){
+                case DOMAIN:
+                    helper.getKeyspaceDao().removeKeyspace(uri);
+                    break;
+            }
 
             helper.getUnifiedColumnRepository().delete(type,uri);
             helper.getUnifiedDocumentRepository().delete(type,uri);

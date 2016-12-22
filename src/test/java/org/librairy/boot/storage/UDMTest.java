@@ -49,12 +49,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Category(IntegrationTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
-@TestPropertySource(properties = {
-        "librairy.columndb.host= 192.168.99.100",
-        "librairy.documentdb.host = 192.168.99.100",
-        "librairy.graphdb.host = 192.168.99.100",
-        "librairy.eventbus.host = 192.168.99.100"
-})
+//@TestPropertySource(properties = {
+//        "librairy.columndb.host= 192.168.99.100",
+//        "librairy.documentdb.host = 192.168.99.100",
+//        "librairy.graphdb.host = 192.168.99.100",
+//        "librairy.eventbus.host = 192.168.99.100"
+//})
 public class UDMTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(UDMTest.class);
@@ -93,6 +93,16 @@ public class UDMTest {
     @Autowired
     SimilarToEdgeRepository similarToEdgeRepository;
 
+
+    @Test
+    public void saveSourceMinimal(){
+//        Source source = Resource.newSource("default");
+//        source.setUrl("file://default");
+//        udm.save(source);
+
+        udm.find(Resource.Type.SOURCE).all().forEach(source -> udm.delete(Resource.Type.SOURCE).byUri(source.getUri()));
+
+    }
 
     @Test
     public void readDomains(){

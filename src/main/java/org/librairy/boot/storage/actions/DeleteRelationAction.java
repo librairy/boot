@@ -12,12 +12,14 @@ import org.librairy.boot.model.domain.relations.Relation;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.storage.Helper;
 import org.librairy.boot.storage.exception.RepositoryNotFound;
+import org.librairy.boot.storage.generator.URIGenerator;
 import org.librairy.boot.storage.session.UnifiedTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by cbadenes on 04/02/16.
@@ -41,6 +43,10 @@ public class DeleteRelationAction {
         try{
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
+
+            // delete all counters
+            helper.getCounterDao().remove();
+            helper.getCounterDao().initialize();
 
             List<Relation.Type> types = (type.equals(Relation.Type.ANY)) ? Arrays.asList
                     (Relation.Type.values()) : Arrays.asList(new Relation.Type[]{type});
@@ -86,6 +92,9 @@ public class DeleteRelationAction {
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
+            // decrement global counter
+            helper.getCounterDao().decrement(URIGenerator.typeFrom(uri).route());
+
             // todo remove it
 //            if (helper.getTemplateFactory().handle(type)) {
 //                helper.getTemplateFactory().of(type).delete(uri);
@@ -93,10 +102,25 @@ public class DeleteRelationAction {
 //                helper.getUnifiedEdgeGraphRepository().delete(type,uri);
 //            }
 
+            // decrement domain counter
+            switch (type){
+                case CONTAINS_TO_DOCUMENT:
+                case CONTAINS_TO_ITEM:
+                case CONTAINS_TO_PART:
+                    // decrement global counter
+                    Optional<Relation> relationOpt = helper.getUnifiedColumnRepository().read(type, uri);
+                    if (relationOpt.isPresent()){
+                        Relation relation = relationOpt.get();
+                        helper.getCounterDao().decrement(relation.getStartUri(), URIGenerator.typeFrom(relation.getEndUri()).route());
+                    }
+                    break;
+            }
             // Column Database
             helper.getUnifiedColumnRepository().delete(type,uri);
 
             transaction.commit();
+
+
 
             LOG.debug("Deleted: "+type.name()+"[" + uri+"]");
 

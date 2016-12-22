@@ -9,9 +9,11 @@ package org.librairy.boot.storage.actions;
 
 import org.librairy.boot.model.Event;
 import org.librairy.boot.model.domain.relations.Relation;
+import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.model.utils.ResourceUtils;
 import org.librairy.boot.storage.Helper;
+import org.librairy.boot.storage.generator.URIGenerator;
 import org.librairy.boot.storage.session.UnifiedTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,18 +28,32 @@ public class SaveRelationAction {
 
     public SaveRelationAction(Helper helper, Relation relation){
 
+
+        // TODO remove it
+        Boolean persist = true;
+
         // setting URI
         StringBuilder contentBuilder = new StringBuilder().append(relation.getStartUri()).append(relation.getEndUri());
         if (!relation.hasUri()) {
             switch (relation.getType()) {
                 // 1 to 1 relations
+                case CONTAINS_TO_DOCUMENT:
+                case CONTAINS_TO_ITEM:
+                    // add to domain
+                    helper.getItemsDao().add(relation.getStartUri(),relation.getEndUri());
+                    helper.getCounterDao().increment(relation.getStartUri(), Resource.Type.ITEM.route());
+                    persist = false;
+                    break;
+                case CONTAINS_TO_PART:
+                    // increment counter
+                    helper.getPartsDao().add(relation.getStartUri(),relation.getEndUri());
+                    helper.getCounterDao().increment(relation.getStartUri(), Resource.Type.PART.route());
+                    persist = false;
+                    break;
                 case AGGREGATES:
                 case APPEARED_IN:
                 case BUNDLES:
                 case COMPOSES:
-                case CONTAINS_TO_DOCUMENT:
-                case CONTAINS_TO_ITEM:
-                case CONTAINS_TO_PART:
                 case DEALS_WITH_FROM_DOCUMENT:
                 case DEALS_WITH_FROM_ITEM:
                 case DEALS_WITH_FROM_PART:
@@ -70,6 +86,8 @@ public class SaveRelationAction {
             relation.setUri(helper.getUriGenerator().basedOnContent(relation.getType(), contentBuilder.toString()));
         }
 
+        // increment counter
+        helper.getCounterDao().increment(relation.getType().route());
 
         try{
             LOG.debug("trying to save :" + relation);
@@ -86,7 +104,7 @@ public class SaveRelationAction {
 //            helper.getTemplateFactory().of(relation.getType()).save(relation);
 
             // Column Database (save or update values)
-            helper.getUnifiedColumnRepository().save(relation);
+            if (persist) helper.getUnifiedColumnRepository().save(relation);
 
             transaction.commit();
 

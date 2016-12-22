@@ -68,6 +68,11 @@ public class SaveResourceAction {
                 case DOMAIN:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
                             (Strings.isNullOrEmpty(resource.asDomain().getName()))? TimeUtils.asISO() : resource.asDomain().getName());
+                    helper.getKeyspaceDao().createKeyspace(uri);
+                    helper.getCounterDao().initialize(uri);
+                    helper.getParametersDao().initialize(uri);
+                    helper.getItemsDao().initialize(uri);
+                    helper.getPartsDao().initialize(uri);
                     break;
                 case SOURCE:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
@@ -79,6 +84,9 @@ public class SaveResourceAction {
             }
 
             resource.setUri(uri);
+
+            // increment counter
+            helper.getCounterDao().increment(resource.getResourceType().route());
         }
 
 
