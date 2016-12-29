@@ -99,8 +99,7 @@ public class ItemsDao {
     }
 
     public Boolean saveOrUpdateTokens(String domainUri, String uri, String tokens){
-        String query = "insert into items (uri,time,tokens) values('"+uri+"', '"+ TimeUtils.asISO()+"', \""+
-                tokens+"\");";
+        String query = "insert into items (uri,time,tokens) values('"+uri+"', '"+ TimeUtils.asISO()+"', '"+ tokens+"');";
 
         try{
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);

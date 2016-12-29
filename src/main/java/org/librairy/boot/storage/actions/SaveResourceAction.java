@@ -73,6 +73,7 @@ public class SaveResourceAction {
                     helper.getParametersDao().initialize(uri);
                     helper.getItemsDao().initialize(uri);
                     helper.getPartsDao().initialize(uri);
+                    helper.getSubdomainsDao().initialize(uri);
                     break;
                 case SOURCE:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
