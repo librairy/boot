@@ -53,27 +53,23 @@ public class SaveResourceAction {
                             .getContent());
                     break;
                 case DOCUMENT:
-                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
-                            (Strings.isNullOrEmpty(resource.asDocument().getTitle()))? TimeUtils.asISO() : resource
-                                    .asDocument().getTitle());
+                    uri = (Strings.isNullOrEmpty(resource.asDocument().getTitle()))?
+                            helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asDocument().toString()) :
+                            helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asDocument().getTitle());
                     break;
                 case ITEM:
-                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asItem()
-                            .getContent());
+                    uri = (Strings.isNullOrEmpty(resource.asItem().getContent()))?
+                            helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asItem().toString()) :
+                            helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asItem().getContent());
                     break;
                 case PART:
-                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asPart()
-                            .getContent());
+                    uri = (Strings.isNullOrEmpty(resource.asPart().getContent()))?
+                            helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asPart().toString()):
+                            helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asPart().getContent());
                     break;
                 case DOMAIN:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
                             (Strings.isNullOrEmpty(resource.asDomain().getName()))? TimeUtils.asISO() : resource.asDomain().getName());
-                    helper.getKeyspaceDao().createKeyspace(uri);
-                    helper.getCounterDao().initialize(uri);
-                    helper.getParametersDao().initialize(uri);
-                    helper.getItemsDao().initialize(uri);
-                    helper.getPartsDao().initialize(uri);
-                    helper.getSubdomainsDao().initialize(uri);
                     break;
                 case SOURCE:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
@@ -86,14 +82,15 @@ public class SaveResourceAction {
 
             resource.setUri(uri);
 
-            // increment counter
-            helper.getCounterDao().increment(resource.getResourceType().route());
         }
 
 
         try{
             helper.getSession().clean();
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
+
+            // increment counter
+            helper.getCounterDao().increment(resource.getResourceType().route());
 
             LOG.debug("trying to save: " + resource);
 
@@ -113,6 +110,16 @@ public class SaveResourceAction {
             transaction.commit();
 
             LOG.debug("Resource Saved: " + resource);
+
+            //TODO implement a factory
+            if (resource.getResourceType().equals(Resource.Type.DOMAIN)){
+                helper.getKeyspaceDao().createKeyspace(resource.getUri());
+                helper.getCounterDao().initialize(resource.getUri());
+                helper.getParametersDao().initialize(resource.getUri());
+                helper.getItemsDao().initialize(resource.getUri());
+                helper.getPartsDao().initialize(resource.getUri());
+                helper.getSubdomainsDao().initialize(resource.getUri());
+            }
 
             //Publish the event
             helper.getEventBus().post(Event.from(ResourceUtils.map(resource, Resource.class)), RoutingKey.of(resource.getResourceType(), Resource.State.CREATED));

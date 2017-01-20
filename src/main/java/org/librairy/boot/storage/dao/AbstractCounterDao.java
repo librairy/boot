@@ -42,6 +42,15 @@ public abstract class AbstractCounterDao {
         return result.wasApplied();
     }
 
+    protected Boolean truncate(String keyspaceId){
+
+        String query = "truncate counts;";
+
+        ResultSet result = dbSessionManager.getSessionById(keyspaceId).execute(query);
+
+        return result.wasApplied();
+    }
+
     protected Boolean update(String keyspaceId, String counter, String op, Long value){
 
         String query = "update counts set num = num "+op+" "+value+" where name='"+counter+"';";

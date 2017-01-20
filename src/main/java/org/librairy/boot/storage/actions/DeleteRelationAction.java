@@ -115,6 +115,9 @@ public class DeleteRelationAction {
                     }
                     break;
             }
+
+            helper.getCounterDao().decrement(type.route());
+
             // Column Database
             helper.getUnifiedColumnRepository().delete(type,uri);
 

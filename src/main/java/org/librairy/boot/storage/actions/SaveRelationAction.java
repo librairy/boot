@@ -28,10 +28,6 @@ public class SaveRelationAction {
 
     public SaveRelationAction(Helper helper, Relation relation){
 
-
-        // TODO remove it
-        Boolean persist = true;
-
         // setting URI
         StringBuilder contentBuilder = new StringBuilder().append(relation.getStartUri()).append(relation.getEndUri());
         if (!relation.hasUri()) {
@@ -42,13 +38,11 @@ public class SaveRelationAction {
                     // add to domain
                     helper.getItemsDao().add(relation.getStartUri(),relation.getEndUri());
                     helper.getCounterDao().increment(relation.getStartUri(), Resource.Type.ITEM.route());
-                    persist = false;
                     break;
                 case CONTAINS_TO_PART:
                     // increment counter
                     helper.getPartsDao().add(relation.getStartUri(),relation.getEndUri());
                     helper.getCounterDao().increment(relation.getStartUri(), Resource.Type.PART.route());
-                    persist = false;
                     break;
                 case AGGREGATES:
                 case APPEARED_IN:
@@ -104,7 +98,7 @@ public class SaveRelationAction {
 //            helper.getTemplateFactory().of(relation.getType()).save(relation);
 
             // Column Database (save or update values)
-            if (persist) helper.getUnifiedColumnRepository().save(relation);
+            helper.getUnifiedColumnRepository().save(relation);
 
             transaction.commit();
 

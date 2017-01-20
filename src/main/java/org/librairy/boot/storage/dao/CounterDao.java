@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
@@ -26,6 +28,10 @@ public class CounterDao extends AbstractCounterDao {
     @Autowired
     DBSessionManager dbSessionManager;
 
+    @PostConstruct
+    public void setup(){
+        initialize();
+    }
 
     public Boolean initialize(){
         Boolean result = super.initialize(DEFAULT_KEYSPACE);
@@ -36,6 +42,18 @@ public class CounterDao extends AbstractCounterDao {
     public Boolean initialize(String domainUri){
         Boolean result = super.initialize(URIGenerator.retrieveId(domainUri));
         LOG.info("Initialized counters for domain: '"+domainUri+"");
+        return result;
+    }
+
+    public Boolean truncate(){
+        Boolean result = super.truncate(DEFAULT_KEYSPACE);
+        LOG.info("Reset global counters");
+        return result;
+    }
+
+    public Boolean truncate(String domainUri){
+        Boolean result = super.truncate(URIGenerator.retrieveId(domainUri));
+        LOG.info("Reset counters for domain: '"+domainUri+"");
         return result;
     }
 

@@ -121,7 +121,7 @@ public class RabbitMQClient {
         Channel channel = connection.createChannel();
 
         // receive a maximum of 1 unacknowledged messages at once per consumer
-        channel.basicQos(500,false); //1
+        channel.basicQos(10,false); //1
 
         // a durable, non-autodelete exchange of "topic" type
         channel.exchangeDeclare(exchange, EXCHANGE_TYPE, true);
@@ -139,7 +139,6 @@ public class RabbitMQClient {
 
             }
         });
-
 
         channels.put(exchange,channel);
 

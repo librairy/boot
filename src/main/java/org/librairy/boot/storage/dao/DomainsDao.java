@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,8 +37,24 @@ public class DomainsDao {
     DBSessionManager dbSessionManager;
 
 
+    public Iterator<Row> listFrom(String resourceUri){
+        String query = "select starturi from contains where enduri='"+resourceUri+"';";
+
+        try{
+            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
+            Iterator<Row> iterator = result.iterator();
+
+            if ((iterator == null)) return Collections.emptyIterator();
+
+            return iterator;
+        } catch (InvalidQueryException e){
+            LOG.warn("Error on query: " + e.getMessage());
+            return Collections.emptyIterator();
+        }
+    }
+
     public List<String> listOnly(String field){
-        String query = "select uri from domains;";
+        String query = "select "+field+" from domains;";
 
         try{
             ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);

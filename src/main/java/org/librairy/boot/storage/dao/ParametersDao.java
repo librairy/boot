@@ -10,6 +10,7 @@ package org.librairy.boot.storage.dao;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
+import org.librairy.boot.storage.actions.DeleteResourceAction;
 import org.librairy.boot.storage.exception.DataNotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +37,19 @@ public class ParametersDao {
         try{
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
             //TODO this part should be moved to specific modules
-            saveOrUpdate(domainUri,"tokenizer.mode","lemmatization");
+            saveOrUpdate(domainUri,"tokenizer.mode","lemma");
             saveOrUpdate(domainUri,"lda.delay","90000");
             saveOrUpdate(domainUri,"lda.vocabulary.size","10000");
             saveOrUpdate(domainUri,"lda.optimizer","basic");
             saveOrUpdate(domainUri,"lda.max.evaluations","50");
             saveOrUpdate(domainUri,"lda.max.iterations","10");
             saveOrUpdate(domainUri,"lda.features","TF");
+            saveOrUpdate(domainUri,"lda.topics","-1");
+            saveOrUpdate(domainUri,"lda.alpha","-1");
+            saveOrUpdate(domainUri,"lda.beta","-1");
+            saveOrUpdate(domainUri,"w2v.delay","10000");
+            saveOrUpdate(domainUri,"w2v.dim","100");
+            saveOrUpdate(domainUri,"w2v.max.iterations","20");
 
             LOG.info("Initialized internal parameters tables for '"+domainUri+"'");
             return result.wasApplied();

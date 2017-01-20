@@ -10,8 +10,12 @@ package org.librairy.boot.storage.dao;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
+import org.librairy.boot.model.Event;
 import org.librairy.boot.model.domain.resources.Domain;
 import org.librairy.boot.model.domain.resources.Resource;
+import org.librairy.boot.model.modules.EventBus;
+import org.librairy.boot.model.modules.RoutingKey;
+import org.librairy.boot.model.utils.ResourceUtils;
 import org.librairy.boot.model.utils.TimeUtils;
 import org.librairy.boot.storage.exception.DataNotFound;
 import org.librairy.boot.storage.generator.URIGenerator;
@@ -37,6 +41,12 @@ public class SubdomainsDao {
     @Autowired
     DBSessionManager dbSessionManager;
 
+    @Autowired
+    EventBus eventBus;
+
+    @Autowired
+    CounterDao counterDao;
+
 
     public Boolean initialize(String domainUri){
         String query = "create table if not exists subdomains(uri varchar, name text, time text, primary key(uri));";
@@ -50,6 +60,8 @@ public class SubdomainsDao {
             return false;
         }
     }
+
+
 
     public List<Domain> list(String domainUri, Integer max, String offset){
         StringBuilder query = new StringBuilder().append("select uri, name, time from subdomains");
@@ -89,6 +101,13 @@ public class SubdomainsDao {
         try{
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
             LOG.info("saved subdomain '"+subdomain.getUri()+"' in '"+domainUri+"'");
+
+            // increment counter
+            counterDao.increment(domainUri, Resource.Type.DOMAIN.route());
+
+            //publish event
+            updateDomain(domainUri);
+
             return result.wasApplied();
         }catch (InvalidQueryException e){
             LOG.warn("Error on query execution: " + e.getMessage());
@@ -102,11 +121,47 @@ public class SubdomainsDao {
         try{
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
             LOG.info("delete subdomain '"+subdomainUri+"' from '"+domainUri+"'");
+
+            // decrement counter
+            counterDao.decrement(domainUri, Resource.Type.DOMAIN.route());
+
+            //publish event
+            updateDomain(domainUri);
+
             return result.wasApplied();
         }catch (InvalidQueryException e){
             LOG.warn("Error on query execution: " + e.getMessage());
             return false;
         }
+    }
+
+    public boolean deleteAll(String domainUri){
+        String query = "drop table subdomains;";
+
+        try{
+            ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
+            LOG.info("deleted all subdomains from '"+domainUri+"'");
+
+            initialize(domainUri);
+
+            // decrement counter
+            counterDao.reset(domainUri, Resource.Type.DOMAIN.route());
+
+            //publish event
+            updateDomain(domainUri);
+
+            return result.wasApplied();
+        }catch (InvalidQueryException e){
+            LOG.warn("Error on query execution: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private void updateDomain(String domainUri){
+        //publish event
+        Domain resource = new Domain();
+        resource.setUri(domainUri);
+        eventBus.post(Event.from(resource), RoutingKey.of(resource.getResourceType(), Resource.State.UPDATED));
     }
 
 }

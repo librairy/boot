@@ -10,6 +10,7 @@ package org.librairy.boot.storage.actions;
 import org.librairy.boot.model.Event;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.RoutingKey;
+import org.librairy.boot.model.utils.ResourceUtils;
 import org.librairy.boot.storage.exception.RepositoryNotFound;
 import org.librairy.boot.storage.generator.URIGenerator;
 import org.librairy.boot.storage.session.UnifiedTransaction;
@@ -114,7 +115,9 @@ public class DeleteResourceAction {
             LOG.debug("Deleted: "+type.name()+"[" + uri+"]");
 
             //Publish the event
-            helper.getEventBus().post(Event.from(uri), RoutingKey.of(type, Resource.State.DELETED));
+            Resource resource = new Resource();
+            resource.setUri(uri);
+            helper.getEventBus().post(Event.from(ResourceUtils.map(resource, Resource.class)), RoutingKey.of(type, Resource.State.DELETED));
 
         }catch (Exception e){
             LOG.error("Unexpected error during delete of '"+uri,e);
