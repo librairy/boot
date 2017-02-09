@@ -124,7 +124,7 @@ public class PartsDao {
 
         try{
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
-            LOG.info("Added part '"+uri+"' to '"+domainUri+"'");
+            LOG.info("Added part '"+uri+"' to '"+domainUri+"' by " + tokenizerMode);
             return result.wasApplied();
         }catch (InvalidQueryException e){
             LOG.warn("Error on query execution [" + query + "] : " + e.getMessage());

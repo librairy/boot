@@ -95,7 +95,11 @@ public class DeleteResourceAction {
 
             switch (type){
                 case DOMAIN:
-                    helper.getKeyspaceDao().removeKeyspace(uri);
+                    try{
+                        helper.getKeyspaceDao().removeKeyspace(uri);
+                    }catch (Exception e){
+                        LOG.warn("Unexpected error trying to delete keyspace from '" + uri + "'",e);
+                    }
                     break;
             }
 

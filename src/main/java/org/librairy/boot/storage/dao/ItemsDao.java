@@ -170,7 +170,7 @@ public class ItemsDao {
         String query = "insert into items (uri,time,tokens) values('"+uri+"', '"+ TimeUtils.asISO()+"', '"+tokens+"');";
         try{
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
-            LOG.info("Added item '"+uri+"' to '"+domainUri+"'");
+            LOG.info("Added item '"+uri+"' to '"+domainUri+"' by " + tokenizerMode);
             return result.wasApplied();
         }catch (InvalidQueryException e){
             LOG.warn("Error on query execution: " + e.getMessage());
