@@ -98,7 +98,7 @@ public class PartsDao {
         }
     }
 
-    public Boolean add(String domainUri, String uri){
+    public Boolean add(String domainUri, String uri) throws DataNotFound{
 
         //add tokens from domain parameter
         String tokenizerMode;
@@ -112,12 +112,8 @@ public class PartsDao {
         String tokens = "";
         while(tokenizer.hasMoreTokens()){
             String type = tokenizer.nextToken();
-            try {
-                Annotation annotation = annotationsDao.get(uri, type);
-                tokens += annotation.getValue();
-            } catch (DataNotFound dataNotFound) {
-                LOG.debug("No '"+type+"' found by '"+uri+"'");
-            }
+            Annotation annotation = annotationsDao.get(uri, type);
+            tokens += annotation.getValue();
         }
 
         String query = "insert into parts (uri,time,tokens) values('"+uri+"', '"+ TimeUtils.asISO()+"', '"+tokens+"');";

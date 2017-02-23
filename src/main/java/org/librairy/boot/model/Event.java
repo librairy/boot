@@ -38,6 +38,7 @@ public class Event {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutput out = new ObjectOutputStream(bos);
             out.writeObject(element);
+            out.flush();
             return new Event(bos.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -52,6 +53,7 @@ public class Event {
             ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
             ObjectInput in = new ObjectInputStream(bis);
             Object data = in.readObject();
+            in.close();
             return (T) data;
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);

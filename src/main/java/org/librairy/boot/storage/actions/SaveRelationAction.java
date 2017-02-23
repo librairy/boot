@@ -13,6 +13,7 @@ import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.model.utils.ResourceUtils;
 import org.librairy.boot.storage.Helper;
+import org.librairy.boot.storage.exception.DataNotFound;
 import org.librairy.boot.storage.generator.URIGenerator;
 import org.librairy.boot.storage.session.UnifiedTransaction;
 import org.slf4j.Logger;
@@ -36,12 +37,20 @@ public class SaveRelationAction {
                 case CONTAINS_TO_DOCUMENT:
                 case CONTAINS_TO_ITEM:
                     // add to domain
-                    helper.getItemsDao().add(relation.getStartUri(),relation.getEndUri());
+                    try {
+                        helper.getItemsDao().add(relation.getStartUri(),relation.getEndUri());
+                    } catch (DataNotFound dataNotFound) {
+                        LOG.debug(dataNotFound.getMessage());
+                    }
                     helper.getCounterDao().increment(relation.getStartUri(), Resource.Type.ITEM.route());
                     break;
                 case CONTAINS_TO_PART:
                     // increment counter
-                    helper.getPartsDao().add(relation.getStartUri(),relation.getEndUri());
+                    try{
+                        helper.getPartsDao().add(relation.getStartUri(),relation.getEndUri());
+                    }catch (DataNotFound dataNotFound) {
+                        LOG.debug(dataNotFound.getMessage());
+                    }
                     helper.getCounterDao().increment(relation.getStartUri(), Resource.Type.PART.route());
                     break;
                 case AGGREGATES:

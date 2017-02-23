@@ -38,7 +38,7 @@ public class ParametersDao {
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
             //TODO this part should be moved to specific modules
             saveOrUpdate(domainUri,"tokenizer.mode","lemma");
-            saveOrUpdate(domainUri,"lda.delay","90000");
+            saveOrUpdate(domainUri,"lda.delay","360000");
             saveOrUpdate(domainUri,"lda.vocabulary.size","10000");
             saveOrUpdate(domainUri,"lda.optimizer","basic");
             saveOrUpdate(domainUri,"lda.max.evaluations","50");
@@ -47,7 +47,7 @@ public class ParametersDao {
             saveOrUpdate(domainUri,"lda.topics","-1");
             saveOrUpdate(domainUri,"lda.alpha","-1");
             saveOrUpdate(domainUri,"lda.beta","-1");
-            saveOrUpdate(domainUri,"w2v.delay","10000");
+            saveOrUpdate(domainUri,"w2v.delay","300000");
             saveOrUpdate(domainUri,"w2v.dim","100");
             saveOrUpdate(domainUri,"w2v.max.iterations","20");
 

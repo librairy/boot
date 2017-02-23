@@ -36,6 +36,21 @@ public class DomainsDao {
     @Autowired
     DBSessionManager dbSessionManager;
 
+    public Boolean exists(String domainUri, String resourceUri){
+        String query = "select count(*) from contains where starturi='" + domainUri + "' and enduri='"+resourceUri+"' ALLOW FILTERING;";
+
+        try{
+            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
+            Row row = result.one();
+
+            if ((row == null) || row.getLong(0) < 1) return false;
+
+        } catch (InvalidQueryException e){
+            LOG.warn("Error on query: " + e.getMessage());
+            return false;
+        }
+        return true;
+    }
 
     public Iterator<Row> listFrom(String resourceUri){
         String query = "select starturi from contains where enduri='"+resourceUri+"';";
@@ -114,6 +129,24 @@ public class DomainsDao {
             throw new DataNotFound("No domain found by '" + uri + "'");
         }
     }
+
+
+    public Long count(String uri, String element) throws DataNotFound {
+        String query = "select num from counts where name='" + element + "' ALLOW FILTERING;";
+
+        try{
+            ResultSet result = dbSessionManager.getSessionByUri(uri).execute(query);
+            Row row = result.one();
+
+            if ((row == null)) return 0l;
+
+            return row.getLong(0);
+        } catch (InvalidQueryException e){
+            LOG.warn("Error on query: " + e.getMessage());
+            throw new DataNotFound("No domain found by '" + uri + "'");
+        }
+    }
+
 
 
 }
