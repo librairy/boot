@@ -13,6 +13,7 @@ import com.datastax.driver.core.exceptions.InvalidQueryException;
 import org.librairy.boot.model.Event;
 import org.librairy.boot.model.domain.resources.Domain;
 import org.librairy.boot.model.domain.resources.Resource;
+import org.librairy.boot.model.modules.BindingKey;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.model.utils.ResourceUtils;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
 @Component
-public class SubdomainsDao {
+public class SubdomainsDao extends AbstractDao {
 
     private static final String DEFAULT_KEYSPACE = "research";
 
@@ -61,6 +62,22 @@ public class SubdomainsDao {
         }
     }
 
+
+    public Boolean exists(String domainUri, String subdomainUri){
+        String query = "select count(*) from subdomains where uri='" + subdomainUri+ "' ;";
+
+        try{
+            ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
+            Row row = result.one();
+
+            if ((row == null) || row.getLong(0) < 1) return false;
+
+        } catch (InvalidQueryException e){
+            LOG.warn("Error on query: " + e.getMessage());
+            return false;
+        }
+        return true;
+    }
 
 
     public List<Domain> list(String domainUri, Integer max, String offset){
@@ -95,8 +112,7 @@ public class SubdomainsDao {
     }
 
     public boolean save(String domainUri, Domain subdomain){
-        String query = "insert into subdomains (uri,name,time) values('"+subdomain.getUri()+"', '"+subdomain.getName
-                ()+"', '"+ TimeUtils.asISO()+"');";
+        String query = "insert into subdomains (uri,name,time) values('"+subdomain.getUri()+"', '"+escaper.escape(subdomain.getName())+"', '"+ TimeUtils.asISO()+"');";
 
         try{
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
@@ -159,9 +175,10 @@ public class SubdomainsDao {
 
     private void updateDomain(String domainUri){
         //publish event
+        //TODO not update domain !!
         Domain resource = new Domain();
         resource.setUri(domainUri);
-        eventBus.post(Event.from(resource), RoutingKey.of(resource.getResourceType(), Resource.State.UPDATED));
+        eventBus.post(Event.from(resource), RoutingKey.of("subdomain.added"));
     }
 
 }

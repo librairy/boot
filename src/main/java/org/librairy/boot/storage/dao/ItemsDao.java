@@ -15,6 +15,7 @@ import com.google.common.base.Strings;
 import org.librairy.boot.model.Annotation;
 import org.librairy.boot.model.Event;
 import org.librairy.boot.model.domain.resources.Domain;
+import org.librairy.boot.model.domain.resources.Item;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.RoutingKey;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
 @Component
-public class ItemsDao {
+public class ItemsDao extends AbstractDao {
 
     private static final String DEFAULT_KEYSPACE = "research";
 
@@ -70,7 +72,80 @@ public class ItemsDao {
         }
     }
 
-    public boolean exists(String domainId, String itemId){
+    public Item get(String uri, Boolean content) throws DataNotFound {
+
+        StringBuilder query = new StringBuilder().append("select description, creationtime, language, format");
+
+        if (content){
+            query.append(", content");
+        }
+
+        query.append(" from research.items");
+
+        query.append(" where uri='"+uri+"' ");
+
+        query.append(";");
+
+
+        try{
+            ResultSet result = dbSessionManager.getSession().execute(query.toString());
+            Row row = result.one();
+
+            if (row == null) throw new DataNotFound("Document not found: '"+ uri + "'");
+
+            Item item = new Item();
+            item.setUri(uri);
+            item.setDescription(row.getString(0));
+            item.setCreationTime(row.getString(1));
+            item.setLanguage(row.getString(2));
+            item.setFormat(row.getString(3));
+
+            if (content){
+                item.setContent(row.getString(4));
+            }
+
+            return item;
+        }catch (InvalidQueryException e){
+            LOG.warn("Error on query: " + query, e);
+            throw new DataNotFound("Error getting document : '" + uri + "'");
+        }
+
+    }
+
+    public Boolean exists(String itemUri){
+        String query = "select count(*) from items where uri='" + itemUri + "';";
+
+        try{
+            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
+            Row row = result.one();
+
+            if ((row == null) || row.getLong(0) < 1) return false;
+
+        } catch (InvalidQueryException e){
+            LOG.warn("Error on query: " + e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public Boolean contains(String itemUri, String partUri){
+        String query = "select count(*) from describes where starturi='" + partUri + "' and enduri='"+itemUri+"' ALLOW FILTERING;";
+
+        try{
+            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
+            Row row = result.one();
+
+            if ((row == null) || row.getLong(0) < 1) return false;
+
+        } catch (InvalidQueryException e){
+            LOG.warn("Error on query: " + e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+
+    public boolean isAnnotatedIn(String domainId, String itemId){
 
         String itemUri = URIGenerator.fromId(Resource.Type.ITEM, itemId);
 
@@ -110,22 +185,8 @@ public class ItemsDao {
     }
 
 
-    public Boolean remove(String domainUri){
-        String query = "drop table if exists items;";
-
-        try{
-            ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
-
-            LOG.info("Removed tokens tables");
-            return result.wasApplied();
-        }catch (InvalidQueryException e){
-            LOG.warn("Error on query execution: " + e.getMessage());
-            return false;
-        }
-    }
-
     public Boolean saveOrUpdateTokens(String domainUri, String uri, String tokens){
-        String query = "insert into items (uri,time,tokens) values('"+uri+"', '"+ TimeUtils.asISO()+"', '"+ tokens+"');";
+        String query = "insert into items (uri,time,tokens) values('"+uri+"', '"+ TimeUtils.asISO()+"', '"+ escaper.escape(tokens) +"');";
 
         try{
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
@@ -163,7 +224,7 @@ public class ItemsDao {
         }
 
 
-        String query = "insert into items (uri,time,tokens) values('"+uri+"', '"+ TimeUtils.asISO()+"', '"+tokens+"');";
+        String query = "insert into items (uri,time,tokens) values('"+uri+"', '"+ TimeUtils.asISO()+"', '"+escaper.escape(tokens)+"');";
         try{
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
             LOG.info("Added item '"+uri+"' to '"+domainUri+"' by " + tokenizerMode);
@@ -191,7 +252,7 @@ public class ItemsDao {
 
                 List<String> parts = listParts(uri, 100, offset);
                 for (String partUri : parts){
-                    partsDao.remove(domainUri, partUri);
+                    partsDao.removeFromDomain(domainUri, partUri);
                 }
 
                 if (parts.size() < 100) break;
@@ -229,7 +290,14 @@ public class ItemsDao {
         StringBuilder query = new StringBuilder().append("select starturi from describes where enduri='"+ itemUri+"'");
 
         if (offset.isPresent()){
-            query.append(" where token(starturi) >= token('" + URIGenerator.fromId(Resource.Type.PART,offset.get()) + "')");
+
+            ResultSet offsetRes = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute("select uri from describes where starturi='" + URIGenerator.fromId(Resource.Type.PART, offset.get()) + "';");
+
+            Row offsetRow = offsetRes.one();
+
+            if (offsetRow == null) return Collections.emptyList();
+
+            query.append(" and token(uri) >= token('" + offsetRow.getString(0) + "')");
         }
 
         query.append(" limit " + size);
@@ -241,7 +309,7 @@ public class ItemsDao {
 
             List<Row> rows = result.all();
 
-            if ((rows == null) || (rows.isEmpty())) Collections.emptyList();
+            if ((rows == null) || (rows.isEmpty())) return Collections.emptyList();
 
             return rows.stream().map(row -> row.getString(0)).collect(Collectors.toList());
         }catch (InvalidQueryException e){
@@ -250,8 +318,8 @@ public class ItemsDao {
         }
     }
 
-    public List<String> listAt(String domainUri, Integer size, Optional<String> offset) throws DataNotFound {
-        StringBuilder query = new StringBuilder().append("select uri from items");
+    public List<Item> listAt(String domainUri, Integer size, Optional<String> offset) throws DataNotFound {
+        StringBuilder query = new StringBuilder().append("select uri,time from items");
 
         if (offset.isPresent()){
             query.append(" where token(uri) >= token('" + URIGenerator.fromId(Resource.Type.ITEM,offset.get()) + "')");
@@ -268,15 +336,32 @@ public class ItemsDao {
 
             if ((rows == null) || (rows.isEmpty())) Collections.emptyList();
 
-            return rows.stream().map(row -> row.getString(0)).collect(Collectors.toList());
+            return rows.stream()
+                    .map(row -> {
+
+                        String uri = row.getString(0);
+                        String time = row.getString(1);
+                        try {
+                            Item item = get(uri, false);
+                            item.setCreationTime(time);
+                            return item;
+                        } catch (DataNotFound dataNotFound) {
+                            LOG.error("Document not found '" + uri + "'");
+                            return new Item();
+                        }
+                    })
+                    .filter(i -> !Strings.isNullOrEmpty(i.getUri()))
+                    .collect(Collectors.toList());
         }catch (InvalidQueryException e){
             LOG.warn("Error on query execution: " + e.getMessage());
             return Collections.emptyList();
         }
     }
 
-    public List<String> listAll(Integer size, Optional<String> offset) {
-        StringBuilder query = new StringBuilder().append("select uri from items");
+
+
+    public List<Item> listAll(Integer size, Optional<String> offset) {
+        StringBuilder query = new StringBuilder().append("select uri, description, creationtime from items");
 
         if (offset.isPresent()){
             query.append(" where token(uri) >= token('" + URIGenerator.fromId(Resource.Type.ITEM,offset.get()) + "')");
@@ -293,7 +378,15 @@ public class ItemsDao {
 
             if ((rows == null) || (rows.isEmpty())) return Collections.emptyList();
 
-            return rows.stream().map(row -> row.getString(0)).collect(Collectors.toList());
+            return rows.stream().map(row -> {
+
+                Item item = new Item();
+                item.setUri(row.getString(0));
+                item.setDescription(row.getString(1));
+                item.setCreationTime(row.getString(2));
+                return item;
+
+            }).collect(Collectors.toList());
         }catch (InvalidQueryException e){
             LOG.warn("Error on query execution: " + e.getMessage());
             return Collections.emptyList();

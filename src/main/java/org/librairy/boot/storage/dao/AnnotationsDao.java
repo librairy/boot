@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
 @Component
-public class AnnotationsDao {
+public class AnnotationsDao extends AbstractDao {
 
     private static final String DEFAULT_KEYSPACE = "research";
 
@@ -57,7 +57,7 @@ public class AnnotationsDao {
 
 
     public Boolean saveOrUpdate(String uri, String type, String value){
-        String query = "insert into annotations(uri,type,time,value) values('"+uri+"', '"+type+"', '"+ TimeUtils.asISO()+"', '"+value+"');";
+        String query = "insert into annotations(uri,type,time,value) values('"+uri+"', '"+type+"', '"+ TimeUtils.asISO()+"', '"+escaper.escape(value)+"');";
 
         try{
             ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);

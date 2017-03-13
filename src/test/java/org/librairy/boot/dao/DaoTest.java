@@ -15,7 +15,8 @@ import org.springframework.context.annotation.PropertySource;
  * Created by cbadenes on 15/03/16.
  */
 @Configuration("librairy.boot.dao.test")
-@ComponentScan({"org.librairy.boot.eventbus", "org.librairy.boot.storage.dao","org.librairy.boot.storage.system.column" })
+//@ComponentScan({"org.librairy.boot.eventbus", "org.librairy.boot.storage.dao","org.librairy.boot.storage.system.column" })
+@ComponentScan({"org.librairy.boot" })
 @PropertySource({"classpath:boot.properties"})
 public class DaoTest {
 }

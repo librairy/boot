@@ -10,6 +10,7 @@ package org.librairy.boot.storage.dao;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
+import org.librairy.boot.model.domain.resources.Param;
 import org.librairy.boot.storage.actions.DeleteResourceAction;
 import org.librairy.boot.storage.exception.DataNotFound;
 import org.slf4j.Logger;
@@ -17,11 +18,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
 @Component
-public class ParametersDao {
+public class ParametersDao extends AbstractDao {
 
     private static final String DEFAULT_KEYSPACE = "research";
 
@@ -74,7 +80,7 @@ public class ParametersDao {
     }
 
     public Boolean saveOrUpdate(String domainUri, String name, String value){
-        String query = "insert into parameters (name,value) values('"+name+"', '"+ value+"');";
+        String query = "insert into parameters (name,value) values('"+name+"', '"+ escaper.escape(value)+"');";
 
         ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
 
@@ -111,6 +117,32 @@ public class ParametersDao {
         }
     }
 
+    public List<Param> listAt(String domainUri){
+        String query = ("select name,value from parameters;");
 
+        LOG.debug("Executing query: " + query);
+        try{
+            ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
+            List<Param> parameters = new ArrayList<>();
+
+            Iterator<Row> it = result.iterator();
+
+            while(it.hasNext()){
+                Row row = it.next();
+
+                Param parameter = new Param();
+                parameter.setName(row.getString(0));
+                parameter.setValue(row.getString(1));
+
+                parameters.add(parameter);
+
+            }
+
+            return parameters;
+        }catch (InvalidQueryException e){
+            LOG.warn("Error on query execution [" + query + "] : " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
 
 }

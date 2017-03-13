@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
-public abstract class AbstractCounterDao {
+public abstract class AbstractCounterDao extends AbstractDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCounterDao.class);
 

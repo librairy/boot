@@ -47,7 +47,7 @@ public class SaveRelationAction {
                 case CONTAINS_TO_PART:
                     // increment counter
                     try{
-                        helper.getPartsDao().add(relation.getStartUri(),relation.getEndUri());
+                        helper.getPartsDao().addToDomain(relation.getStartUri(),relation.getEndUri());
                     }catch (DataNotFound dataNotFound) {
                         LOG.debug(dataNotFound.getMessage());
                     }

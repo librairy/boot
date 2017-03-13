@@ -7,15 +7,20 @@
 
 package org.librairy.boot.dao;
 
+import com.google.common.base.Strings;
 import es.cbadenes.lab.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.librairy.boot.model.Event;
+import org.librairy.boot.model.domain.relations.Relation;
+import org.librairy.boot.model.domain.resources.Item;
+import org.librairy.boot.model.domain.resources.Part;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.storage.dao.ItemsDao;
+import org.librairy.boot.storage.dao.PartsDao;
 import org.librairy.boot.storage.exception.DataNotFound;
 import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
@@ -44,6 +49,9 @@ public class ItemsDaoTest {
     @Autowired
     EventBus eventBus;
 
+    @Autowired
+    PartsDao partsDao;
+
     @Test
     public void updateItems() throws DataNotFound {
 
@@ -54,11 +62,11 @@ public class ItemsDaoTest {
         AtomicInteger counter = new AtomicInteger(0);
         Integer maxCounter = 2;
         while(!stop){
-            List<String> items = itemsDao.listAll(splitSize, lastUri);
-            items.stream().forEach( uri ->{
-                LOG.info("["+counter.incrementAndGet() + "] Item: "  + uri);
+            List<Item> items = itemsDao.listAll(splitSize, lastUri);
+            items.stream().forEach( item ->{
+                LOG.info("["+counter.incrementAndGet() + "] Item: "  + item);
                 Resource resource = new Resource();
-                resource.setUri(uri);
+                resource.setUri(item.getUri());
                 eventBus.post(Event.from(resource), RoutingKey.of(Resource.Type.ITEM, Resource.State.CREATED));
 
 //                // notifiy parts
@@ -73,10 +81,145 @@ public class ItemsDaoTest {
             } );
             if (counter.get()>maxCounter) break;
             if (items.isEmpty() || items.size() < splitSize) break;
-            lastUri = Optional.of(URIGenerator.retrieveId(items.get(splitSize-1)));
+            lastUri = Optional.of(URIGenerator.retrieveId(items.get(splitSize-1).getUri()));
+        }
+    }
+
+    @Test
+    public void addToDomain() throws DataNotFound {
+
+        String domainUri = "http://librairy.org/domains/141fc5bbcf0212ec9bee5ef66c6096ab";
+
+        String itemUri   = "http://librairy.org/items/yV_NJ8YiYRSGV";
+
+
+        itemsDao.add(domainUri, itemUri);
+
+        LOG.info("Test completed!");
+
+    }
+
+
+    @Test
+    public void listParts() throws DataNotFound {
+
+        String itemUri   = "http://librairy.org/items/rL1yAYqh5co";
+
+        Optional<String> offset = Optional.empty();
+        Boolean completed = false;
+        while(!completed){
+
+            List<String> parts = null;
+            parts = itemsDao.listParts(itemUri,10,offset);
+
+            for (String uri : parts){
+                LOG.info("adding: " + uri + " to domain");
+            }
+
+            if (parts.isEmpty() || parts.size() < 10) break;
+
+            String lastUri = parts.get(parts.size()-1);
+            offset = Optional.of(URIGenerator.retrieveId(lastUri));
+        }
+
+    }
+
+
+    @Test
+    public void ratioReport() throws DataNotFound {
+
+        Double wordsPerItem = 0.0;
+        Double wordsPerPart = 0.0;
+        Double wordsPerResource = 0.0;
+
+        int windowsize = 10;
+
+        Optional<String> offset = Optional.empty();
+        Boolean completed = false;
+        while(!completed){
+
+
+            List<Item> items = itemsDao.listAll(10, offset);
+
+            for (Item item : items){
+
+
+                LOG.info("checking '" + item.getUri() + " '");
+
+                Item book = itemsDao.get(item.getUri(), true);
+                if (Strings.isNullOrEmpty(book.getContent())) {
+                    LOG.error("Book empty: " + book.getUri());
+                    continue;
+                }
+                int bookWords = book.getContent().split(" ").length;
+
+                // words per item
+                if (wordsPerItem == 0.0){
+                    wordsPerItem = Double.valueOf(bookWords);
+                }
+
+                wordsPerItem = (wordsPerItem + bookWords) / 2.0;
+
+                // words per resource
+                if (wordsPerResource == 0.0){
+                    wordsPerResource = Double.valueOf(bookWords);
+                }
+
+                wordsPerResource = (wordsPerResource + bookWords) / 2.0;
+
+                Optional<String> partOffset = Optional.empty();
+                Boolean partsCompleted = false;
+
+                while(!partsCompleted){
+                    List<String> parts = itemsDao.listParts(item.getUri(), windowsize, partOffset);
+
+                    for (String uri: parts){
+                        LOG.debug("checking '" + uri + " '");
+
+
+                        Part part = partsDao.get(uri, true);
+                        if (Strings.isNullOrEmpty(part.getContent())) {
+                            LOG.error("Part empty: " + uri);
+                            continue;
+                        }
+                        int chapterWords = part.getContent().split(" ").length;
+
+                        // words per part
+                        if (wordsPerPart == 0.0){
+                            wordsPerPart = Double.valueOf(chapterWords);
+                        }
+
+                        wordsPerPart = (wordsPerPart + chapterWords) / 2.0;
+
+
+                        // words per resource
+                        if (wordsPerResource == 0.0){
+                            wordsPerResource = Double.valueOf(chapterWords);
+                        }
+
+                        wordsPerResource = (wordsPerResource + chapterWords) / 2.0;
+
+                    }
+
+                    if (parts.isEmpty() || parts.size() < windowsize) break;
+
+                    String lastUri = parts.get(parts.size()-1);
+                    partOffset = Optional.of(URIGenerator.retrieveId(lastUri));
+
+                }
+
+            }
+
+            if (items.isEmpty() || items.size() < windowsize) break;
+
+            String lastUri = items.get(items.size()-1).getUri();
+            offset = Optional.of(URIGenerator.retrieveId(lastUri));
         }
 
 
+        LOG.info("Words per book: " + wordsPerItem);
+        LOG.info("Words per part: " + wordsPerPart);
+        LOG.info("Words per resource: " + wordsPerResource);
 
     }
 
