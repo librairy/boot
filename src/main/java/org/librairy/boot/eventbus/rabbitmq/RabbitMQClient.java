@@ -30,7 +30,7 @@ public class RabbitMQClient {
 
     private static String EXCHANGE_TYPE = "topic";
 
-    private Connection connection;
+    public Connection connection;
 
     private Map<String,Channel> channels;
 

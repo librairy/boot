@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 @Component
 @Conditional(GuavaCondition.class)
@@ -66,6 +68,14 @@ public class GuavaEventBus implements EventBus {
 	@Override
 	public void post(Event event, RoutingKey key) {
 		LOG.debug("Post event:[" + event + "] to: " + key + "]");
+		this.bus.post(event);
+	}
+
+	@Override
+	public void directPost(String msg, String queue) throws IOException, TimeoutException {
+		Event event = Event.from(msg);
+		RoutingKey key = RoutingKey.of(queue);
+		LOG.debug("Direct Post event:[" + event + "] to: " + key + "]");
 		this.bus.post(event);
 	}
 

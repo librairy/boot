@@ -117,4 +117,14 @@ public class RabbitMQEventBus implements EventBus {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void directPost(String msg, String queue) throws IOException, TimeoutException {
+
+        Channel channel = client.connection.createChannel();
+        channel.queueDeclare(queue, false, false, false, null);
+        channel.basicPublish("", queue, null, msg.getBytes());
+        LOG.info("Sent '" + msg + "' to queue: '"+ queue + "' in event-bus");
+        channel.close();
+    }
 }

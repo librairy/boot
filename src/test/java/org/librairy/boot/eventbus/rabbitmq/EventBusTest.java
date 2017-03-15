@@ -20,6 +20,7 @@ import org.librairy.boot.model.modules.BindingKey;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.EventBusSubscriber;
 import org.librairy.boot.model.modules.RoutingKey;
+import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.util.Random;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by cbadenes on 13/10/15.
@@ -57,6 +60,14 @@ public class EventBusTest implements EventBusSubscriber {
         Assert.assertTrue(true);
     }
 
+
+    @Test
+    public void domainAnalyzed() throws IOException, TimeoutException {
+
+        String domainUri = "http://librairy.org/domains/12345";
+        eventBus.directPost(URIGenerator.retrieveId(domainUri), "domain.analyzed");
+
+    }
 
 
     @Test
