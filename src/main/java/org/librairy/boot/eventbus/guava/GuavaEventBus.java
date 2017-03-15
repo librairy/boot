@@ -72,7 +72,7 @@ public class GuavaEventBus implements EventBus {
 	}
 
 	@Override
-	public void directPost(String msg, String queue) throws IOException, TimeoutException {
+	public void publish(String msg, String queue) throws IOException, TimeoutException {
 		Event event = Event.from(msg);
 		RoutingKey key = RoutingKey.of(queue);
 		LOG.debug("Direct Post event:[" + event + "] to: " + key + "]");

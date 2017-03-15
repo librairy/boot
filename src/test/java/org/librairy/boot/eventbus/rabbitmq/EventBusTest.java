@@ -7,19 +7,23 @@
 
 package org.librairy.boot.eventbus.rabbitmq;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import es.cbadenes.lab.test.IntegrationTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.librairy.boot.eventbus.EventBusConfig;
+import org.librairy.boot.eventbus.EventMessage;
 import org.librairy.boot.model.Event;
+import org.librairy.boot.model.domain.resources.Domain;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.domain.resources.Source;
 import org.librairy.boot.model.modules.BindingKey;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.EventBusSubscriber;
 import org.librairy.boot.model.modules.RoutingKey;
+import org.librairy.boot.model.utils.TimeUtils;
 import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +69,16 @@ public class EventBusTest implements EventBusSubscriber {
     public void domainAnalyzed() throws IOException, TimeoutException {
 
         String domainUri = "http://librairy.org/domains/12345";
-        eventBus.directPost(URIGenerator.retrieveId(domainUri), "domain.analyzed");
+
+        EventMessage eventMessage = new EventMessage();
+        eventMessage.setName("sample-name");
+        eventMessage.setId("sample-id");
+        eventMessage.setTime(TimeUtils.asISO());
+
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonMsg = mapper.writeValueAsString(eventMessage);
+
+        eventBus.publish(jsonMsg, "domains.analyzed");
 
     }
 

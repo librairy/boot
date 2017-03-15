@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -69,6 +71,12 @@ public class RabbitMQEventBus implements EventBus {
 //            this.client.connect(uri);
             this.client.connect(user,pwd, host, Integer.valueOf(port), keyspace);
             this.channel = this.client.newChannel(EXCHANGE);
+
+
+            // librairy.news
+            Channel newsChannel = client.connection.createChannel();
+            newsChannel.exchangeDeclare("librairy.news","topic",false);
+            newsChannel.close();
             LOG.info("RabbitMQ Event-Bus initialized successfully");
         } catch (IOException | TimeoutException | NoSuchAlgorithmException | KeyManagementException | URISyntaxException e) {
             throw new RuntimeException(e);
@@ -119,12 +127,20 @@ public class RabbitMQEventBus implements EventBus {
     }
 
     @Override
-    public void directPost(String msg, String queue) throws IOException, TimeoutException {
+    public void publish(String msg, String route) throws IOException, TimeoutException {
 
         Channel channel = client.connection.createChannel();
-        channel.queueDeclare(queue, false, false, false, null);
-        channel.basicPublish("", queue, null, msg.getBytes());
-        LOG.info("Sent '" + msg + "' to queue: '"+ queue + "' in event-bus");
+
+        channel.exchangeDeclare("librairy.news","topic",false);
+//
+//        Map<String,Object> args = new HashMap<>();
+//        args.put("x-message-ttl", 10000);//msecs
+//        boolean durable     = true;
+//        boolean exclusive   = false;
+//        boolean autodelete  = true;
+//        channel.queueDeclare(queue, durable, exclusive, autodelete, args);
+        channel.basicPublish("librairy.news", route, null, msg.getBytes());
+        LOG.info("Sent '" + msg + "' to route: '"+ route+ "' in event-bus");
         channel.close();
     }
 }

@@ -20,6 +20,6 @@ public interface EventBus {
 
 	void post(Event event, RoutingKey routingKey);
 
-	void directPost(String msg, String queue) throws IOException, TimeoutException;
+	void publish(String msg, String route) throws IOException, TimeoutException;
 
 }

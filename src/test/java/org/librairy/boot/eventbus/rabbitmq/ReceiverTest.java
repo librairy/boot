@@ -34,8 +34,10 @@ public class ReceiverTest {
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 
-        String QUEUE_NAME = "domain.analyzed";
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+//        channel.exchangeDeclare("librairy.news","topic");
+        String queueName = channel.queueDeclare().getQueue();
+
+        channel.queueBind(queueName, "librairy.news", "domains.analyzed");
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
         Consumer consumer = new DefaultConsumer(channel) {
             @Override
@@ -45,7 +47,7 @@ public class ReceiverTest {
                 System.out.println(" [x] Received '" + message + "'");
             }
         };
-        channel.basicConsume(QUEUE_NAME, true, consumer);
+        channel.basicConsume(queueName, true, consumer);
 
         Thread.sleep(Long.MAX_VALUE);
     }
