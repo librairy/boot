@@ -87,10 +87,11 @@ public class DBSessionManager {
     private static String getKeyspaceId(String domainId){
         //return (Character.isDigit(domainId.charAt(0)))? "d"+domainId : domainId;
 
-        switch (domainId.toLowerCase()){
+        String domainIdLowerCase = domainId.toLowerCase();
+        switch (domainIdLowerCase){
             case "research": return "research";
             case "default" : return "default";
-            default: return "d"+domainId;
+            default: return "d"+domainIdLowerCase;
         }
     }
 }

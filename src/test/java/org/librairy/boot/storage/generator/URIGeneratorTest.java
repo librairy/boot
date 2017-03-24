@@ -27,7 +27,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
 @TestPropertySource(properties = {
-        "librairy.uri= drinventor.eu"
+        //"librairy.uri= drinventor.eu"
+        "librairy.uri= librairy.linkeddata.es/resources"
 })
 public class URIGeneratorTest {
 
@@ -51,4 +52,15 @@ public class URIGeneratorTest {
         Assert.assertEquals("http://drinventor.eu/documents/123", uriGenerator.from(Resource.Type.DOCUMENT,"123"));
 
     }
+
+    @Test
+    public void typeAndId(){
+
+        String uri = "http://librairy.linkeddata.es/resources/domains/d01";
+
+        Assert.assertEquals(Resource.Type.DOMAIN, uriGenerator.typeFrom(uri));
+        Assert.assertEquals("d01", uriGenerator.retrieveId(uri));
+
+    }
+
 }

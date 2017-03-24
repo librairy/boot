@@ -44,7 +44,7 @@ public class ParametersDao extends AbstractDao {
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
             //TODO this part should be moved to specific modules
             saveOrUpdate(domainUri,"tokenizer.mode","lemma");
-            saveOrUpdate(domainUri,"lda.delay","360000");
+            saveOrUpdate(domainUri,"lda.delay","30000");
             saveOrUpdate(domainUri,"lda.vocabulary.size","10000");
             saveOrUpdate(domainUri,"lda.optimizer","basic");
             saveOrUpdate(domainUri,"lda.max.evaluations","50");
