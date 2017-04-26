@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 public class DBSessionManager {
+
     @Autowired
     CassandraClusterFactoryBean clusterFactoryBean;
 
@@ -39,11 +40,23 @@ public class DBSessionManager {
 
 
     public Session getSessionByUri(String domainUri){
-        return getSessionById(URIGenerator.retrieveId(domainUri));
+        return getDomainSession(URIGenerator.retrieveId(domainUri));
     }
 
-    public Session getSessionById(String id){
-        String keyspaceId = getKeyspaceId(id);
+
+    public Session getCommonSession(){
+        return getSession(getCommonKeyspaceId());
+    }
+
+    public Session getDomainSession(String domainId){
+        return getSession(getDomainKeyspaceId(domainId));
+    }
+
+    public Session getSpecificSession(String scope, String domainId){
+        return getSession(getSpecificKeyspaceId(scope, domainId));
+    }
+
+    private Session getSession(String keyspaceId){
         Session session = sessions.get(keyspaceId);
 
         if (session == null){
@@ -62,36 +75,46 @@ public class DBSessionManager {
     }
 
     public void closeSessionByUri(String uri){
-        closeSessionById(URIGenerator.retrieveId(uri));
+        closeDomainSessionById(URIGenerator.retrieveId(uri));
     }
 
-    public void closeSessionById(String id){
-        String keyspaceId = getKeyspaceId(id);
-        if (sessions.contains(keyspaceId)){
-            sessions.get(id).close();
-            sessions.remove(keyspaceId);
-        }
+    public void closeDomainSessionById(String id){
+        closeSession(getDomainKeyspaceId(id));
     }
 
-    public void closeSession(){
+    public void closeSpecificSessionById(String scope, String id){
+        closeSession(getSpecificKeyspaceId(scope,id));
+    }
+
+
+    public void closeCommonsSession(){
+        closeSession(getCommonKeyspaceId());
         if (this.controlSession != null){
             this.controlSession.close();
         }
     }
 
+    private void closeSession(String id){
+        if (sessions.contains(id)){
+            sessions.get(id).close();
+            sessions.remove(id);
+        }
+    }
+
     public static String getKeyspaceFromUri(String uri){
-        return getKeyspaceId(URIGenerator.retrieveId(uri));
+        return getDomainKeyspaceId(URIGenerator.retrieveId(uri));
     }
 
 
-    private static String getKeyspaceId(String domainId){
-        //return (Character.isDigit(domainId.charAt(0)))? "d"+domainId : domainId;
+    public static String getCommonKeyspaceId(){
+        return "research";
+    }
 
-        String domainIdLowerCase = domainId.toLowerCase();
-        switch (domainIdLowerCase){
-            case "research": return "research";
-            case "default" : return "default";
-            default: return "d"+domainIdLowerCase;
-        }
+    public static String getDomainKeyspaceId(String domainId){
+        return "d" + domainId.toLowerCase();
+    }
+
+    public static String getSpecificKeyspaceId(String scope,String domainId){
+        return scope.toLowerCase() +"_" + domainId.toLowerCase();
     }
 }

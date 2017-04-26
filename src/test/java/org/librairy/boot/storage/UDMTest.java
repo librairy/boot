@@ -8,39 +8,33 @@
 package org.librairy.boot.storage;
 
 import es.cbadenes.lab.test.IntegrationTest;
-import org.librairy.boot.Config;
-import org.librairy.boot.model.domain.resources.Document;
-import org.librairy.boot.model.domain.resources.Domain;
-import org.librairy.boot.model.domain.resources.Resource;
-import org.librairy.boot.model.modules.RoutingKey;
-import org.librairy.boot.model.Event;
-import org.librairy.boot.model.domain.relations.HypernymOf;
-import org.librairy.boot.model.domain.relations.Relation;
-import org.librairy.boot.model.domain.resources.Source;
-import org.librairy.boot.model.modules.BindingKey;
-import org.librairy.boot.model.modules.EventBus;
-import org.librairy.boot.model.modules.EventBusSubscriber;
-import org.librairy.boot.storage.generator.URIGenerator;
-import org.librairy.boot.storage.system.document.domain.WordDocument;
-import org.librairy.boot.storage.system.document.repository.WordDocumentRepository;
-import org.librairy.boot.storage.system.graph.repository.edges.DealsWithFromDocumentEdgeRepository;
-import org.librairy.boot.storage.system.graph.repository.edges.SimilarToEdgeRepository;
-import org.librairy.boot.storage.system.graph.repository.nodes.DocumentGraphRepository;
-import org.librairy.boot.storage.system.graph.repository.nodes.DomainGraphRepository;
-import org.librairy.boot.storage.system.graph.repository.nodes.SourceGraphRepository;
-import org.librairy.boot.storage.system.graph.repository.nodes.UnifiedNodeGraphRepositoryFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.librairy.boot.Config;
+import org.librairy.boot.model.Event;
+import org.librairy.boot.model.domain.relations.HypernymOf;
+import org.librairy.boot.model.domain.relations.Relation;
+import org.librairy.boot.model.domain.resources.Document;
+import org.librairy.boot.model.domain.resources.Domain;
+import org.librairy.boot.model.domain.resources.Resource;
+import org.librairy.boot.model.domain.resources.Source;
+import org.librairy.boot.model.modules.BindingKey;
+import org.librairy.boot.model.modules.EventBus;
+import org.librairy.boot.model.modules.EventBusSubscriber;
+import org.librairy.boot.model.modules.RoutingKey;
+import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -66,33 +60,10 @@ public class UDMTest {
     Helper helper;
 
     @Autowired
-    DocumentGraphRepository documentGraphRepository;
-
-    @Autowired
-    WordDocumentRepository wordDocumentRepository;
-
-    @Autowired
-    SourceGraphRepository sourceGraphRepository;
-
-    @Autowired
-    DomainGraphRepository domainGraphRepository;
-
-    @Autowired
-    DealsWithFromDocumentEdgeRepository dealsWithFromDocumentEdgeRepository;
-
-    @Autowired
     EventBus eventBus;
 
     @Autowired
     URIGenerator uriGenerator;
-
-    @Autowired
-    UnifiedNodeGraphRepositoryFactory factory;
-
-
-    @Autowired
-    SimilarToEdgeRepository similarToEdgeRepository;
-
 
     @Test
     public void saveSourceMinimal(){
@@ -131,106 +102,6 @@ public class UDMTest {
 
     }
 
-
-    @Test
-    public void read() throws InterruptedException {
-
-
-//        List<String> docs = udm.find(Resource.Type.DOCUMENT).from(Resource.Type.DOMAIN, "http://librairy" +
-//                ".org/domains/default");
-//
-//        System.out.println("Found: " + docs.size() + " documents");
-
-//        List<String> sources = udm.find(Resource.Type.SOURCE).all();
-//
-//        List<String> itemUris = udm.find(Resource.Type.ITEM).from(Resource.Type.SOURCE, sources.get(0));
-//
-//        System.out.println(itemUris);
-
-
-//        Iterator<Map<String, Object>> result = udm.queryGraph("match (d:Document) return count " +
-//                "(d)");
-//
-//        System.out.println(result);
-
-
-//        Select select = QueryBuilder.select().from("research", "items");
-//        select.where(QueryBuilder.eq("uri","http://librairy.org/items/297f44cc83545ea4d9ce5ceb0d8aadb2"));
-//
-//        List<LinkableElement> result = udm.queryColumn(select);
-//
-//        System.out.println(result);
-
-
-//        SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery())
-//                .withQuery(QueryBuilders.termQuery("content", "communication"))
-//                .withHighlightFields(new HighlightBuilder.Field("message"))
-//                .withPageable(new PageRequest(0, 10))
-//                .build();
-//
-//        List<String> result = udm.queryDocument(searchQuery);
-//
-//        System.out.println(result);
-
-
-        Iterable<Relation> res = helper.getUnifiedColumnRepository().findBy(Relation.Type.BUNDLES, "item",
-                "http://librairy" +
-                        ".org/items/297f44cc83545ea4d9ce5ceb0d8aadb2");
-
-
-        List<Resource> docs = udm.find(Resource.Type.DOCUMENT).from(Resource.Type.ITEM, "http://librairy" +
-                ".org/items/297f44cc83545ea4d9ce5ceb0d8aadb2");
-
-
-        System.out.println(docs);
-
-
-//        Boolean res = helper.getUnifiedDocumentRepository().exists(Resource.Type.ITEM, "http://librairy" +
-//                ".org/items/297f44cc83545ea4d9ce5ceb0d8aadb3");
-
-        long documents = 0;
-        double docRate = 0.0;
-
-        long items = 0;
-        double itemRate = 0.0;
-
-        long delay = 5000l;
-        while(true){
-
-            long newDocs                = countFor(Resource.Type.DOCUMENT);
-            long incrementDocs          = newDocs - documents;
-            Double rateDocs             = Double.valueOf(incrementDocs) / Double.valueOf(delay/1000);
-            docRate = (docRate + rateDocs) /2.0;
-            LOG.info("Docs creation. [instant: " + rateDocs  + " docs/sec] [mean: " + docRate + " docs/sec]");
-            documents = newDocs;
-
-            long newItems           = countFor(Resource.Type.ITEM);
-            long incrementItems     = newItems - items;
-
-            Double rateItems        = Double.valueOf(incrementItems) / Double.valueOf(delay/1000);
-            itemRate = (itemRate + rateItems) /2.0;
-            LOG.info("Items creation. [instant: " + rateItems  + " items/sec] [mean: " + itemRate + " items/sec]");
-            items = newItems;
-
-//            long docs = udm.count(Resource.Type.DOCUMENT).all();
-//            long items = udm.count(Resource.Type.ITEM).all();
-//            System.out.println("Node Items: " + items);
-
-            Thread.sleep(delay);
-        }
-    }
-
-    private long countFor(Resource.Type type){
-//        long dDocs = helper.getUnifiedDocumentRepository().count(type);
-//        long cDocs = helper.getUnifiedColumnRepository().count(type);
-        long n1Docs = helper.getTemplateFactory().of(type).countAll();
-//        long n2Docs = helper.getUnifiedNodeGraphRepository().count(type);
-//        LOG.info(type.name() + "s from [ElasticSearch=" + dDocs+"] [Cassandra="+cDocs+"] [Neo4j(template)" +
-//                "="+n1Docs+"] [Neo4j(repository)="+n2Docs+"]");
-        LOG.info(type.name() + "s from [[Neo4j(template)" +
-                "="+n1Docs+"]");
-        return n1Docs;
-    }
 
     @Test
     public void purge(){
@@ -504,15 +375,5 @@ public class UDMTest {
         LOG.info("Domain: " + domain);
     }
 
-
-    @Test
-    public void findWord (){
-
-        String wordURI = "http://librairy.org/words/f643a3b3-16ce-4158-b4f8-0f82c53092bc";
-        String domainURI ="http://librairy.org/domains/382130c5-1d84-4b21-a591-90d2c235f0a5";
-
-        WordDocument doc = wordDocumentRepository.findOne(wordURI);
-        System.out.println(doc);
-    }
 
 }

@@ -40,8 +40,6 @@ public class UpdateResourceAction {
 
             // column
             helper.getUnifiedColumnRepository().save(resource);
-            // document
-            helper.getUnifiedDocumentRepository().save(resource);
 
             transaction.commit();
 

@@ -53,6 +53,7 @@ public class URIGenerator implements Serializable{
     @PostConstruct
     public void setup(){
         base = "http://"+domainUri+"/";
+        baseUri = base;
         LOG.info("Uri Generator initialized successfully");
     }
 
@@ -75,7 +76,7 @@ public class URIGenerator implements Serializable{
         return new StringBuilder(baseUri).append(resource.route()).append(SEPARATOR).append(getMD5(content)).toString();
     }
 
-    public static String compositionFromId(Resource.Type resource1, String id1, Resource.Type resource2, String id2){
+    public static String compositeFromId(Resource.Type resource1, String id1, Resource.Type resource2, String id2){
         initializeBaseUri();
         return new StringBuilder(baseUri)
                 .append(resource1.route())

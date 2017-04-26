@@ -8,17 +8,12 @@
 package org.librairy.boot.storage;
 
 import lombok.Data;
-import lombok.Getter;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.storage.dao.*;
 import org.librairy.boot.storage.executor.QueryExecutor;
 import org.librairy.boot.storage.generator.URIGenerator;
-import org.librairy.boot.storage.system.column.repository.UnifiedColumnRepository;
-import org.librairy.boot.storage.system.document.repository.UnifiedDocumentRepository;
-import org.librairy.boot.storage.system.graph.repository.edges.UnifiedEdgeGraphRepository;
-import org.librairy.boot.storage.system.graph.repository.nodes.UnifiedNodeGraphRepository;
-import org.librairy.boot.storage.system.graph.template.TemplateFactory;
 import org.librairy.boot.storage.session.UnifiedSession;
+import org.librairy.boot.storage.system.column.repository.UnifiedColumnRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,25 +27,13 @@ public class Helper {
     @Autowired 
     UnifiedColumnRepository unifiedColumnRepository;
 
-    @Autowired 
-    UnifiedDocumentRepository unifiedDocumentRepository;
-
-    @Autowired 
-    UnifiedNodeGraphRepository unifiedNodeGraphRepository;
-
-    @Autowired 
-    UnifiedEdgeGraphRepository unifiedEdgeGraphRepository;
-
-    @Autowired 
+    @Autowired
     UnifiedSession session;
 
     @Autowired 
     EventBus eventBus;
 
-    @Autowired 
-    TemplateFactory templateFactory;
-
-    @Autowired 
+    @Autowired
     URIGenerator uriGenerator;
 
     @Autowired 

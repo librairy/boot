@@ -50,7 +50,7 @@ public class AnnotationsDao extends AbstractDao {
     public Boolean initialize(){
         String query = "create table if not exists annotations(uri varchar, type varchar, time varchar, value text, primary key(uri,type));";
 
-        ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
+        ResultSet result = dbSessionManager.getCommonSession().execute(query);
 
         return result.wasApplied();
     }
@@ -60,7 +60,7 @@ public class AnnotationsDao extends AbstractDao {
         String query = "insert into annotations(uri,type,time,value) values('"+uri+"', '"+type+"', '"+ TimeUtils.asISO()+"', '"+escaper.escape(value)+"');";
 
         try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
+            ResultSet result = dbSessionManager.getCommonSession().execute(query);
             LOG.debug("Annotated '"+uri+"' with '"+type+"'");
             //publish event
             Resource resource = new Resource();
@@ -77,7 +77,7 @@ public class AnnotationsDao extends AbstractDao {
         String query = "select time,value from annotations where uri='"+uri+"' and type='"+type+"';";
 
         try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
+            ResultSet result = dbSessionManager.getCommonSession().execute(query);
             Row row = result.one();
 
             if (row == null) throw new DataNotFound("Not found '"+type+"' in '"+uri+"'");
@@ -104,7 +104,7 @@ public class AnnotationsDao extends AbstractDao {
         query += " from annotations where uri='" + uri + "';";
 
         try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
+            ResultSet result = dbSessionManager.getCommonSession().execute(query);
             List<Row> rows = result.all();
 
             if ((rows == null) || rows.isEmpty()) return Collections.emptyList();
@@ -128,7 +128,7 @@ public class AnnotationsDao extends AbstractDao {
         String query = "delete from annotations where uri='"+uri+"' and type='"+type+"';";
 
         try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
+            ResultSet result = dbSessionManager.getCommonSession().execute(query);
             return result.wasApplied();
         } catch (InvalidQueryException e){
             LOG.warn("Error on query: " + e.getMessage());
@@ -140,7 +140,7 @@ public class AnnotationsDao extends AbstractDao {
         String query = "delete from annotations where uri='"+uri+"';";
 
         try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
+            ResultSet result = dbSessionManager.getCommonSession().execute(query);
             return result.wasApplied();
         } catch (InvalidQueryException e){
             LOG.warn("Error on query: " + e.getMessage());
@@ -152,7 +152,7 @@ public class AnnotationsDao extends AbstractDao {
         String query = "truncate annotations;";
 
         try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
+            ResultSet result = dbSessionManager.getCommonSession().execute(query);
             return result.wasApplied();
         } catch (InvalidQueryException e){
             LOG.warn("Error on query: " + e.getMessage());

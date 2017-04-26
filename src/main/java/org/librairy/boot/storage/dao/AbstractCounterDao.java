@@ -23,49 +23,39 @@ public abstract class AbstractCounterDao extends AbstractDao {
     @Autowired
     DBSessionManager dbSessionManager;
 
-
     protected Boolean initialize(String keyspaceId){
 
         String query = "create table if not exists counts(num counter, name varchar, primary key(name));";
 
-        ResultSet result = dbSessionManager.getSessionById(keyspaceId).execute(query);
-
-        return result.wasApplied();
+        return executeQuery(query,keyspaceId).wasApplied();
     }
 
     protected Boolean remove(String keyspaceId){
 
         String query = "drop table if exists counts;";
 
-        ResultSet result = dbSessionManager.getSessionById(keyspaceId).execute(query);
-
-        return result.wasApplied();
+        return executeQuery(query,keyspaceId).wasApplied();
     }
 
     protected Boolean truncate(String keyspaceId){
 
         String query = "truncate counts;";
 
-        ResultSet result = dbSessionManager.getSessionById(keyspaceId).execute(query);
-
-        return result.wasApplied();
+        return executeQuery(query,keyspaceId).wasApplied();
     }
 
     protected Boolean update(String keyspaceId, String counter, String op, Long value){
 
         String query = "update counts set num = num "+op+" "+value+" where name='"+counter+"';";
 
-        ResultSet result = dbSessionManager.getSessionById(keyspaceId).execute(query);
-
-        return result.wasApplied();
+        return executeQuery(query,keyspaceId).wasApplied();
     }
 
     protected Long get(String keyspaceId, String counter){
 
         String query = "select num from counts where name='"+counter+"';";
 
-        ResultSet result = dbSessionManager.getSessionById(keyspaceId).execute(query);
-
+        ResultSet result = executeQuery(query, keyspaceId);
         Row row = result.one();
 
         if (row == null) return 0l;
@@ -80,6 +70,13 @@ public abstract class AbstractCounterDao extends AbstractDao {
 
         return update(keyspaceId,counter,"-",value);
 
+    }
+
+    private ResultSet executeQuery(String query, String keyspaceId){
+        if (keyspaceId.equalsIgnoreCase("research"))
+            return dbSessionManager.getCommonSession().execute(query);
+        else
+            return dbSessionManager.getDomainSession(keyspaceId).execute(query);
     }
 
 }

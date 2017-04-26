@@ -8,7 +8,6 @@
 package org.librairy.boot.storage;
 
 import com.datastax.driver.core.querybuilder.Select;
-import com.google.common.collect.ImmutableMap;
 import org.librairy.boot.eventbus.EventBusHelper;
 import org.librairy.boot.eventbus.RelationEventHandler;
 import org.librairy.boot.eventbus.ResourceEventHandler;
@@ -18,17 +17,13 @@ import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.storage.actions.*;
 import org.librairy.boot.storage.system.column.templates.ColumnTemplate;
-import org.librairy.boot.storage.system.document.templates.DocumentTemplate;
-import org.librairy.boot.storage.system.graph.template.TemplateExecutor;
-import org.neo4j.ogm.model.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.List;
 
 /**
  * Created by cbadenes on 23/12/15.
@@ -45,16 +40,7 @@ public class UDM {
     EventBusHelper eventBusHelper;
 
     @Autowired
-    TemplateExecutor neo4jExecutor;
-
-    @Autowired
     ColumnTemplate columnTemplate;
-
-    @Autowired
-    DocumentTemplate documentTemplate;
-
-    @Autowired
-    TemplateExecutor executor;
 
     @Autowired
     EventBus eventBus;
@@ -87,17 +73,6 @@ public class UDM {
         eventBusHelper.subscribe(type, state, label, handler);
     }
 
-    /**
-     * Native Graph Queries
-     * @param query
-     * @return
-     */
-    public Iterator<Map<String, Object>> queryGraph(String query){
-        Optional<Result> result = neo4jExecutor.query(query, ImmutableMap.of());
-        if (!result.isPresent()) return Collections.EMPTY_LIST.iterator();
-        return result.get().queryResults().iterator();
-    }
-
 
     /**
      * Native Column Queries
@@ -108,15 +83,6 @@ public class UDM {
         return columnTemplate.query(select);
     }
 
-
-    /**
-     * Native Document Queries
-     * @param select
-     * @return
-     */
-    public List<String> queryDocument(SearchQuery select){
-        return documentTemplate.query(select);
-    }
 
     /**
      * Save a resource
@@ -130,16 +96,6 @@ public class UDM {
      * @param resource
      */
     public UpdateResourceAction update(Resource resource){return new UpdateResourceAction(helper,resource);
-    }
-
-    /**
-     * Temporal solution to avoid Neo4j bug for duplicated relations
-     * @param uri
-     * @return
-     */
-    public Optional<Result> fixDuplicates(String uri){
-        return executor.query("MATCH ()-[r {uri : {0}}]->() WITH TAIL (COLLECT (r)) as rr FOREACH (r IN rr | " +
-                "DELETE r)", ImmutableMap.of("0",uri));
     }
 
     /**
@@ -203,24 +159,6 @@ public class UDM {
      */
     public SearchRelationAction find(Relation.Type type){
         return new SearchRelationAction(helper,type);
-    }
-
-    /**
-     * Count 'type' resources
-     * @param type
-     * @return uris
-     */
-    public CountResourceAction count(Resource.Type type){
-        return new CountResourceAction(helper,type);
-    }
-
-    /**
-     * Count 'type' relations
-     * @param type
-     * @return uris
-     */
-    public CountRelationAction count(Relation.Type type){
-        return new CountRelationAction(helper,type);
     }
 
     /**

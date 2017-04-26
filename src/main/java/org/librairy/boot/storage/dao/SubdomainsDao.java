@@ -80,11 +80,12 @@ public class SubdomainsDao extends AbstractDao {
     }
 
 
-    public List<Domain> list(String domainUri, Integer max, String offset){
+    public List<Domain> list(String domainUri, Integer max, String offset, Boolean inclusive){
         StringBuilder query = new StringBuilder().append("select uri, name, time from subdomains");
 
         if (offset != null){
-            query.append(" token(uri) >= token('" + URIGenerator.fromId(
+            String operator = inclusive? ">=" : ">";
+            query.append(" token(uri) "+operator+" token('" + URIGenerator.fromId(
                     Resource.Type.DOMAIN,offset) + "')");
         }
 

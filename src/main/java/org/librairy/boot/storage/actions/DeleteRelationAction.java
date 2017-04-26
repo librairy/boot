@@ -93,37 +93,12 @@ public class DeleteRelationAction {
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
             // decrement global counter
-            helper.getCounterDao().decrement(URIGenerator.typeFrom(uri).route());
-
-            // todo remove it
-//            if (helper.getTemplateFactory().handle(type)) {
-//                helper.getTemplateFactory().of(type).delete(uri);
-//            }else{
-//                helper.getUnifiedEdgeGraphRepository().delete(type,uri);
-//            }
-
-            // decrement domain counter
-            switch (type){
-                case CONTAINS_TO_DOCUMENT:
-                case CONTAINS_TO_ITEM:
-                case CONTAINS_TO_PART:
-                    // decrement global counter
-                    Optional<Relation> relationOpt = helper.getUnifiedColumnRepository().read(type, uri);
-                    if (relationOpt.isPresent()){
-                        Relation relation = relationOpt.get();
-                        helper.getCounterDao().decrement(relation.getStartUri(), URIGenerator.typeFrom(relation.getEndUri()).route());
-                    }
-                    break;
-            }
-
             helper.getCounterDao().decrement(type.route());
 
             // Column Database
             helper.getUnifiedColumnRepository().delete(type,uri);
 
             transaction.commit();
-
-
 
             LOG.debug("Deleted: "+type.name()+"[" + uri+"]");
 

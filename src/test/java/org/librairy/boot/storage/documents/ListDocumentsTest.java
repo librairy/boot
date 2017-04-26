@@ -14,23 +14,12 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.librairy.boot.Config;
-import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.domain.resources.Document;
-import org.librairy.boot.model.modules.EventBus;
-import org.librairy.boot.storage.Helper;
+import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.storage.UDM;
-import org.librairy.boot.storage.generator.URIGenerator;
-import org.librairy.boot.storage.system.document.repository.WordDocumentRepository;
-import org.librairy.boot.storage.system.graph.repository.edges.DealsWithFromDocumentEdgeRepository;
-import org.librairy.boot.storage.system.graph.repository.nodes.DocumentGraphRepository;
-import org.librairy.boot.storage.system.graph.repository.nodes.DomainGraphRepository;
-import org.librairy.boot.storage.system.graph.repository.nodes.SourceGraphRepository;
-import org.librairy.boot.storage.system.graph.repository.nodes.UnifiedNodeGraphRepositoryFactory;
-import org.neo4j.ogm.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -65,39 +54,6 @@ public class ListDocumentsTest {
 
     @Autowired
     UDM udm;
-
-    @Autowired
-    Helper helper;
-
-    @Autowired
-    Session session;
-
-    @Autowired
-    DocumentGraphRepository documentGraphRepository;
-
-    @Autowired
-    WordDocumentRepository wordDocumentRepository;
-
-    @Autowired
-    SourceGraphRepository sourceGraphRepository;
-
-    @Autowired
-    DomainGraphRepository domainGraphRepository;
-
-    @Autowired
-    DealsWithFromDocumentEdgeRepository dealsWithFromDocumentEdgeRepository;
-
-    @Autowired
-    EventBus eventBus;
-
-    @Autowired
-    URIGenerator uriGenerator;
-
-    @Autowired
-    UnifiedNodeGraphRepositoryFactory factory;
-
-    @Autowired
-    ElasticsearchTemplate documentDBRepository;
 
     @Test
     public void listOfDocuments() throws IOException, URISyntaxException {

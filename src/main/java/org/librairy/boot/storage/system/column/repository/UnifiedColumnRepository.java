@@ -11,7 +11,7 @@ import org.apache.commons.lang.WordUtils;
 import org.librairy.boot.model.domain.relations.Relation;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.utils.ResourceUtils;
-import org.librairy.boot.storage.system.graph.repository.Repository;
+import org.librairy.boot.storage.system.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,7 +187,6 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
         return Collections.EMPTY_LIST;
     }
 
-    @Override
     public void delete(Resource.Type type, String uri){
         try{
             factory.repositoryOf(type).delete(BasicMapId.id(ResourceUtils.URI, uri));
@@ -225,9 +224,6 @@ public class UnifiedColumnRepository implements Repository<Resource,Resource.Typ
     }
 
 
-
-
-    @Override
     public void deleteAll(Resource.Type type){
         try{
             factory.repositoryOf(type).deleteAll();

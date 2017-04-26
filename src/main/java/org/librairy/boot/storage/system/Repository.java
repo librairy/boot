@@ -1,19 +1,19 @@
 /*
- * Copyright (c) 2016. Universidad Politecnica de Madrid
+ * Copyright (c) 2017. Universidad Politecnica de Madrid
  *
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  *
  */
 
-package org.librairy.boot.storage.system.graph.repository;
+package org.librairy.boot.storage.system;
 
-import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.domain.LinkableElement;
+import org.librairy.boot.model.domain.resources.Resource;
 
 import java.util.Optional;
 
 /**
- * Created by cbadenes on 03/02/16.
+ * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
 public interface  Repository<L extends LinkableElement,T> {
 

@@ -33,7 +33,7 @@ public class Resource extends LinkableElement {
 		FILTER("filter","filters"),
 		PATH("path","paths"),
 		FILE("file","files"),
-		ANY("*","*");
+		ANY("*","*"), ;
 
 		String plural;
 		String key;

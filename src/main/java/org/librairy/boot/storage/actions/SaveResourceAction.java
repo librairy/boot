@@ -104,8 +104,6 @@ public class SaveResourceAction {
 
             // column
             helper.getUnifiedColumnRepository().save(resource);
-            // document
-            helper.getUnifiedDocumentRepository().save(resource);
 
             transaction.commit();
 

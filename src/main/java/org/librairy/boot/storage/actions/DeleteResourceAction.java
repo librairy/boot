@@ -55,14 +55,6 @@ public class DeleteResourceAction {
             types.stream().filter(x -> !x.equals(Resource.Type.ANY)).forEach(t ->{
                 try{
                     helper.getUnifiedColumnRepository().deleteAll(t);
-                    helper.getUnifiedDocumentRepository().deleteAll(t);
-
-                    //TODO remove it
-//                    if (helper.getTemplateFactory().handle(t)){
-//                        helper.getTemplateFactory().of(t).deleteAll();
-//                    }else{
-//                        helper.getUnifiedNodeGraphRepository().deleteAll(t);
-//                    }
 
                 }catch (RepositoryNotFound e){
                     LOG.warn("" + e.getMessage());
@@ -91,7 +83,7 @@ public class DeleteResourceAction {
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
             // decrement global counter
-            helper.getCounterDao().decrement(URIGenerator.typeFrom(uri).route());
+            helper.getCounterDao().decrement(type.route());
 
             switch (type){
                 case DOMAIN:
@@ -104,15 +96,6 @@ public class DeleteResourceAction {
             }
 
             helper.getUnifiedColumnRepository().delete(type,uri);
-            helper.getUnifiedDocumentRepository().delete(type,uri);
-
-
-            // TODO remove it
-//            if (helper.getTemplateFactory().handle(type)){
-//                helper.getTemplateFactory().of(type).deleteOne(uri);
-//            }else{
-//                helper.getUnifiedNodeGraphRepository().delete(type,uri);
-//            }
 
             transaction.commit();
 

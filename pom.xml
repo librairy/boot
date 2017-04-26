@@ -73,6 +73,7 @@
         <hector.version>1.1-3</hector.version>
         <httpclient.version>4.5.2</httpclient.version>
         <httpcore.version>4.4.4</httpcore.version>
+        <jackson.version>2.8.8</jackson.version>
         <jgrapht.version>0.9.0</jgrapht.version>
         <junit.version>4.12</junit.version>
         <log4j.version>1.2.17</log4j.version>
@@ -84,7 +85,6 @@
         <jsoup.version>1.8.2</jsoup.version>
         <lz4.version>1.3.0</lz4.version>
         <mockito.version>1.9.5</mockito.version>
-        <neo4j.version>2.3.2</neo4j.version>
         <netty.version>4.0.34.Final</netty.version>
         <rabbitmq.version>3.5.6</rabbitmq.version>
         <spring.version>4.2.7.RELEASE</spring.version>
@@ -92,9 +92,6 @@
         <spring.data.cassandra.version>1.5.0.M1</spring.data.cassandra.version>
         <spring.data.commons.version>1.12.0.M1</spring.data.commons.version>
         <spring.data.jpa.version>1.10.0.M1</spring.data.jpa.version>
-        <spring.data.elasticsearch.version>1.4.0.M1</spring.data.elasticsearch.version>
-        <spring.data.neo4j.version>4.1.2.RELEASE</spring.data.neo4j.version>
-        <spring.data.neo4j.ogm.version>2.0.4</spring.data.neo4j.ogm.version>
         <snappy.version>1.1.2</snappy.version>
         <surefire.junit.version>2.12</surefire.junit.version>
         <testutils.version>1.0.0</testutils.version>
@@ -150,54 +147,6 @@
                 <version>${thrift.version}</version>
             </dependency>
 
-            <!-- Elasticsearch Libraries -->
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-elasticsearch</artifactId>
-                <version>${spring.data.elasticsearch.version}</version>
-            </dependency>
-
-            <!-- Graph Libraries -->
-            <dependency>
-                <groupId>org.jgrapht</groupId>
-                <artifactId>jgrapht-core</artifactId>
-                <version>${jgrapht.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-neo4j</artifactId>
-                <version>${spring.data.neo4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.neo4j</groupId>
-                <artifactId>neo4j-ogm-compiler</artifactId>
-                <version>${spring.data.neo4j.ogm.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.neo4j</groupId>
-                <artifactId>neo4j-ogm-api</artifactId>
-                <version>${spring.data.neo4j.ogm.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.neo4j</groupId>
-                <artifactId>neo4j-ogm-core</artifactId>
-                <version>${spring.data.neo4j.ogm.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.neo4j</groupId>
-                <artifactId>neo4j-ogm-http-driver</artifactId>
-                <version>${spring.data.neo4j.ogm.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>${httpclient.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpcore</artifactId>
-                <version>${httpcore.version}</version>
-            </dependency>
 
             <!-- Log Libraries -->
             <dependency>
@@ -258,11 +207,6 @@
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
                 <version>${commons.lang.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${apache.commons.lang.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.neovisionaries</groupId>
@@ -386,6 +330,11 @@
                 <artifactId>netty-all</artifactId>
                 <version>${netty.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
 
             <!-- Tomcat Libraries -->
             <dependency>
@@ -479,6 +428,10 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
 
         <!-- ColumnDB Libraries -->
         <dependency>
@@ -496,39 +449,6 @@
         <dependency>
             <groupId>net.jpountz.lz4</groupId>
             <artifactId>lz4</artifactId>
-        </dependency>
-
-        <!-- DocumentDB Libraries -->
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-elasticsearch</artifactId>
-        </dependency>
-
-        <!-- GraphDB Libraries -->
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-neo4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-ogm-compiler</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-ogm-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-ogm-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-ogm-http-driver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-kernel</artifactId>
-            <version>${neo4j.version}</version>
         </dependency>
 
         <!-- Spring Data Libraries -->
@@ -580,6 +500,23 @@
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
         </dependency>
+
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+
     </dependencies>
 
     <build>
@@ -717,15 +654,6 @@
             <url>http://repo.spring.io/milestone</url>
             <snapshots>
                 <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
-        <!-- Neo4j Snapshot Repository -->
-        <repository>
-            <id>neo4j-snapshots</id>
-            <url>http://m2.neo4j.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
             </snapshots>
         </repository>
 

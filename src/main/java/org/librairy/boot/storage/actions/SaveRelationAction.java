@@ -36,21 +36,10 @@ public class SaveRelationAction {
                 // 1 to 1 relations
                 case CONTAINS_TO_DOCUMENT:
                 case CONTAINS_TO_ITEM:
-                    // add to domain
-                    try {
-                        helper.getItemsDao().add(relation.getStartUri(),relation.getEndUri());
-                    } catch (DataNotFound dataNotFound) {
-                        LOG.debug(dataNotFound.getMessage());
-                    }
                     helper.getCounterDao().increment(relation.getStartUri(), Resource.Type.ITEM.route());
                     break;
                 case CONTAINS_TO_PART:
                     // increment counter
-                    try{
-                        helper.getPartsDao().addToDomain(relation.getStartUri(),relation.getEndUri());
-                    }catch (DataNotFound dataNotFound) {
-                        LOG.debug(dataNotFound.getMessage());
-                    }
                     helper.getCounterDao().increment(relation.getStartUri(), Resource.Type.PART.route());
                     break;
                 case AGGREGATES:

@@ -13,11 +13,13 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.librairy.boot.model.Event;
+import org.librairy.boot.model.domain.resources.Domain;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.storage.dao.DomainsDao;
 import org.librairy.boot.storage.dao.ItemsDao;
+import org.librairy.boot.storage.dao.PartsDao;
 import org.librairy.boot.storage.exception.DataNotFound;
 import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
@@ -42,20 +44,15 @@ public class DomainsDaoTest {
     private static final Logger LOG = LoggerFactory.getLogger(DomainsDaoTest.class);
 
     @Autowired
-    DomainsDao domainsDao;
+    PartsDao partsDao;
 
     @Test
     public void listByResource() throws DataNotFound {
 
         String uri = "http://librairy.org/parts/585927a3d199a199845a7ad2";
 
-        Iterator<Row> domains = domainsDao.listFrom(uri);
-
-        while(domains.hasNext()){
-            Row row = domains.next();
-
-            LOG.info("Domain: " + row);
-
+        for (Domain domain: partsDao.listDomains(uri,100,Optional.empty())){
+            LOG.info("Domain: " + domain);
         }
 
     }

@@ -7,6 +7,7 @@
 
 package org.librairy.boot.eventbus.rabbitmq;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.cbadenes.lab.test.IntegrationTest;
 import org.junit.Assert;
@@ -16,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.librairy.boot.eventbus.EventBusConfig;
 import org.librairy.boot.eventbus.EventMessage;
 import org.librairy.boot.model.Event;
-import org.librairy.boot.model.domain.resources.Domain;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.domain.resources.Source;
 import org.librairy.boot.model.modules.BindingKey;
@@ -24,12 +24,10 @@ import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.EventBusSubscriber;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.model.utils.TimeUtils;
-import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;

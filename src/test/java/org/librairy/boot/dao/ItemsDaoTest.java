@@ -62,7 +62,7 @@ public class ItemsDaoTest {
         AtomicInteger counter = new AtomicInteger(0);
         Integer maxCounter = 2;
         while(!stop){
-            List<Item> items = itemsDao.listAll(splitSize, lastUri);
+            List<Item> items = itemsDao.list(splitSize, lastUri, false);
             items.stream().forEach( item ->{
                 LOG.info("["+counter.incrementAndGet() + "] Item: "  + item);
                 Resource resource = new Resource();
@@ -85,20 +85,6 @@ public class ItemsDaoTest {
         }
     }
 
-    @Test
-    public void addToDomain() throws DataNotFound {
-
-        String domainUri = "http://librairy.org/domains/141fc5bbcf0212ec9bee5ef66c6096ab";
-
-        String itemUri   = "http://librairy.org/items/yV_NJ8YiYRSGV";
-
-
-        itemsDao.add(domainUri, itemUri);
-
-        LOG.info("Test completed!");
-
-    }
-
 
     @Test
     public void listParts() throws DataNotFound {
@@ -109,16 +95,15 @@ public class ItemsDaoTest {
         Boolean completed = false;
         while(!completed){
 
-            List<String> parts = null;
-            parts = itemsDao.listParts(itemUri,10,offset);
+            List<Part> parts = itemsDao.listParts(itemUri,10,offset, false);
 
-            for (String uri : parts){
-                LOG.info("adding: " + uri + " to domain");
+            for (Part part : parts){
+                LOG.info("adding: " + part.getUri() + " to domain");
             }
 
             if (parts.isEmpty() || parts.size() < 10) break;
 
-            String lastUri = parts.get(parts.size()-1);
+            String lastUri = parts.get(parts.size()-1).getUri();
             offset = Optional.of(URIGenerator.retrieveId(lastUri));
         }
 
@@ -139,7 +124,7 @@ public class ItemsDaoTest {
         while(!completed){
 
 
-            List<Item> items = itemsDao.listAll(10, offset);
+            List<Item> items = itemsDao.list(10, offset, false);
 
             for (Item item : items){
 
@@ -171,13 +156,13 @@ public class ItemsDaoTest {
                 Boolean partsCompleted = false;
 
                 while(!partsCompleted){
-                    List<String> parts = itemsDao.listParts(item.getUri(), windowsize, partOffset);
+                    List<Part> parts = itemsDao.listParts(item.getUri(), windowsize, partOffset, false);
 
-                    for (String uri: parts){
+                    for (Part uri: parts){
                         LOG.debug("checking '" + uri + " '");
 
 
-                        Part part = partsDao.get(uri, true);
+                        Part part = partsDao.get(uri.getUri(), true);
                         if (Strings.isNullOrEmpty(part.getContent())) {
                             LOG.error("Part empty: " + uri);
                             continue;
@@ -203,7 +188,7 @@ public class ItemsDaoTest {
 
                     if (parts.isEmpty() || parts.size() < windowsize) break;
 
-                    String lastUri = parts.get(parts.size()-1);
+                    String lastUri = parts.get(parts.size()-1).getUri();
                     partOffset = Optional.of(URIGenerator.retrieveId(lastUri));
 
                 }

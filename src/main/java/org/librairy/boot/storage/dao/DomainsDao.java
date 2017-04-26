@@ -10,8 +10,16 @@ package org.librairy.boot.storage.dao;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
+import com.google.common.base.Strings;
+import org.librairy.boot.model.Annotation;
+import org.librairy.boot.model.Event;
+import org.librairy.boot.model.domain.relations.Relation;
 import org.librairy.boot.model.domain.resources.Domain;
+import org.librairy.boot.model.domain.resources.Item;
+import org.librairy.boot.model.domain.resources.Part;
 import org.librairy.boot.model.domain.resources.Resource;
+import org.librairy.boot.model.modules.EventBus;
+import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.model.utils.TimeUtils;
 import org.librairy.boot.storage.UDM;
 import org.librairy.boot.storage.exception.DataNotFound;
@@ -22,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
@@ -35,13 +42,13 @@ public class DomainsDao extends AbstractDao  {
     private static final Logger LOG = LoggerFactory.getLogger(DomainsDao.class);
 
     @Autowired
-    DBSessionManager dbSessionManager;
-
-    @Autowired
     KeyspaceDao keyspaceDao;
 
     @Autowired
     UDM udm;
+
+    @Autowired
+    EventBus eventBus;
 
     @Autowired
     CounterDao counterDao;
@@ -49,287 +56,325 @@ public class DomainsDao extends AbstractDao  {
     @Autowired
     ItemsDao itemsDao;
 
+    @Autowired
+    ParametersDao parametersDao;
+
+    @Autowired
+    AnnotationsDao annotationsDao;
+
     public Boolean exists(String domainUri){
-        String query = "select count(*) from contains where starturi='" + domainUri + "';";
-
-        try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
-            Row row = result.one();
-
-            if ((row == null) || row.getLong(0) < 1) return false;
-
-        } catch (InvalidQueryException e){
-            LOG.warn("Error on query: " + e.getMessage());
-            return false;
-        }
-        return true;
+        return super.countQuery("select count(*) from domains where uri='" + domainUri + "';");
     }
 
 
     public Boolean contains(String domainUri, String resourceUri){
-        String query = "select count(*) from contains where starturi='" + domainUri + "' and enduri='"+resourceUri+"' ALLOW FILTERING;";
-
-        try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
-            Row row = result.one();
-
-            if ((row == null) || row.getLong(0) < 1) return false;
-
-        } catch (InvalidQueryException e){
-            LOG.warn("Error on query: " + e.getMessage());
-            return false;
-        }
-        return true;
+        String domainId = URIGenerator.retrieveId(domainUri);
+        String tableName    = URIGenerator.typeFrom(resourceUri).route();
+        return super.countQueryOn("select count(*) from "+tableName+" where uri='" + resourceUri+ "' ;", domainId);
     }
 
 
-    public Iterator<Row> listFrom(String resourceUri){
-        String query = "select starturi from contains where enduri='"+resourceUri+"';";
+    public Domain get(String domainUri) throws DataNotFound {
 
-        try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
-            Iterator<Row> iterator = result.iterator();
+        Optional<Row> row = super.oneQuery("select name, description, creationtime from domains where uri='"+domainUri+"';");
 
-            if ((iterator == null)) return Collections.emptyIterator();
+        if (!row.isPresent()) throw new DataNotFound("No domain found by '" + domainUri + "'");
 
-            return iterator;
-        } catch (InvalidQueryException e){
-            LOG.warn("Error on query: " + e.getMessage());
-            return Collections.emptyIterator();
-        }
-    }
-
-    public List<String> listOnly(String field){
-        String query = "select "+field+" from domains;";
-
-        try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
-            List<Row> rows = result.all();
-
-            if ((rows == null) || rows.isEmpty()) return Collections.emptyList();
-
-            return rows.stream().map(row -> row.getString(0)).collect(Collectors.toList());
-        } catch (InvalidQueryException e){
-            LOG.warn("Error on query: " + e.getMessage());
-            return Collections.emptyList();
-        }
+        Domain domain = new Domain();
+        Row rowValue = row.get();
+        domain.setName(rowValue.getString(0));
+        domain.setDescription(rowValue.getString(1));
+        domain.setCreationTime(rowValue.getString(2));
+        domain.setUri(domainUri);
+        return domain;
 
     }
 
-    public List<Domain> listAll(){
-        String query = "select uri, name, description, creationtime from domains;";
+    public List<Domain> list(Integer size, Optional<String> offset, Boolean inclusive){
+        StringBuilder query = new StringBuilder().append("select uri, name, description, creationtime from domains");
 
-        try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
-            List<Row> rows = result.all();
-
-            if ((rows == null) || rows.isEmpty()) return Collections.emptyList();
-
-            return rows.stream().map(row -> {
-                Domain domain = new Domain();
-                domain.setUri(row.getString(0));
-                domain.setName(row.getString(1));
-                domain.setDescription(row.getString(2));
-                domain.setCreationTime(row.getString(3));
-                return domain;
-            }).collect(Collectors.toList());
-        } catch (InvalidQueryException e){
-            LOG.warn("Error on query: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
-    public List<Domain> list(Long size, String offset){
-
-
-        StringBuilder query = new StringBuilder().append("select uri, name, creationtime, description from research.domains");
-
-        if (offset != null){
-            query.append(" where token(uri) >= token('" + URIGenerator.fromId(org.librairy.boot.model.domain.resources.Resource.Type
-                            .ITEM,
-                    offset) + "')");
+        if (offset.isPresent()){
+            String operator = inclusive? ">=" : ">";
+            query.append(" where token(uri) "+operator+" token('" + URIGenerator.fromId(Resource.Type.DOMAIN, offset.get())+"') ");
         }
 
         query.append(" limit " + size);
-
         query.append(";");
 
-        LOG.debug("Executing query: " + query);
+        List<Domain> domains = new ArrayList<>();
+        Iterator<Row> it = super.iteratedQuery(query.toString());
+        while(it.hasNext()){
+            Row row = it.next();
+            Domain domain = new Domain();
+            domain.setUri(row.getString(0));
+            domain.setName(row.getString(1));
+            domain.setDescription(row.getString(2));
+            domain.setCreationTime(row.getString(3));
+            domains.add(domain);
+        }
+
+        return domains;
+
+    }
+
+    public List<Item> listDocuments(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) throws DataNotFound {
+
+        Iterator<Row> it = listResources(domainUri, size, offset, Resource.Type.ITEM, inclusive);
+
+        List<Item> items = new ArrayList<>();
+
+        while(it.hasNext()){
+            Row row = it.next();
+            Item item = new Item();
+            item.setUri(row.getString(0));
+            item.setCreationTime(row.getString(1));
+            items.add(item);
+        }
+
+        return items;
+    }
+
+    public List<Part> listParts(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) throws DataNotFound {
+
+        Iterator<Row> it = listResources(domainUri, size, offset, Resource.Type.PART, inclusive);
+
+        List<Part> parts = new ArrayList<>();
+
+        while(it.hasNext()){
+            Row row = it.next();
+            Part part = new Part();
+            part.setUri(row.getString(0));
+            part.setCreationTime(row.getString(1));
+            parts.add(part);
+        }
+
+        return parts;
+    }
+
+    private Iterator<Row> listResources(String domainUri, Integer size, Optional<String> offset, Resource.Type type, Boolean inclusive){
+        StringBuilder query = new StringBuilder().append("select uri, time from " + type.route() + " ");
+
+        if (offset.isPresent()){
+            String operator = inclusive? ">=" : ">";
+            query.append(" where token(uri) "+operator+" token('" + URIGenerator.fromId(type, offset.get()) + "')");
+        }
+
+        query.append(" limit " + size);
+        query.append(";");
+
+        String domainId = URIGenerator.retrieveId(domainUri);
+        return super.iteratedQueryOn(query.toString(), domainId );
+    }
+
+
+    public boolean save(Domain domain){
         try{
-            ResultSet result = dbSessionManager.getSession().execute(query.toString());
-            Iterator<Row> it = result.iterator();
+            udm.save(domain);
+            return true;
+        }catch (Exception e){
+            LOG.error("Error saving domain: " + domain);
+            return false;
+        }
+    }
 
-            List<Domain> resources = new ArrayList<>();
 
-            while(it.hasNext()) {
-                Row row = it.next();
+    public void addDocument(String domainUri, String documentUri){
 
-                Domain domain = new Domain();
-                domain.setUri(row.getString(0));
-                domain.setName(row.getString(1));
-                domain.setCreationTime(row.getString(2));
-                domain.setDescription(row.getString(3));
+        // add to contains document
+        udm.save(Relation.newContains(domainUri, documentUri));
 
-                resources.add(domain);
+        // add to items document
+        StringBuilder insertItemQuery = new StringBuilder()
+                .append("insert into items (uri, time, tokens) values(")
+                .append("'").append(documentUri).append("',")
+                .append("'").append(TimeUtils.asISO()).append("',")
+                .append("'").append(retrieveDomainTokens(domainUri, documentUri)).append("'")
+                .append(") ;");
+
+        super.executeOn(insertItemQuery.toString(), URIGenerator.retrieveId(domainUri));
+
+        // for each part
+        Integer windowSize = 100;
+        Optional<String> offset = Optional.empty();
+        Boolean finished = false;
+
+        while(!finished){
+
+            List<Part> parts = itemsDao.listParts(documentUri, windowSize, offset, false);
+
+            // add to parts part
+            for (Part part: parts){
+                StringBuilder insertPartQuery = new StringBuilder()
+                        .append("insert into parts (uri, time, tokens) values(")
+                        .append("'").append(part.getUri()).append("',")
+                        .append("'").append(TimeUtils.asISO()).append("',")
+                        .append("'").append(retrieveDomainTokens(domainUri, part.getUri())).append("'")
+                        .append(") ;");
+
+                super.executeOn(insertPartQuery.toString(), URIGenerator.retrieveId(domainUri));
+                counterDao.increment(domainUri, Resource.Type.PART.route());
             }
 
-            return resources;
+
+            if (parts.size() < windowSize){
+                finished = true;
+            }else{
+                offset = Optional.of(URIGenerator.retrieveId(parts.get(windowSize-1).getUri()));
+            }
+        }
+    }
+
+    private String retrieveDomainTokens(String domainUri, String resourceUri){
+        //add tokens from domain parameter
+        String tokenizerMode;
+        try {
+            tokenizerMode = parametersDao.get(domainUri, "tokenizer.mode");
+        } catch (DataNotFound dataNotFound) {
+            tokenizerMode = "lemma";
+        }
+
+        StringTokenizer tokenizer = new StringTokenizer(tokenizerMode, "+", false);
+        String tokens = "";
+        while(tokenizer.hasMoreTokens()){
+            String type = tokenizer.nextToken();
+            Annotation annotation = null;
+            try {
+                annotation = annotationsDao.get(resourceUri, type);
+                tokens += annotation.getValue();
+                tokens += " ";
+            } catch (DataNotFound dataNotFound) {
+                LOG.debug("No annotation '" + type+ "' found for " + resourceUri);
+            }
+        }
+
+        return Strings.isNullOrEmpty(tokens)? tokens : escaper.escape(tokens);
+    }
+
+    public String getDomainTokens(String domainUri, String uri) throws DataNotFound {
+
+
+        try{
+            String domainId     = URIGenerator.retrieveId(domainUri);
+            String tableName    = URIGenerator.typeFrom(uri).route();
+            Optional<Row> row = super.oneQueryOn("select tokens from "+tableName+" where uri='"+uri+"';", domainId);
+
+            if (!row.isPresent()) throw new DataNotFound("Tokens from '"+uri+"' not found in '"+domainUri+"'");
+
+            return row.get().getString(0);
         }catch (InvalidQueryException e){
-            LOG.warn("Error on query execution [" + query + "] : " + e.getMessage());
-            return Collections.emptyList();
+            LOG.warn("Error on query execution: " + e.getMessage());
+            throw new DataNotFound("Error getting Tokens from '"+uri+"' in '"+domainUri+"'");
         }
+
     }
 
-
-    public Domain get(String uri) throws DataNotFound {
-        String query = "select name, description, creationtime from domains where uri='"+uri+"';";
-
-        try{
-            ResultSet result = dbSessionManager.getSessionById(DEFAULT_KEYSPACE).execute(query);
-            Row row = result.one();
-
-            if ((row == null)) throw new DataNotFound("No domain found by '" + uri + "'");
-
-            Domain domain = new Domain();
-            domain.setName(row.getString(0));
-            domain.setDescription(row.getString(1));
-            domain.setCreationTime(row.getString(2));
-            domain.setUri(uri);
-
-            return domain;
-        } catch (InvalidQueryException e){
-            LOG.warn("Error on query: " + e.getMessage());
-            throw new DataNotFound("No domain found by '" + uri + "'");
-        }
+    public Boolean updateDomainTokens(String domainUri, String uri){
+        return updateDomainTokens(domainUri, uri, retrieveDomainTokens(domainUri, uri));
     }
 
+    public Boolean updateDomainTokens(String domainUri, String uri, String tokens){
 
-    public Long count(String uri, String element) throws DataNotFound {
-        String query = "select num from counts where name='" + element + "' ALLOW FILTERING;";
+        String domainId = URIGenerator.retrieveId(domainUri);
+        Resource.Type type = URIGenerator.typeFrom(uri);
+        if (super.executeOn("insert into "+type.route()+" (uri,time,tokens) values('"+uri+"', '"+ TimeUtils.asISO()+"', '"+ escaper.escape(tokens) +"');", domainId)){
+            LOG.info("saved tokens of '"+uri+"' in '"+domainUri+"'");
 
-        try{
-            ResultSet result = dbSessionManager.getSessionByUri(uri).execute(query);
-            Row row = result.one();
-
-            if ((row == null)) return 0l;
-
-            return row.getLong(0);
-        } catch (InvalidQueryException e){
-            LOG.warn("Error on query: " + e.getMessage());
-            throw new DataNotFound("No domain found by '" + uri + "'");
+            Domain resource = new Domain();
+            resource.setUri(domainUri);
+            eventBus.post(Event.from(resource), RoutingKey.of(resource.getResourceType(), Resource.State.UPDATED));
+            return true;
         }
+        return false;
     }
-
 
     public void delete(String uri){
 
         try{
-            udm.delete(org.librairy.boot.model.domain.resources.Resource.Type.DOMAIN).byUri(uri);
-            ResultSet result = dbSessionManager.getSession().execute("select uri from research.contains where starturi='" + uri + "';");
-
+            // delete from contains
+            ResultSet result = dbSessionManager.getCommonSession().execute("select uri from contains where starturi='" + uri + "';");
             Iterator<Row> iterator = result.iterator();
-            while(iterator.hasNext()){
-                String relUri = iterator.next().getString(0);
-                dbSessionManager.getSession().execute("delete from research.contains where uri='"+relUri+"';");
+            if (iterator != null){
+                while(iterator.hasNext()){
+                    String relUri = iterator.next().getString(0);
+                    udm.delete(Relation.Type.CONTAINS_TO_DOCUMENT).byUri(relUri);
+                }
             }
+
+            // delete from domains
+            udm.delete(Resource.Type.DOMAIN).byUri(uri);
+
         }catch (InvalidQueryException e){
             LOG.warn("Error on query execution: " + e.getMessage());
         }
 
     }
 
-    public void remove(String domainUri, String resourceUri){
+    public void removeDocument(String domainUri, String documentUri){
 
-        String query = "select uri from research.contains where starturi='" + domainUri + "' and enduri='" + resourceUri + "' ALLOW FILTERING;";
-        try{
-            ResultSet result = dbSessionManager.getSession().execute(query);
+        Optional<Row> row = super.oneQuery("select uri from contains where starturi='" + domainUri + "' and enduri='" + documentUri + "' ALLOW FILTERING;");
 
-            Row row = result.one();
+        if (!row.isPresent()) return;
 
-            if (row != null){
-                dbSessionManager.getSession().execute("delete from research.contains where uri='" + row.getString(0) + "';");
+        // Delete parts
+        Integer windowSize = 100;
+        Optional<String> offset = Optional.empty();
+        Boolean completed = false;
+        while(!completed){
 
-                // decrement counter
-                Resource.Type type = URIGenerator.typeFrom(resourceUri);
+            List<Part> parts = itemsDao.listParts(documentUri,windowSize,offset, false);
 
-                counterDao.decrement(domainUri, type.route());
-
-                if (type.equals(Resource.Type.ITEM)){
-
-                    // Delete parts
-                    Optional<String> offset = Optional.empty();
-                    Boolean completed = false;
-                    while(!completed){
-
-                        List<String> parts = null;
-                        parts = itemsDao.listParts(resourceUri,100,offset);
-
-                        for (String uri : parts){
-                            remove(domainUri, uri);
-                        }
-
-                        if (parts.isEmpty() || parts.size() < 100) break;
-
-                        String lastUri = parts.get(parts.size()-1);
-                        offset = Optional.of(URIGenerator.retrieveId(lastUri));
-                    }
-
-                }
-
-
+            for (Part part : parts){
+                removePart(domainUri, part.getUri());
             }
-            LOG.info("Deleted "+ resourceUri + " from " + domainUri);
-        }catch (InvalidQueryException e){
-            LOG.warn("Error on query execution [" + query + "] : " + e.getMessage());
+
+            if (parts.size() < windowSize) break;
+
+            offset = Optional.of(URIGenerator.retrieveId(parts.get(parts.size()-1).getUri()));
         }
+
+        udm.delete(Relation.Type.CONTAINS_TO_DOCUMENT).byUri(row.get().getString(0));
+
+        // Remove from items
+        super.executeOn("delete from items where uri='"+documentUri+"';", URIGenerator.retrieveId(domainUri));
+        counterDao.decrement(domainUri, Resource.Type.ITEM.route());
+
+
+        LOG.info("Deleted "+ documentUri + " from " + domainUri);
+
+    }
+
+    public boolean removePart(String domainUri, String partUri){
+        if (super.executeOn("delete from parts where uri='"+partUri+"';", URIGenerator.retrieveId(domainUri))){
+            counterDao.decrement(domainUri, Resource.Type.PART.route());
+            return true;
+        }
+        return false;
     }
 
     public void removeAllDocuments(String domainUri){
-        String query = "select uri from research.contains where starturi='" + domainUri +"';";
-        try{
 
-            ResultSet result = dbSessionManager.getSession().execute(query);
-            Iterator<Row> it = result.iterator();
+        // Remove from Contains
+        Iterator<Row> it = super.iteratedQuery("select uri from contains where starturi='" + domainUri + "';");
 
-            while(it.hasNext()){
-                dbSessionManager.getSession().execute("delete from research.contains where " + "uri='" + it.next().getString(0) + "';");
-            }
-
-            dbSessionManager.getSessionByUri(domainUri).execute("drop table if exists items;");
-            dbSessionManager.getSessionByUri(domainUri).execute("drop table if exists parts;");
-
-            counterDao.reset(domainUri, Resource.Type.ITEM.route());
-            counterDao.reset(domainUri, Resource.Type.PART.route());
-
-        }catch (InvalidQueryException e){
-            LOG.warn("Error on query execution [" + query + "] : " + e.getMessage());
+        while(it.hasNext()){
+            udm.delete(Relation.Type.CONTAINS_TO_DOCUMENT).byUri(it.next().getString(0));
         }
+        String domainId = URIGenerator.retrieveId(domainUri);
+
+        // Remove Items
+        super.executeOn("drop table if exists items;", domainId);
+        counterDao.reset(domainUri, Resource.Type.ITEM.route());
+
+        // Remove Parts
+        removeAllParts(domainUri);
+
     }
 
     public void removeAllParts(String domainUri){
-        String query = "select uri, enduri from research.contains where starturi='" + domainUri +"';";
-        try{
-
-            ResultSet result = dbSessionManager.getSession().execute(query);
-            Iterator<Row> it = result.iterator();
-
-            while(it.hasNext()){
-                Row row = it.next();
-                String uri      = row.getString(0);
-                String resUri   = row.getString(1);
-                if (URIGenerator.typeFrom(resUri).equals(Resource.Type.PART)){
-                    dbSessionManager.getSession().execute("delete from research.contains where " + "uri='" + uri + "';");
-                }
-            }
-
-            dbSessionManager.getSessionByUri(domainUri).execute("drop table if exists parts;");
-
+        String domainId = URIGenerator.retrieveId(domainUri);
+        if (super.executeOn("drop table if exists parts;", domainId)){
             counterDao.reset(domainUri, Resource.Type.PART.route());
-
-        }catch (InvalidQueryException e){
-            LOG.warn("Error on query execution [" + query + "] : " + e.getMessage());
         }
     }
-
 
 }

@@ -7,7 +7,9 @@
 
 package org.librairy.boot.storage.system.column;
 
+import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.SocketOptions;
+import com.datastax.driver.core.policies.RoundRobinPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ import org.springframework.data.cassandra.mapping.BasicCassandraMappingContext;
 import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.net.InetSocketAddress;
 
 /**
  * Created by cbadenes on 21/12/15.
@@ -60,7 +64,6 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
         }catch (Exception e){
             LOG.error("Error configuring cassandra connection parameters: ",e);
         }
-
         return cluster;
     }
 
