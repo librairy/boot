@@ -12,7 +12,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.librairy</groupId>
     <artifactId>librairy-boot</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.2</version>
     <packaging>jar</packaging>
     <name>boot</name>
     <description>It makes easy to create librairy-powered applications and services with minimum fuss.</description>
@@ -63,8 +63,7 @@
         <asm.version>5.0.4</asm.version>
         <apache.commons.lang.version>3.0</apache.commons.lang.version>
         <beanutils.version>1.9.2</beanutils.version>
-        <cassandra.driver.core.version>3.0.3</cassandra.driver.core.version>
-        <cassandra.driver.dse.version>3.0.0-rc1</cassandra.driver.dse.version>
+
         <cloning.version>1.9.1</cloning.version>
         <commons.lang.version>2.6</commons.lang.version>
         <commons.pool.version>2.4.1</commons.pool.version>
@@ -87,11 +86,19 @@
         <mockito.version>1.9.5</mockito.version>
         <netty.version>4.0.34.Final</netty.version>
         <rabbitmq.version>3.5.6</rabbitmq.version>
-        <spring.version>4.2.7.RELEASE</spring.version>
-        <springboot.version>1.2.1.RELEASE</springboot.version>
-        <spring.data.cassandra.version>1.5.0.M1</spring.data.cassandra.version>
-        <spring.data.commons.version>1.12.0.M1</spring.data.commons.version>
-        <spring.data.jpa.version>1.10.0.M1</spring.data.jpa.version>
+
+
+        <springboot.version>1.5.3.RELEASE</springboot.version><!-- 1.2.1.RELEASE -->
+
+
+        <spring.version>4.3.8.RELEASE</spring.version><!-- 4.2.7.RELEASE -->
+        <!--<cassandra.driver.core.version>3.0.3</cassandra.driver.core.version>-->
+        <!--<cassandra.driver.dse.version>3.0.0-rc1</cassandra.driver.dse.version>-->
+
+        <spring.data.cassandra.version>1.5.3.RELEASE</spring.data.cassandra.version><!-- 1.5.0.M1 -->
+        <!--<spring.data.commons.version>1.12.0.M1</spring.data.commons.version>-->
+        <!--<spring.data.jpa.version>1.10.0.M1</spring.data.jpa.version>-->
+
         <snappy.version>1.1.2</snappy.version>
         <surefire.junit.version>2.12</surefire.junit.version>
         <testutils.version>1.0.0</testutils.version>
@@ -116,21 +123,21 @@
                 <artifactId>spring-data-cassandra</artifactId>
                 <version>${spring.data.cassandra.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-cql</artifactId>
-                <version>${spring.data.cassandra.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.datastax.cassandra</groupId>
-                <artifactId>cassandra-driver-dse</artifactId>
-                <version>${cassandra.driver.dse.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.datastax.cassandra</groupId>
-                <artifactId>cassandra-driver-core</artifactId>
-                <version>${cassandra.driver.core.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.data</groupId>-->
+                <!--<artifactId>spring-cql</artifactId>-->
+                <!--<version>${spring.data.cassandra.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>com.datastax.cassandra</groupId>-->
+                <!--<artifactId>cassandra-driver-dse</artifactId>-->
+                <!--<version>${cassandra.driver.dse.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>com.datastax.cassandra</groupId>-->
+                <!--<artifactId>cassandra-driver-core</artifactId>-->
+                <!--<version>${cassandra.driver.core.version}</version>-->
+            <!--</dependency>-->
             <dependency>
                 <groupId>org.xerial.snappy</groupId>
                 <artifactId>snappy-java</artifactId>
@@ -265,16 +272,16 @@
                 <artifactId>spring-test</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-jpa</artifactId>
-                <version>${spring.data.jpa.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-commons</artifactId>
-                <version>${spring.data.commons.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.data</groupId>-->
+                <!--<artifactId>spring-data-jpa</artifactId>-->
+                <!--<version>${spring.data.jpa.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.data</groupId>-->
+                <!--<artifactId>spring-data-commons</artifactId>-->
+                <!--<version>${spring.data.commons.version}</version>-->
+            <!--</dependency>-->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-aop</artifactId>
@@ -438,10 +445,10 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-cassandra</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.datastax.cassandra</groupId>
-            <artifactId>cassandra-driver-core</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.datastax.cassandra</groupId>-->
+            <!--<artifactId>cassandra-driver-core</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
@@ -456,14 +463,14 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-commons</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.data</groupId>-->
+            <!--<artifactId>spring-data-jpa</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.data</groupId>-->
+            <!--<artifactId>spring-data-commons</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>

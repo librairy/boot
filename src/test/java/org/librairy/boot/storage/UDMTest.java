@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
@@ -43,12 +44,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Category(IntegrationTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Config.class)
-//@TestPropertySource(properties = {
-//        "librairy.columndb.host= 192.168.99.100",
-//        "librairy.documentdb.host = 192.168.99.100",
-//        "librairy.graphdb.host = 192.168.99.100",
-//        "librairy.eventbus.host = 192.168.99.100"
-//})
+@TestPropertySource(properties = {
+        "librairy.columndb.host= localhost",
+        "librairy.columndb.port= 9042",
+        "librairy.eventbus.host = local"
+})
 public class UDMTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(UDMTest.class);
@@ -67,12 +67,19 @@ public class UDMTest {
 
     @Test
     public void saveSourceMinimal(){
-//        Source source = Resource.newSource("default");
-//        source.setUrl("file://default");
-//        udm.save(source);
 
-        udm.find(Resource.Type.SOURCE).all().forEach(source -> udm.delete(Resource.Type.SOURCE).byUri(source.getUri()));
+        LOG.info("Getting sources..");
+        List<Resource> sources = udm.find(Resource.Type.SOURCE).all();
+        LOG.info("Sources: " + sources);
 
+        Source source = Resource.newSource("default");
+        source.setUrl("file://default");
+        udm.save(source);
+        LOG.info("Source created");
+
+        LOG.info("Getting sources..");
+        sources = udm.find(Resource.Type.SOURCE).all();
+        LOG.info("Sources: " + sources);
     }
 
     @Test

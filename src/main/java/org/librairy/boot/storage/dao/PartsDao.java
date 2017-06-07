@@ -129,7 +129,7 @@ public class PartsDao extends AbstractDao {
 
 
     public Boolean exists(String partUri){
-        return super.countQuery("select count(*) from parts where uri='" + partUri + "';");
+        return super.countQuery("select count(uri) from parts where uri='" + partUri + "';");
     }
 
     public Part get(String uri, Boolean content) throws DataNotFound {

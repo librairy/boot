@@ -11,6 +11,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
 import org.librairy.boot.model.Event;
+import org.librairy.boot.model.domain.relations.Relation;
 import org.librairy.boot.model.domain.resources.Domain;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.BindingKey;
@@ -64,7 +65,7 @@ public class SubdomainsDao extends AbstractDao {
 
 
     public Boolean exists(String domainUri, String subdomainUri){
-        String query = "select count(*) from subdomains where uri='" + subdomainUri+ "' ;";
+        String query = "select count(uri) from subdomains where uri='" + subdomainUri+ "' ;";
 
         try{
             ResultSet result = dbSessionManager.getSessionByUri(domainUri).execute(query);
@@ -123,7 +124,7 @@ public class SubdomainsDao extends AbstractDao {
             counterDao.increment(domainUri, Resource.Type.DOMAIN.route());
 
             //publish event
-            updateDomain(domainUri);
+            updateDomain(domainUri, subdomain.getUri(),"added");
 
             return result.wasApplied();
         }catch (InvalidQueryException e){
@@ -143,7 +144,7 @@ public class SubdomainsDao extends AbstractDao {
             counterDao.decrement(domainUri, Resource.Type.DOMAIN.route());
 
             //publish event
-            updateDomain(domainUri);
+            updateDomain(domainUri, subdomainUri, "deleted");
 
             return result.wasApplied();
         }catch (InvalidQueryException e){
@@ -164,8 +165,7 @@ public class SubdomainsDao extends AbstractDao {
             // decrement counter
             counterDao.reset(domainUri, Resource.Type.DOMAIN.route());
 
-            //publish event
-            updateDomain(domainUri);
+            //TODO publish event
 
             return result.wasApplied();
         }catch (InvalidQueryException e){
@@ -174,12 +174,8 @@ public class SubdomainsDao extends AbstractDao {
         }
     }
 
-    private void updateDomain(String domainUri){
-        //publish event
-        //TODO not update domain !!
-        Domain resource = new Domain();
-        resource.setUri(domainUri);
-        eventBus.post(Event.from(resource), RoutingKey.of("subdomain.added"));
+    private void updateDomain(String domainUri, String subdomainUri, String action){
+        eventBus.post(Event.from(Relation.newContains(domainUri, subdomainUri)), RoutingKey.of("subdomain."+action));
     }
 
 }

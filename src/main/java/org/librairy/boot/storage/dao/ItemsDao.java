@@ -201,11 +201,11 @@ public class ItemsDao extends AbstractDao {
     }
 
     public Boolean exists(String uri){
-        return super.countQuery("select count(*) from items where uri='" + uri + "';");
+        return super.countQuery("select count(uri) from items where uri='" + uri + "';");
     }
 
     public Boolean contains(String itemUri, String partUri){
-        return super.countQuery("select count(*) from describes where starturi='" + partUri + "' and enduri='"+itemUri+"' ALLOW FILTERING;");
+        return super.countQuery("select count(uri) from describes where starturi='" + partUri + "' and enduri='"+itemUri+"' ALLOW FILTERING;");
     }
 
     public List<Part> listParts(String itemUri, Integer size, Optional<String> offset, Boolean inclusive){

@@ -63,14 +63,14 @@ public class DomainsDao extends AbstractDao  {
     AnnotationsDao annotationsDao;
 
     public Boolean exists(String domainUri){
-        return super.countQuery("select count(*) from domains where uri='" + domainUri + "';");
+        return super.countQuery("select count(uri) from domains where uri='" + domainUri + "';");
     }
 
 
     public Boolean contains(String domainUri, String resourceUri){
         String domainId = URIGenerator.retrieveId(domainUri);
         String tableName    = URIGenerator.typeFrom(resourceUri).route();
-        return super.countQueryOn("select count(*) from "+tableName+" where uri='" + resourceUri+ "' ;", domainId);
+        return super.countQueryOn("select count(uri) from "+tableName+" where uri='" + resourceUri+ "' ;", domainId);
     }
 
 
