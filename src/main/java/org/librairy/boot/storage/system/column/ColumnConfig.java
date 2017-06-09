@@ -270,6 +270,7 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
         schemaScripts.add("create index if not exists on research.paths (end);");
 
 
+
         return schemaScripts;
     }
 
