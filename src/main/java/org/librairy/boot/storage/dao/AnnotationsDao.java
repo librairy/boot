@@ -10,9 +10,9 @@ package org.librairy.boot.storage.dao;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
+import com.google.common.collect.Lists;
 import org.librairy.boot.model.Annotation;
 import org.librairy.boot.model.Event;
-import org.librairy.boot.model.domain.resources.Domain;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.RoutingKey;
@@ -26,7 +26,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,8 +46,8 @@ public class AnnotationsDao extends AbstractDao {
     EventBus eventBus;
 
     @PostConstruct
-    public Boolean initialize(){
-        String query = "create table if not exists annotations(uri varchar, type varchar, time varchar, value text, primary key(uri,type));";
+    public Boolean initialize() {
+        String query = "create table if not exists annotations(uri varchar, type varchar, time varchar, value text, primary key((uri,type), value));";
 
         ResultSet result = dbSessionManager.getCommonSession().execute(query);
 
@@ -56,54 +55,50 @@ public class AnnotationsDao extends AbstractDao {
     }
 
 
-    public Boolean saveOrUpdate(String uri, String type, String value){
-        String query = "insert into annotations(uri,type,time,value) values('"+uri+"', '"+type+"', '"+ TimeUtils.asISO()+"', '"+escaper.escape(value)+"');";
+    public Boolean saveOrUpdate(String uri, String type, String value) {
+        String query = "insert into annotations(uri,type,time,value) values('" + uri + "', '" + type + "', '" + TimeUtils.asISO() + "', '" + escaper.escape(value) + "');";
 
-        try{
+        try {
             ResultSet result = dbSessionManager.getCommonSession().execute(query);
-            LOG.debug("Annotated '"+uri+"' with '"+type+"'");
+            LOG.debug("Annotated '" + uri + "' with '" + type + "'");
             //publish event
             Resource resource = new Resource();
             resource.setUri(uri);
             eventBus.post(Event.from(resource), RoutingKey.of(URIGenerator.typeFrom(uri), Resource.State.UPDATED));
             return result.wasApplied();
-        }catch (InvalidQueryException e){
+        } catch (InvalidQueryException e) {
             LOG.warn("Error on query execution: " + e.getMessage());
             return false;
         }
     }
 
-    public Annotation get(String uri, String type) throws DataNotFound {
-        String query = "select time,value from annotations where uri='"+uri+"' and type='"+type+"';";
 
-        try{
+    public Annotation get(String uri, String type) throws DataNotFound {
+        String query = "select time,value from annotations where uri='" + uri + "' and type='" + type + "';";
+
+        try {
             ResultSet result = dbSessionManager.getCommonSession().execute(query);
             Row row = result.one();
 
-            if (row == null) throw new DataNotFound("Not found '"+type+"' in '"+uri+"'");
+            if (row == null) throw new DataNotFound("Not found '" + type + "' in '" + uri + "'");
 
             Annotation annotation = new Annotation();
             annotation.setType(type);
             annotation.setTime(row.getString(0));
             annotation.setValue(row.getString(1));
             return annotation;
-        } catch (InvalidQueryException e){
+        } catch (InvalidQueryException e) {
             LOG.warn("Error on query: " + e.getMessage());
             return new Annotation();
         }
 
     }
 
-    public List<Annotation> list(String uri, Boolean content){
-        String query = "select type, time";
+    public List<Annotation> list(String uri, String type) {
 
-        if(content){
-            query += ", value";
-        }
+        String query = String.format("select type, time, value from annotations where uri='%s' and type = '%s';", uri, type);
 
-        query += " from annotations where uri='" + uri + "';";
-
-        try{
+        try {
             ResultSet result = dbSessionManager.getCommonSession().execute(query);
             List<Row> rows = result.all();
 
@@ -111,50 +106,82 @@ public class AnnotationsDao extends AbstractDao {
 
             return rows.stream().map(row -> {
                 Annotation annotation = new Annotation();
+
                 annotation.setType(row.getString(0));
                 annotation.setTime(row.getString(1));
-
-                if (content) annotation.setValue(row.getString(2));
+                annotation.setValue(row.getString(2));
 
                 return annotation;
             }).collect(Collectors.toList());
-        } catch (InvalidQueryException e){
+        } catch (InvalidQueryException e) {
             LOG.warn("Error on query: " + e.getMessage());
             return Collections.emptyList();
         }
     }
 
-    public Boolean remove(String uri, String type){
-        String query = "delete from annotations where uri='"+uri+"' and type='"+type+"';";
+    public List<Annotation> list(String uri, Boolean content) {
+        String query = "select type, time";
 
-        try{
+        if (content) {
+            query += ", value";
+        }
+
+        query += " from annotations where uri='" + uri + "' ALLOW FILTERING;";
+
+        try {
+            ResultSet result = dbSessionManager.getCommonSession().execute(query);
+            List<Row> rows = result.all();
+
+            if ((rows == null) || rows.isEmpty()) return Collections.emptyList();
+
+            return Lists.newArrayList(
+                    rows.stream().map(row -> {
+                        Annotation annotation = new Annotation();
+                        annotation.setType(row.getString(0));
+                        annotation.setTime(row.getString(1));
+
+                        if (content) annotation.setValue(row.getString(2));
+
+                        return annotation;
+                    }).collect(Collectors.toSet())
+            );
+        } catch (InvalidQueryException e) {
+            LOG.warn("Error on query: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public Boolean remove(String uri, String type) {
+        String query = "delete from annotations where uri='" + uri + "' and type='" + type + "';";
+
+        try {
             ResultSet result = dbSessionManager.getCommonSession().execute(query);
             return result.wasApplied();
-        } catch (InvalidQueryException e){
+        } catch (InvalidQueryException e) {
             LOG.warn("Error on query: " + e.getMessage());
             return false;
         }
     }
 
-    public Boolean removeAll(String uri){
-        String query = "delete from annotations where uri='"+uri+"';";
+    public Boolean removeAll(String uri) {
+        String query = "delete from annotations where uri='" + uri + "';";
 
-        try{
+        try {
             ResultSet result = dbSessionManager.getCommonSession().execute(query);
             return result.wasApplied();
-        } catch (InvalidQueryException e){
+        } catch (InvalidQueryException e) {
             LOG.warn("Error on query: " + e.getMessage());
             return false;
         }
     }
 
-    public Boolean removeAll(){
+    public Boolean removeAll() {
         String query = "truncate annotations;";
 
-        try{
+        try {
             ResultSet result = dbSessionManager.getCommonSession().execute(query);
             return result.wasApplied();
-        } catch (InvalidQueryException e){
+        } catch (InvalidQueryException e) {
             LOG.warn("Error on query: " + e.getMessage());
             return false;
         }

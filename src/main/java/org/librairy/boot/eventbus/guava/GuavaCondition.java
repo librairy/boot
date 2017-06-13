@@ -23,10 +23,9 @@ public class GuavaCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
-        String envVar  = System.getenv("LIBRAIRY_EVENTBUS_HOST");
-        boolean condition = (!Strings.isNullOrEmpty(envVar) && envVar.equalsIgnoreCase("local"))
-                || (Strings.isNullOrEmpty(envVar) &&
-                conditionContext.getEnvironment().getProperty("librairy.eventbus.host").equalsIgnoreCase("local"));
+        String envVar = System.getenv("LIBRAIRY_EVENTBUS_HOST");
+        boolean condition = (!Strings.isNullOrEmpty(envVar) && "local".equalsIgnoreCase(envVar))
+                || (Strings.isNullOrEmpty(envVar) && "local".equalsIgnoreCase(conditionContext.getEnvironment().getProperty("librairy.eventbus.host")));
         return condition;
     }
 }
