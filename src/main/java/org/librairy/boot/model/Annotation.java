@@ -8,6 +8,7 @@
 package org.librairy.boot.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
@@ -15,7 +16,8 @@ import java.io.Serializable;
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
 @Data
-public class Annotation implements Serializable{
+@EqualsAndHashCode(of = {"uri", "type", "value"})
+public class Annotation implements Serializable {
 
     private String uri;
 
