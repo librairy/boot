@@ -10,23 +10,17 @@ package org.librairy.boot.storage.dao;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
-import org.librairy.boot.model.Annotation;
-import org.librairy.boot.model.Event;
-import org.librairy.boot.model.domain.resources.Item;
+import org.librairy.boot.model.domain.resources.Annotation;
 import org.librairy.boot.model.domain.resources.Listener;
-import org.librairy.boot.model.domain.resources.Resource;
-import org.librairy.boot.model.modules.EventBus;
-import org.librairy.boot.model.modules.RoutingKey;
-import org.librairy.boot.model.utils.TimeUtils;
 import org.librairy.boot.storage.exception.DataNotFound;
-import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -35,108 +29,47 @@ import java.util.stream.Collectors;
 @Component
 public class ListenersDao extends AbstractDao {
 
-    private static final String DEFAULT_KEYSPACE = "research";
-
     private static final Logger LOG = LoggerFactory.getLogger(ListenersDao.class);
 
     @Autowired
     DBSessionManager dbSessionManager;
 
-    @Autowired
-    EventBus eventBus;
+    public List<Listener> getByRoute(String route) throws DataNotFound {
+        String query = "select "+Listener.URI +
+                ", " + Listener.CREATION_TIME +
+                " from listeners where " + Listener.ROUTE + "='" + route+ "' ALLOW FILTERING;";
 
-    @PostConstruct
-    public Boolean initialize(){
-        String query = "create table if not exists research.listeners(id text, time text, primary key (id));";
-
-        ResultSet result = dbSessionManager.getCommonSession().execute(query);
-
-        return result.wasApplied();
-    }
-
-
-    public Boolean save(String id){
-        String query = "insert into listeners(id,time) values('"+id+"', '"+ TimeUtils.asISO()+"');";
-
-        try{
+        try {
             ResultSet result = dbSessionManager.getCommonSession().execute(query);
-            LOG.debug("Added listener for '"+id+"'");
-            eventBus.post(Event.from(id), RoutingKey.of("listener.created"));
-            return result.wasApplied();
-        }catch (InvalidQueryException e){
-            LOG.warn("Error on query execution: " + e.getMessage());
-            return false;
-        }
-    }
+            List<Row> rows = result.all();
 
-    public Listener get(String id) throws DataNotFound {
-        String query = "select time from listeners where id='"+id+"';";
+            if ((rows == null) || rows.isEmpty()) return Collections.emptyList();
 
-        try{
-            ResultSet result = dbSessionManager.getCommonSession().execute(query);
-            Row row = result.one();
+            return rows.stream()
+                    .map( row -> {
+                        Listener listener = new Listener();
+                        listener.setRoute(route);
+                        listener.setUri(row.getString(0));
+                        listener.setCreationTime(row.getString(1));
+                        return listener;
+                    }).collect(Collectors.toList());
 
-            if (row == null) throw new DataNotFound("Not found '"+id+"'");
-
-            Listener listener = new Listener();
-            listener.setId(id);
-            listener.setTime(row.getString(0));
-            return listener;
-        } catch (InvalidQueryException e){
+        } catch (InvalidQueryException e) {
             LOG.warn("Error on query: " + e.getMessage());
-            return new Listener();
+            return Collections.emptyList();
         }
 
     }
 
-    public Boolean remove(String id){
-        String query = "delete from listeners where id='"+id+"';";
 
-        try{
-            ResultSet result = dbSessionManager.getCommonSession().execute(query);
-            return result.wasApplied();
-        } catch (InvalidQueryException e){
-            LOG.warn("Error on query: " + e.getMessage());
-            return false;
-        }
-    }
+    public Boolean removeByRoute(String route) throws DataNotFound {
 
-    public Boolean removeAll(){
-        String query = "truncate listeners;";
-
-        try{
-            ResultSet result = dbSessionManager.getCommonSession().execute(query);
-            return result.wasApplied();
-        } catch (InvalidQueryException e){
-            LOG.warn("Error on query: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public List<Listener> list(Integer size, Optional<String> offset, Boolean inclusive) {
-        StringBuilder query = new StringBuilder().append("select id, time from listeners");
-
-        if (offset.isPresent()){
-            String operator = inclusive? ">=" : ">";
-            query.append(" where token(id) "+operator+" token('" + offset.get() + "')");
-        }
-
-        query.append(" limit " + size);
-
-        query.append(";");
-
-        Iterator<Row> it = super.iteratedQuery(query.toString());
-
-        List<Listener> listeners= new ArrayList<>();
-        while(it.hasNext()){
-            Row row = it.next();
-            Listener listener = new Listener();
-            listener.setId(row.getString(0));
-            listener.setTime(row.getString(1));
-            listeners.add(listener);
-        }
-
-        return listeners;
+        return getByRoute(route)
+                .stream()
+                .map( listener -> dbSessionManager.getCommonSession().execute("delete from listeners where uri='" + listener.getUri() + "';").wasApplied())
+                .reduce( (r1,r2) -> r1 && r2)
+                .get()
+        ;
     }
 
 

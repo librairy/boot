@@ -9,18 +9,11 @@ package org.librairy.boot.storage.dao;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
-import com.datastax.driver.core.exceptions.InvalidQueryException;
-import com.google.common.base.Strings;
-import org.librairy.boot.model.Annotation;
-import org.librairy.boot.model.Event;
 import org.librairy.boot.model.domain.relations.Relation;
 import org.librairy.boot.model.domain.resources.Domain;
 import org.librairy.boot.model.domain.resources.Item;
 import org.librairy.boot.model.domain.resources.Part;
 import org.librairy.boot.model.domain.resources.Resource;
-import org.librairy.boot.model.modules.EventBus;
-import org.librairy.boot.model.modules.RoutingKey;
-import org.librairy.boot.model.utils.TimeUtils;
 import org.librairy.boot.storage.UDM;
 import org.librairy.boot.storage.exception.DataNotFound;
 import org.librairy.boot.storage.generator.URIGenerator;
@@ -30,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
@@ -86,9 +78,8 @@ public class PartsDao extends AbstractDao {
                 }
             }
 
-
             // delete annotations
-            annotationsDao.removeAll(partUri);
+            annotationsDao.removeByResource(partUri, Optional.empty(), Optional.empty(), Optional.empty());
 
             // Delete
             udm.delete(Resource.Type.PART).byUri(partUri);

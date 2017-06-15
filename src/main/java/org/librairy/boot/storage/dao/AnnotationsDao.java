@@ -10,23 +10,16 @@ package org.librairy.boot.storage.dao;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
-import com.google.common.collect.Lists;
-import org.librairy.boot.model.Annotation;
-import org.librairy.boot.model.Event;
-import org.librairy.boot.model.domain.resources.Resource;
-import org.librairy.boot.model.modules.EventBus;
-import org.librairy.boot.model.modules.RoutingKey;
-import org.librairy.boot.model.utils.TimeUtils;
+import org.librairy.boot.model.domain.resources.Annotation;
 import org.librairy.boot.storage.exception.DataNotFound;
-import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -35,68 +28,38 @@ import java.util.stream.Collectors;
 @Component
 public class AnnotationsDao extends AbstractDao {
 
-    private static final String DEFAULT_KEYSPACE = "research";
-
     private static final Logger LOG = LoggerFactory.getLogger(AnnotationsDao.class);
 
     @Autowired
     DBSessionManager dbSessionManager;
 
-    @Autowired
-    EventBus eventBus;
+    public List<Annotation> getByResource(String uri, Optional<String> type, Optional<String> purpose, Optional<String> creator) throws DataNotFound {
+        String query = "select "+Annotation.URI +
+                ", " + Annotation.TYPE +
+                ", " + Annotation.CREATION_TIME +
+                ", " + Annotation.CREATOR +
+                ", " + Annotation.FORMAT +
+                ", " + Annotation.LANGUAGE +
+                ", " + Annotation.VALUE +
+                ", " + Annotation.DESCRIPTION +
+                ", " + Annotation.PURPOSE +
+                ", " + Annotation.SCORE +
+                ", " + Annotation.SELECTION +
+                " from annotations where " + Annotation.RESOURCE + "='" + uri + "' ";
 
-    @PostConstruct
-    public Boolean initialize() {
-        String query = "create table if not exists annotations(uri varchar, type varchar, time varchar, value text, primary key((uri,type), value));";
-
-        ResultSet result = dbSessionManager.getCommonSession().execute(query);
-
-        return result.wasApplied();
-    }
-
-
-    public Boolean saveOrUpdate(String uri, String type, String value) {
-        String query = "insert into annotations(uri,type,time,value) values('" + uri + "', '" + type + "', '" + TimeUtils.asISO() + "', '" + escaper.escape(value) + "');";
-
-        try {
-            ResultSet result = dbSessionManager.getCommonSession().execute(query);
-            LOG.debug("Annotated '" + uri + "' with '" + type + "'");
-            //publish event
-            Resource resource = new Resource();
-            resource.setUri(uri);
-            eventBus.post(Event.from(resource), RoutingKey.of(URIGenerator.typeFrom(uri), Resource.State.UPDATED));
-            return result.wasApplied();
-        } catch (InvalidQueryException e) {
-            LOG.warn("Error on query execution: " + e.getMessage());
-            return false;
-        }
-    }
-
-
-    public Annotation get(String uri, String type) throws DataNotFound {
-        String query = "select time,value from annotations where uri='" + uri + "' and type='" + type + "';";
-
-        try {
-            ResultSet result = dbSessionManager.getCommonSession().execute(query);
-            Row row = result.one();
-
-            if (row == null) throw new DataNotFound("Not found '" + type + "' in '" + uri + "'");
-
-            Annotation annotation = new Annotation();
-            annotation.setType(type);
-            annotation.setTime(row.getString(0));
-            annotation.setValue(row.getString(1));
-            return annotation;
-        } catch (InvalidQueryException e) {
-            LOG.warn("Error on query: " + e.getMessage());
-            return new Annotation();
+        if (type.isPresent()){
+            query += " and "+ Annotation.TYPE + "='" + type.get() + "' ";
         }
 
-    }
+        if (purpose.isPresent()){
+            query += " and "+ Annotation.PURPOSE + "='" + purpose.get() +"' ";
+        }
 
-    public List<Annotation> list(String uri, String type) {
+        if (creator.isPresent()){
+            query += " and "+ Annotation.CREATOR + "='" + creator.get() +"' ";
+        }
 
-        String query = String.format("select type, time, value from annotations where uri='%s' and type = '%s';", uri, type);
+        query += " ALLOW FILTERING ;";
 
         try {
             ResultSet result = dbSessionManager.getCommonSession().execute(query);
@@ -104,87 +67,40 @@ public class AnnotationsDao extends AbstractDao {
 
             if ((rows == null) || rows.isEmpty()) return Collections.emptyList();
 
-            return rows.stream().map(row -> {
-                Annotation annotation = new Annotation();
-
-                annotation.setType(row.getString(0));
-                annotation.setTime(row.getString(1));
-                annotation.setValue(row.getString(2));
-
-                return annotation;
-            }).collect(Collectors.toList());
-        } catch (InvalidQueryException e) {
-            LOG.warn("Error on query: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
-    public List<Annotation> list(String uri, Boolean content) {
-        String query = "select type, time";
-
-        if (content) {
-            query += ", value";
-        }
-
-        query += " from annotations where uri='" + uri + "' ALLOW FILTERING;";
-
-        try {
-            ResultSet result = dbSessionManager.getCommonSession().execute(query);
-            List<Row> rows = result.all();
-
-            if ((rows == null) || rows.isEmpty()) return Collections.emptyList();
-
-            return Lists.newArrayList(
-                    rows.stream().map(row -> {
+            return rows.stream()
+                    .map( row -> {
                         Annotation annotation = new Annotation();
-                        annotation.setType(row.getString(0));
-                        annotation.setTime(row.getString(1));
-
-                        if (content) annotation.setValue(row.getString(2));
-
+                        annotation.setResource(uri);
+                        annotation.setUri(row.getString(0));
+                        annotation.setType(row.getString(1));
+                        annotation.setCreationTime(row.getString(2));
+                        annotation.setCreator(row.getString(3));
+                        annotation.setFormat(row.getString(4));
+                        annotation.setLanguage(row.getString(5));
+                        annotation.setValue(row.getMap(6, String.class, String.class));
+                        annotation.setDescription(row.getString(7));
+                        annotation.setPurpose(row.getString(8));
+                        annotation.setScore(row.getDouble(9));
+                        annotation.setSelection(row.getMap(10, String.class, String.class));
                         return annotation;
-                    }).collect(Collectors.toSet())
-            );
+                    }).collect(Collectors.toList());
+
         } catch (InvalidQueryException e) {
             LOG.warn("Error on query: " + e.getMessage());
             return Collections.emptyList();
         }
+
     }
 
-    public Boolean remove(String uri, String type) {
-        String query = "delete from annotations where uri='" + uri + "' and type='" + type + "';";
 
-        try {
-            ResultSet result = dbSessionManager.getCommonSession().execute(query);
-            return result.wasApplied();
-        } catch (InvalidQueryException e) {
-            LOG.warn("Error on query: " + e.getMessage());
-            return false;
-        }
-    }
+    public Boolean removeByResource(String uri, Optional<String> type, Optional<String> purpose, Optional<String> creator) throws DataNotFound {
 
-    public Boolean removeAll(String uri) {
-        String query = "delete from annotations where uri='" + uri + "';";
-
-        try {
-            ResultSet result = dbSessionManager.getCommonSession().execute(query);
-            return result.wasApplied();
-        } catch (InvalidQueryException e) {
-            LOG.warn("Error on query: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public Boolean removeAll() {
-        String query = "truncate annotations;";
-
-        try {
-            ResultSet result = dbSessionManager.getCommonSession().execute(query);
-            return result.wasApplied();
-        } catch (InvalidQueryException e) {
-            LOG.warn("Error on query: " + e.getMessage());
-            return false;
-        }
+        return getByResource(uri,type,purpose,creator)
+                .stream()
+                .map( annotation -> dbSessionManager.getCommonSession().execute("delete from annotations where uri='" + annotation.getUri() + "';").wasApplied())
+                .reduce( (r1,r2) -> r1 && r2)
+                .get()
+        ;
     }
 
 

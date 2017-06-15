@@ -8,6 +8,7 @@
 package org.librairy.boot.model.domain.resources;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -19,14 +20,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Data
 @ToString(callSuper = true)
+@EqualsAndHashCode(of = "uri", callSuper = true)
 @XmlRootElement(name = "listener")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Listener  {
+public class Listener  extends Resource{
 
-    public static final String ID="id";
-    private String id;
-
-    public static final String TIME="time";
-    private String time;
+    public static final String ROUTE="route";
+    private String route;
 
 }

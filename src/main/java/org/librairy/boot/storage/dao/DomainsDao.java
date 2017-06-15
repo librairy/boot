@@ -11,13 +11,9 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.google.common.base.Strings;
-import org.librairy.boot.model.Annotation;
 import org.librairy.boot.model.Event;
 import org.librairy.boot.model.domain.relations.Relation;
-import org.librairy.boot.model.domain.resources.Domain;
-import org.librairy.boot.model.domain.resources.Item;
-import org.librairy.boot.model.domain.resources.Part;
-import org.librairy.boot.model.domain.resources.Resource;
+import org.librairy.boot.model.domain.resources.*;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.model.utils.TimeUtils;
@@ -237,11 +233,13 @@ public class DomainsDao extends AbstractDao  {
         String tokens = "";
         while(tokenizer.hasMoreTokens()){
             String type = tokenizer.nextToken();
-            Annotation annotation = null;
             try {
-                annotation = annotationsDao.get(resourceUri, type);
-                tokens += annotation.getValue();
-                tokens += " ";
+
+                for (Annotation annotation : annotationsDao.getByResource(resourceUri, Optional.of(type), Optional.empty(), Optional.empty())){
+                    tokens += annotation.getValue().get("content");
+                    tokens += " ";
+                }
+
             } catch (DataNotFound dataNotFound) {
                 LOG.debug("No annotation '" + type+ "' found for " + resourceUri);
             }

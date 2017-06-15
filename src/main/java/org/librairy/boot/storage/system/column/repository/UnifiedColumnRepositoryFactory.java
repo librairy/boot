@@ -98,6 +98,12 @@ public class UnifiedColumnRepositoryFactory {
     @Autowired
     SerializedObjectColumnRepository serializedObjectColumnRepository;
 
+    @Autowired
+    AnnotationColumnRepository annotationColumnRepository;
+
+    @Autowired
+    ListenerColumnRepository listenerColumnRepository;
+
     public BaseColumnRepository repositoryOf(Resource.Type type) throws RepositoryNotFound {
         switch (type){
             case ANALYSIS: return analysisColumnRepository;
@@ -112,6 +118,8 @@ public class UnifiedColumnRepositoryFactory {
             case FILTER: return filterColumnRepository;
             case PATH: return pathColumnRepository;
             case SERIALIZED_OBJECT: return serializedObjectColumnRepository;
+            case ANNOTATION: return annotationColumnRepository;
+            case LISTENER: return listenerColumnRepository;
         }
         throw new RepositoryNotFound("Column Repository not found for " + type);
     }
@@ -157,6 +165,8 @@ public class UnifiedColumnRepositoryFactory {
             case FILTER: return FilterColumn.class;
             case PATH: return PathColumn.class;
             case SERIALIZED_OBJECT: return SerializedObjectColumn.class;
+            case ANNOTATION: return AnnotationColumn.class;
+            case LISTENER: return ListenerColumn.class;
         }
         throw new RuntimeException("Mapping not found for " + type);
     }

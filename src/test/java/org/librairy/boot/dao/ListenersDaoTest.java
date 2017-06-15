@@ -50,19 +50,8 @@ public class ListenersDaoTest {
 
 
     @Test
-    public void saveTest() throws DataNotFound {
+    public void crudTest() throws DataNotFound {
 
-        List<Listener> res1 = dao.list(10, Optional.empty(), false);
-        Assert.assertTrue(res1.isEmpty());
-
-        Listener res2 = dao.get("sample");
-        Assert.assertTrue(Strings.isNullOrEmpty(res2.getId()));
-
-        Boolean res3 = dao.save("documents.created");
-        Assert.assertTrue(res3);
-
-        List<Listener> res4 = dao.list(10, Optional.empty(), false);
-        Assert.assertTrue(res1.isEmpty());
 
     }
 

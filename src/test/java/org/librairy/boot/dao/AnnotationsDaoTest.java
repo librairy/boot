@@ -7,11 +7,15 @@
 
 package org.librairy.boot.dao;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import es.cbadenes.lab.test.IntegrationTest;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.librairy.boot.model.Event;
+import org.librairy.boot.model.domain.resources.Annotation;
 import org.librairy.boot.model.domain.resources.Item;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.EventBus;
@@ -44,21 +48,57 @@ public class AnnotationsDaoTest {
     @Autowired
     AnnotationsDao annotationsDao;
 
+    @Autowired
+    UDM udm;
+
     @Test
-    public void save() throws DataNotFound {
+    public void createReadDelete() throws DataNotFound {
 
-        String uri = "http://librairy.org/items/OP7dGJ-cvNfVJ";
+        Assert.assertTrue(udm.find(Resource.Type.ANNOTATION).all().isEmpty());
 
-        String type = "ner";
+        Annotation annotation = new Annotation();
+        annotation.setResource("http://librairy.org/items/1");
+        annotation.setDescription("testing annotation");
+        annotation.setPurpose("test");
+        annotation.setLanguage("en");
+        annotation.setScore(1.0);
+        annotation.setCreator("junit-test");
+        annotation.setFormat("text/plain");
+        annotation.setType("lemma");
+        annotation.setValue(ImmutableMap.of("content","lemma1 lemma2 lemma3"));
+        annotation.setSelection(ImmutableMap.of("range","all"));
+        udm.save(annotation);
 
-        String tokens = "Transport_Policy_Studies_'_Review";
+        Assert.assertTrue(!udm.find(Resource.Type.ANNOTATION).all().isEmpty());
 
-        try{
-            annotationsDao.saveOrUpdate(uri,type,tokens);
-            LOG.info("Saved successfully!");
-        }catch (Exception e){
-            LOG.error("Error saving content", e);
-        }
+        Optional<Resource> resource = udm.read(Resource.Type.ANNOTATION).byUri(annotation.getUri());
+        Assert.assertTrue(resource.isPresent());
+        Assert.assertTrue(resource.get().asAnnotation().equals(annotation));
+
+
+        List<Annotation> annotationsByResource = annotationsDao.getByResource(annotation.getResource(), Optional.empty(), Optional.empty(), Optional.empty());
+        Assert.assertTrue(!annotationsByResource.isEmpty());
+        Assert.assertTrue(annotationsByResource.get(0).equals(annotation));
+
+        List<Annotation> annotationsByResourceAndType = annotationsDao.getByResource(annotation.getResource(), Optional.of(annotation.getType()), Optional.empty(), Optional.empty());
+        Assert.assertTrue(!annotationsByResourceAndType.isEmpty());
+        Assert.assertTrue(annotationsByResourceAndType.get(0).equals(annotation));
+
+        List<Annotation> annotationsByResourceAndPurpose = annotationsDao.getByResource(annotation.getResource(), Optional.empty(), Optional.of(annotation.getPurpose()), Optional.empty());
+        Assert.assertTrue(!annotationsByResourceAndPurpose.isEmpty());
+        Assert.assertTrue(annotationsByResourceAndPurpose.get(0).equals(annotation));
+
+        List<Annotation> annotationsByResourceAndCreator = annotationsDao.getByResource(annotation.getResource(), Optional.empty(), Optional.empty(), Optional.of(annotation.getCreator()));
+        Assert.assertTrue(!annotationsByResourceAndCreator.isEmpty());
+        Assert.assertTrue(annotationsByResourceAndCreator.get(0).equals(annotation));
+
+        Assert.assertTrue(annotationsDao.removeByResource(annotation.getResource(), Optional.empty(), Optional.empty(), Optional.empty()));
+        Assert.assertTrue(udm.find(Resource.Type.ANNOTATION).all().isEmpty());
+
+        udm.save(annotation);
+        Assert.assertTrue(!udm.find(Resource.Type.ANNOTATION).all().isEmpty());
+        udm.delete(Resource.Type.ANNOTATION).byUri(annotation.getUri());
+        Assert.assertTrue(udm.find(Resource.Type.ANNOTATION).all().isEmpty());
 
     }
 

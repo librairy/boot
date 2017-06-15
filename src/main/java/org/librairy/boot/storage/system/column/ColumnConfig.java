@@ -270,6 +270,16 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
         schemaScripts.add("create index if not exists on research.paths (end);");
 
 
+        schemaScripts.add("create table if not exists research.listeners(uri text, creationTime text, route text, primary key (uri));");
+        schemaScripts.add("create index if not exists on research.listeners (creationTime);");
+        schemaScripts.add("create index if not exists on research.listeners (route);");
+
+        schemaScripts.add("create table if not exists research.annotations(uri text, resource text, type text, creationTime text, creator text, format text, language text, value map<text,text>, description text, purpose text, score double, selection map<text,text>, primary key(uri));");
+        schemaScripts.add("create index if not exists on research.annotations (resource);");
+        schemaScripts.add("create index if not exists on research.annotations (type);");
+        schemaScripts.add("create index if not exists on research.annotations (creationTime);");
+        schemaScripts.add("create index if not exists on research.annotations (creator);");
+        schemaScripts.add("create index if not exists on research.annotations (purpose);");
 
         return schemaScripts;
     }

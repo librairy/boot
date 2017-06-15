@@ -33,6 +33,8 @@ public class Resource extends LinkableElement {
 		FILTER("filter","filters"),
 		PATH("path","paths"),
 		FILE("file","files"),
+		LISTENER("listener","listeners"),
+		ANNOTATION("annotation","annotations"),
 		ANY("*","*"), ;
 
 		String plural;
@@ -75,6 +77,8 @@ public class Resource extends LinkableElement {
 			case WORD: return Word.class;
 			case FILTER: return Filter.class;
 			case PATH: return Path.class;
+			case LISTENER: return Listener.class;
+			case ANNOTATION: return Annotation.class;
 			default: return Resource.class;
 		}
 	}
@@ -151,6 +155,20 @@ public class Resource extends LinkableElement {
 		return word;
 	}
 
+	public static Listener newListener(String route){
+		Listener listener = new Listener();
+		listener.setRoute(route);
+		return listener;
+	}
+
+	public static Annotation newAnnotation(String resource, String type){
+		Annotation annotation = new Annotation();
+		annotation.setResource(resource);
+		annotation.setType(type);
+		return annotation;
+	}
+
+
 	public Analysis asAnalysis(){
 		return Analysis.class.cast(this);
 	}
@@ -199,4 +217,11 @@ public class Resource extends LinkableElement {
 		return Path.class.cast(this);
 	}
 
+	public Listener asListener(){
+		return Listener.class.cast(this);
+	}
+
+	public Annotation asAnnotation(){
+		return Annotation.class.cast(this);
+	}
 }

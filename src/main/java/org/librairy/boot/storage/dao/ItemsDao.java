@@ -9,19 +9,11 @@ package org.librairy.boot.storage.dao;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
-import com.datastax.driver.core.exceptions.InvalidQueryException;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import org.librairy.boot.model.Annotation;
-import org.librairy.boot.model.Event;
 import org.librairy.boot.model.domain.relations.Relation;
 import org.librairy.boot.model.domain.resources.Domain;
 import org.librairy.boot.model.domain.resources.Item;
 import org.librairy.boot.model.domain.resources.Part;
 import org.librairy.boot.model.domain.resources.Resource;
-import org.librairy.boot.model.modules.EventBus;
-import org.librairy.boot.model.modules.RoutingKey;
-import org.librairy.boot.model.utils.TimeUtils;
 import org.librairy.boot.storage.UDM;
 import org.librairy.boot.storage.exception.DataNotFound;
 import org.librairy.boot.storage.generator.URIGenerator;
@@ -30,10 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.net.URI;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
@@ -91,7 +80,8 @@ public class ItemsDao extends AbstractDao {
             }
 
             // delete annotations
-            annotationsDao.removeAll(itemUri);
+            annotationsDao.removeByResource(itemUri, Optional.empty(), Optional.empty(), Optional.empty());
+
 
             // delete parts
             offset = Optional.empty();

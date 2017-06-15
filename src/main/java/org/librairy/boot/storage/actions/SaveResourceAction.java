@@ -13,6 +13,7 @@ import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.model.utils.ResourceUtils;
 import org.librairy.boot.model.utils.TimeUtils;
+import org.librairy.boot.storage.generator.URIGenerator;
 import org.librairy.boot.storage.session.UnifiedTransaction;
 import org.librairy.boot.storage.Helper;
 import org.slf4j.Logger;
@@ -51,6 +52,13 @@ public class SaveResourceAction {
                 case TOPIC:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asTopic()
                             .getContent());
+                    break;
+                case ANNOTATION:
+                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),new StringBuilder()
+                            .append(resource.asAnnotation().getResource())
+                            .append(resource.asAnnotation().getType())
+                            .append(resource.asAnnotation().getPurpose())
+                            .toString());
                     break;
                 case DOCUMENT:
                     uri = (Strings.isNullOrEmpty(resource.asDocument().getTitle()))?
@@ -94,15 +102,6 @@ public class SaveResourceAction {
 
             LOG.debug("trying to save: " + resource);
 
-            // graph
-            // TODO remove it
-//            if (helper.getTemplateFactory().handle(resource.getResourceType())){
-//                helper.getTemplateFactory().of(resource.getResourceType()).save(resource);
-//            }else{
-//                helper.getUnifiedNodeGraphRepository().save(resource);
-//            }
-
-            // column
             helper.getUnifiedColumnRepository().save(resource);
 
             transaction.commit();
@@ -117,6 +116,21 @@ public class SaveResourceAction {
                 helper.getItemsDao().initialize(resource.getUri());
                 helper.getPartsDao().initialize(resource.getUri());
                 helper.getSubdomainsDao().initialize(resource.getUri());
+            }else if (resource.getResourceType().equals(Resource.Type.ANNOTATION)){
+                //Publish the related-event
+                String relatedResourceUri = resource.asAnnotation().getResource();
+                try{
+                    if (Strings.isNullOrEmpty(relatedResourceUri)){
+                        relatedResourceUri = helper.getUnifiedColumnRepository().read(Resource.Type.ANNOTATION, resource.getUri()).get().asAnnotation().getResource();
+                    }
+                    Resource.Type typeFrom = URIGenerator.typeFrom(relatedResourceUri);
+                    Resource relatedResource = new Resource();
+                    relatedResource.setUri(relatedResourceUri);
+                    helper.getEventBus().post(Event.from(relatedResource), RoutingKey.of(typeFrom, Resource.State.UPDATED));
+                }catch (RuntimeException e){
+                    //no type found from related resource uri
+                    LOG.warn("No type found from related resource uri: '" + relatedResourceUri + "'");
+                }
             }
 
             //Publish the event
