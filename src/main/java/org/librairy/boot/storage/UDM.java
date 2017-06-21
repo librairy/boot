@@ -107,7 +107,7 @@ public class UDM {
     }
 
     /**
-     * Check if a 'type' resource identified by 'uri' exists
+     * Check if a 'typeFilter' resource identified by 'uri' exists
      * @param type
      * @return boolean
      */
@@ -116,7 +116,7 @@ public class UDM {
     }
 
     /**
-     * Check if a 'type' relation identified by 'uri' exists
+     * Check if a 'typeFilter' relation identified by 'uri' exists
      * @param type
      * @return boolean
      */
@@ -125,7 +125,7 @@ public class UDM {
     }
 
     /**
-     * Read the 'type' resource identified by 'uri'
+     * Read the 'typeFilter' resource identified by 'uri'
      * @param type
      * @return resource
      */
@@ -134,7 +134,7 @@ public class UDM {
     }
 
     /**
-     * Read the 'type' resource identified by 'uri'
+     * Read the 'typeFilter' resource identified by 'uri'
      * @param type
      * @return relation
      */
@@ -162,7 +162,7 @@ public class UDM {
     }
 
     /**
-     * Delete 'type' resources
+     * Delete 'typeFilter' resources
      * @param type
      * @return
      */
@@ -171,7 +171,7 @@ public class UDM {
     }
 
     /**
-     * Delete 'type' relations
+     * Delete 'typeFilter' relations
      * @param type
      * @return
      */

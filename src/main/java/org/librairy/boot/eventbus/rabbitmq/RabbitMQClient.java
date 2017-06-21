@@ -123,7 +123,7 @@ public class RabbitMQClient {
         // receive a maximum of 1 unacknowledged messages at once per consumer
         channel.basicQos(10,false); //1
 
-        // a durable, non-autodelete exchange of "topic" type
+        // a durable, non-autodelete exchange of "topic" typeFilter
         channel.exchangeDeclare(exchange, EXCHANGE_TYPE, true);
 
         // Handling unroutable messages

@@ -95,6 +95,8 @@ public class DeleteResourceAction {
                     break;
             }
 
+
+
             helper.getUnifiedColumnRepository().delete(type,uri);
 
             transaction.commit();

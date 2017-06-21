@@ -281,6 +281,15 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
         schemaScripts.add("create index if not exists on research.annotations (creator);");
         schemaScripts.add("create index if not exists on research.annotations (purpose);");
 
+        // code=2200 [Invalid query] message="Cannot include more than one non-primary key column 'typeFilter' in materialized view primary key"
+        //schemaScripts.add("CREATE MATERIALIZED VIEW research.annotations_by_resource AS SELECT resource, typeFilter, creator, purposeFilter, uri FROM research.annotations WHERE resource IS NOT NULL AND uri IS NOT NULL PRIMARY KEY ((resource), typeFilter, creator, purposeFilter);");
+
+        schemaScripts.add("create table if not exists research.annotations_by_resource(resource text, type text, creator text, purpose text, uri text, primary key((resource),type,purpose,creator));");
+
+
+        schemaScripts.add("create table if not exists research.counts(num counter, name varchar, primary key(name));");
+
+
         return schemaScripts;
     }
 

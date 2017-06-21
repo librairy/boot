@@ -7,8 +7,10 @@
 
 package org.librairy.boot.storage.actions;
 
+import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.google.common.base.Strings;
 import org.librairy.boot.model.Event;
+import org.librairy.boot.model.domain.resources.Annotation;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.model.utils.ResourceUtils;
@@ -117,6 +119,18 @@ public class SaveResourceAction {
                 helper.getPartsDao().initialize(resource.getUri());
                 helper.getSubdomainsDao().initialize(resource.getUri());
             }else if (resource.getResourceType().equals(Resource.Type.ANNOTATION)){
+                // Insert into annotations_by_resource
+                Annotation annotation = resource.asAnnotation();
+                String query = "insert into annotations_by_resource (resource,type,creator,purpose,uri) " +
+                        "values('"+annotation.getResource()+"', '"+ annotation.getType()+"', '"+ annotation.getCreator()+"', '"+annotation.getPurpose()+"', '"+annotation.getUri()+"')";
+                try{
+                    helper.getDbSessionManager().getCommonSession().execute(query);
+                }catch (InvalidQueryException e){
+                    LOG.warn("Error on query execution [" + query + "] : " + e.getMessage());
+                    helper.getUnifiedColumnRepository().delete(Resource.Type.ANNOTATION, resource.getUri());
+                    return;
+                }
+
                 //Publish the related-event
                 String relatedResourceUri = resource.asAnnotation().getResource();
                 try{
@@ -128,8 +142,8 @@ public class SaveResourceAction {
                     relatedResource.setUri(relatedResourceUri);
                     helper.getEventBus().post(Event.from(relatedResource), RoutingKey.of(typeFrom, Resource.State.UPDATED));
                 }catch (RuntimeException e){
-                    //no type found from related resource uri
-                    LOG.warn("No type found from related resource uri: '" + relatedResourceUri + "'");
+                    //no typeFilter found from related resource uri
+                    LOG.warn("No typeFilter found from related resource uri: '" + relatedResourceUri + "'");
                 }
             }
 

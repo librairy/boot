@@ -43,10 +43,10 @@ public class SearchRelationAction {
         try{
 
             // TODO remove it
-//            if (helper.getTemplateFactory().handle(type)){
-//                helper.getTemplateFactory().of(type).findAll().forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+//            if (helper.getTemplateFactory().handle(typeFilter)){
+//                helper.getTemplateFactory().of(typeFilter).findAll().forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(typeFilter))));
 //            }else{
-//                helper.getUnifiedEdgeGraphRepository().findAll(type).forEach(x -> relations.add(Relation.class.cast(x)));
+//                helper.getUnifiedEdgeGraphRepository().findAll(typeFilter).forEach(x -> relations.add(Relation.class.cast(x)));
 //            }
 
             helper.getUnifiedColumnRepository().findAll(type).forEach(x -> relations.add(Relation.class.cast(x)));
@@ -73,10 +73,10 @@ public class SearchRelationAction {
 //            UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
             // TODO remove it
-//            if (helper.getTemplateFactory().handle(type)){
-//                helper.getTemplateFactory().of(type).findOne(startUri,endUri).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+//            if (helper.getTemplateFactory().handle(typeFilter)){
+//                helper.getTemplateFactory().of(typeFilter).findOne(startUri,endUri).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(typeFilter))));
 //            }else{
-//                helper.getUnifiedEdgeGraphRepository().findBetween(type, startUri, endUri).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+//                helper.getUnifiedEdgeGraphRepository().findBetween(typeFilter, startUri, endUri).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(typeFilter))));
 //            }
 
             throw new RuntimeException("Method not implemented");
@@ -108,10 +108,10 @@ public class SearchRelationAction {
 
 
             //TODO remove it
-//            if (helper.getTemplateFactory().handle(type)){
-//                helper.getTemplateFactory().of(type).findIn(referenceType,referenceURI).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+//            if (helper.getTemplateFactory().handle(typeFilter)){
+//                helper.getTemplateFactory().of(typeFilter).findIn(referenceType,referenceURI).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(typeFilter))));
 //            }else{
-//                helper.getUnifiedEdgeGraphRepository().findFrom(type, referenceType, referenceURI).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+//                helper.getUnifiedEdgeGraphRepository().findFrom(typeFilter, referenceType, referenceURI).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(typeFilter))));
 //            }
 
             transaction.commit();
@@ -137,7 +137,7 @@ public class SearchRelationAction {
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
             // TODO remove it
-//            helper.getUnifiedEdgeGraphRepository().findBy(type, field, value).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
+//            helper.getUnifiedEdgeGraphRepository().findBy(typeFilter, field, value).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(typeFilter))));
 
             helper.getUnifiedColumnRepository().findBy(type, field, value).forEach(x -> relations.add((Relation) ResourceUtils.map(x,Relation.classOf(type))));
 

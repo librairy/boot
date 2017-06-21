@@ -40,6 +40,6 @@ public class Word extends Resource {
 //    public static final String POS="pos";
 //    private String pos;
 //
-//    public static final String TYPE="type";
-//    private String type;
+//    public static final String TYPE="typeFilter";
+//    private String typeFilter;
 }

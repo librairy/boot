@@ -43,10 +43,10 @@ public class SearchResourceAction {
         try{
                 //TODO remove it
 //
-//            if (helper.getTemplateFactory().handle(type)){
-//                helper.getTemplateFactory().of(type).findAll().forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
+//            if (helper.getTemplateFactory().handle(typeFilter)){
+//                helper.getTemplateFactory().of(typeFilter).findAll().forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(typeFilter))));
 //            }else{
-//                helper.getUnifiedNodeGraphRepository().findAll(type).forEach(x -> resources.add(x));
+//                helper.getUnifiedNodeGraphRepository().findAll(typeFilter).forEach(x -> resources.add(x));
 //            }
 
             helper.getUnifiedColumnRepository().findAll(type).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
@@ -72,10 +72,10 @@ public class SearchResourceAction {
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
             //TODO remove it
-//            if (helper.getTemplateFactory().handle(type)){
-//                helper.getTemplateFactory().of(type).findFrom(referenceType,referenceURI).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
+//            if (helper.getTemplateFactory().handle(typeFilter)){
+//                helper.getTemplateFactory().of(typeFilter).findFrom(referenceType,referenceURI).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(typeFilter))));
 //            }else{
-//                helper.getUnifiedNodeGraphRepository().findFrom(type, referenceType,referenceURI).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(type))));
+//                helper.getUnifiedNodeGraphRepository().findFrom(typeFilter, referenceType,referenceURI).forEach(x -> resources.add((Resource) ResourceUtils.map(x, Resource.classOf(typeFilter))));
 //            }
 
             Relation.Type relType = RelationUtils.getRelationBetween(type,referenceType);

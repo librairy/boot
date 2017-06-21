@@ -128,7 +128,9 @@ public abstract class AbstractDao {
         try{
             ResultSet result = dbSessionManager.getCommonSession().execute(query.toString());
             if (result == null) return Optional.empty();
-            return Optional.of(result.one());
+            Row value = result.one();
+            if (value == null) return Optional.empty();
+            return Optional.of(value);
 
         }catch (InvalidQueryException e){
             LOG.warn("Error on one query execution [" + query + "] : " + e.getMessage());
@@ -142,7 +144,9 @@ public abstract class AbstractDao {
         try{
             ResultSet result = dbSessionManager.getDomainSession(domainId).execute(query.toString());
             if (result == null) return Optional.empty();
-            return Optional.of(result.one());
+            Row value = result.one();
+            if (value == null) return Optional.empty();
+            return Optional.of(value);
 
         }catch (InvalidQueryException e){
             LOG.warn("Error on one query execution [" + query + "] on domain '"+domainId+"': " + e.getMessage());

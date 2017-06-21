@@ -57,4 +57,7 @@ public class Helper {
     @Autowired 
     CounterDao counterDao;
 
+    @Autowired
+    DBSessionManager dbSessionManager;
+
 }

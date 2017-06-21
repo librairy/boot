@@ -21,6 +21,7 @@ import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.storage.UDM;
+import org.librairy.boot.storage.dao.AnnotationFilter;
 import org.librairy.boot.storage.dao.AnnotationsDao;
 import org.librairy.boot.storage.dao.ItemsDao;
 import org.librairy.boot.storage.exception.DataNotFound;
@@ -76,23 +77,26 @@ public class AnnotationsDaoTest {
         Assert.assertTrue(resource.get().asAnnotation().equals(annotation));
 
 
-        List<Annotation> annotationsByResource = annotationsDao.getByResource(annotation.getResource(), Optional.empty(), Optional.empty(), Optional.empty());
+        List<Annotation> annotationsByResource = annotationsDao.getByResource(annotation.getResource(), Optional.empty());
         Assert.assertTrue(!annotationsByResource.isEmpty());
         Assert.assertTrue(annotationsByResource.get(0).equals(annotation));
 
-        List<Annotation> annotationsByResourceAndType = annotationsDao.getByResource(annotation.getResource(), Optional.of(annotation.getType()), Optional.empty(), Optional.empty());
+        AnnotationFilter byTypeFilter = AnnotationFilter.byType(annotation.getType()).build();
+        List<Annotation> annotationsByResourceAndType = annotationsDao.getByResource(annotation.getResource(), Optional.of(byTypeFilter));
         Assert.assertTrue(!annotationsByResourceAndType.isEmpty());
         Assert.assertTrue(annotationsByResourceAndType.get(0).equals(annotation));
 
-        List<Annotation> annotationsByResourceAndPurpose = annotationsDao.getByResource(annotation.getResource(), Optional.empty(), Optional.of(annotation.getPurpose()), Optional.empty());
+        AnnotationFilter byTypeAndPurposeFilter = AnnotationFilter.byType(annotation.getType()).byPurpose(annotation.getPurpose()).build();
+        List<Annotation> annotationsByResourceAndPurpose = annotationsDao.getByResource(annotation.getResource(), Optional.of(byTypeAndPurposeFilter));
         Assert.assertTrue(!annotationsByResourceAndPurpose.isEmpty());
         Assert.assertTrue(annotationsByResourceAndPurpose.get(0).equals(annotation));
 
-        List<Annotation> annotationsByResourceAndCreator = annotationsDao.getByResource(annotation.getResource(), Optional.empty(), Optional.empty(), Optional.of(annotation.getCreator()));
+        AnnotationFilter byTypeAndPurposeAndCreatorFilter = AnnotationFilter.byType(annotation.getType()).byPurpose(annotation.getPurpose()).byCreator(annotation.getCreator()).build();
+        List<Annotation> annotationsByResourceAndCreator = annotationsDao.getByResource(annotation.getResource(), Optional.of(byTypeAndPurposeAndCreatorFilter));
         Assert.assertTrue(!annotationsByResourceAndCreator.isEmpty());
         Assert.assertTrue(annotationsByResourceAndCreator.get(0).equals(annotation));
 
-        Assert.assertTrue(annotationsDao.removeByResource(annotation.getResource(), Optional.empty(), Optional.empty(), Optional.empty()));
+        Assert.assertTrue(annotationsDao.removeByResource(annotation.getResource(), Optional.empty()));
         Assert.assertTrue(udm.find(Resource.Type.ANNOTATION).all().isEmpty());
 
         udm.save(annotation);

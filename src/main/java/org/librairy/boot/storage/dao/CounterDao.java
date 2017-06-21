@@ -28,11 +28,6 @@ public class CounterDao extends AbstractCounterDao {
     @Autowired
     DBSessionManager dbSessionManager;
 
-    @PostConstruct
-    public void setup(){
-        initialize();
-    }
-
     public Boolean initialize(){
         Boolean result = super.initialize(DEFAULT_KEYSPACE);
         LOG.info("Initialized global counters");

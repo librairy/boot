@@ -198,17 +198,9 @@ public class DomainsDao extends AbstractDao  {
 
             List<Part> parts = itemsDao.listParts(documentUri, windowSize, offset, false);
 
-            // add to parts part
+            // add to parts
             for (Part part: parts){
-                StringBuilder insertPartQuery = new StringBuilder()
-                        .append("insert into parts (uri, time, tokens) values(")
-                        .append("'").append(part.getUri()).append("',")
-                        .append("'").append(TimeUtils.asISO()).append("',")
-                        .append("'").append(retrieveDomainTokens(domainUri, part.getUri())).append("'")
-                        .append(") ;");
-
-                super.executeOn(insertPartQuery.toString(), URIGenerator.retrieveId(domainUri));
-                counterDao.increment(domainUri, Resource.Type.PART.route());
+                addPart(domainUri, part.getUri());
             }
 
 
@@ -218,6 +210,22 @@ public class DomainsDao extends AbstractDao  {
                 offset = Optional.of(URIGenerator.retrieveId(parts.get(windowSize-1).getUri()));
             }
         }
+    }
+
+    public void addPart(String domainUri, String partUri){
+
+        // add to contains
+//        udm.save(Relation.newContains(domainUri, partUri));
+
+        StringBuilder insertPartQuery = new StringBuilder()
+                .append("insert into parts (uri, time, tokens) values(")
+                .append("'").append(partUri).append("',")
+                .append("'").append(TimeUtils.asISO()).append("',")
+                .append("'").append(retrieveDomainTokens(domainUri, partUri)).append("'")
+                .append(") ;");
+
+        super.executeOn(insertPartQuery.toString(), URIGenerator.retrieveId(domainUri));
+        counterDao.increment(domainUri, Resource.Type.PART.route());
     }
 
     private String retrieveDomainTokens(String domainUri, String resourceUri){
@@ -234,8 +242,8 @@ public class DomainsDao extends AbstractDao  {
         while(tokenizer.hasMoreTokens()){
             String type = tokenizer.nextToken();
             try {
-
-                for (Annotation annotation : annotationsDao.getByResource(resourceUri, Optional.of(type), Optional.empty(), Optional.empty())){
+                AnnotationFilter filterByType = AnnotationFilter.byType(type).build();
+                for (Annotation annotation : annotationsDao.getByResource(resourceUri, Optional.of(filterByType))){
                     tokens += annotation.getValue().get("content");
                     tokens += " ";
                 }

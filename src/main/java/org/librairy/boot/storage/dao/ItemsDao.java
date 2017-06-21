@@ -80,7 +80,7 @@ public class ItemsDao extends AbstractDao {
             }
 
             // delete annotations
-            annotationsDao.removeByResource(itemUri, Optional.empty(), Optional.empty(), Optional.empty());
+            annotationsDao.removeByResource(itemUri, Optional.empty());
 
 
             // delete parts

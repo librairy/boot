@@ -79,7 +79,7 @@ public class PartsDao extends AbstractDao {
             }
 
             // delete annotations
-            annotationsDao.removeByResource(partUri, Optional.empty(), Optional.empty(), Optional.empty());
+            annotationsDao.removeByResource(partUri, Optional.empty());
 
             // Delete
             udm.delete(Resource.Type.PART).byUri(partUri);

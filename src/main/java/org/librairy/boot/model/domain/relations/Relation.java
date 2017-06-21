@@ -69,6 +69,7 @@ public class Relation extends LinkableElement {
         PROVIDES("provides","provisions"),
         COMPOSES("composes","compositions"),
         CONTAINS_TO_DOCUMENT("contains","contains"),
+        CONTAINS_TO_DOMAIN("contains","contains"),
         CONTAINS_TO_ITEM("contains","contains"),
         CONTAINS_TO_PART("contains","contains"),
         BUNDLES("bundles","bundles"),
@@ -165,6 +166,7 @@ public class Relation extends LinkableElement {
             case DOCUMENT: return newRelation(ContainsDoc.class,startUri,endUri);
             case ITEM: return newRelation(ContainsItem.class,startUri,endUri);
             case PART: return newRelation(ContainsPart.class,startUri,endUri);
+            case DOMAIN: return newRelation(ContainsDomain.class,startUri,endUri);
             default: throw new RuntimeException("Invalid start uri for CONTAINS relation: " + startUri);
         }
 

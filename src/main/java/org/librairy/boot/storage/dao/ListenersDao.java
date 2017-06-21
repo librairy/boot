@@ -72,5 +72,9 @@ public class ListenersDao extends AbstractDao {
         ;
     }
 
+    public Boolean truncate(){
+        return Boolean.valueOf(this.dbSessionManager.getCommonSession().execute("truncate listeners;").wasApplied());
+    }
+
 
 }

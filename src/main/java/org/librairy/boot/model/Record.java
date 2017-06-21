@@ -48,7 +48,7 @@ public class Record {
     public static final String PUBLICATION_LANGUAGE             = joiner.join(PUBLICATION,"lang");
     public static final String PUBLICATION_RIGHTS               = joiner.join(PUBLICATION,"rights");
     public static final String PUBLICATION_FORMAT               = joiner.join(PUBLICATION,"format");
-    public static final String PUBLICATION_TYPE               = joiner.join(PUBLICATION,"type");
+    public static final String PUBLICATION_TYPE                 = joiner.join(PUBLICATION,"type");
     public static final String PUBLICATION_SUBJECT               = joiner.join(PUBLICATION,"subject");
 
     //  -> urls
