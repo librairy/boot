@@ -7,6 +7,8 @@
 
 package org.librairy.boot.storage.dao;
 
+import com.google.common.base.Strings;
+
 import java.util.Optional;
 
 /**
@@ -40,7 +42,7 @@ public class AnnotationFilter {
 
         public AnnotationFilter build(){
             AnnotationFilter filter = new AnnotationFilter();
-            filter.type     = Optional.of(this.type);
+            if (!Strings.isNullOrEmpty(type)) filter.type     = Optional.of(this.type);
             return filter;
         }
     }
@@ -61,8 +63,8 @@ public class AnnotationFilter {
 
         public  AnnotationFilter build(){
             AnnotationFilter filter = new AnnotationFilter();
-            filter.purpose  = Optional.of(this.purpose);
-            filter.type     = Optional.of(this.typeFilter.type);
+            if (!Strings.isNullOrEmpty(purpose)) filter.purpose  =  Optional.of(this.purpose);
+            if (!Strings.isNullOrEmpty(this.typeFilter.type)) filter.type  = Optional.of(this.typeFilter.type);
             return filter;
         }
     }
@@ -78,9 +80,9 @@ public class AnnotationFilter {
 
         public  AnnotationFilter build(){
             AnnotationFilter filter = new AnnotationFilter();
-            filter.creator  = Optional.of(this.creator);
-            filter.purpose  = Optional.of(this.purposeFilter.purpose);
-            filter.type     = Optional.of(this.purposeFilter.typeFilter.type);
+            if (!Strings.isNullOrEmpty(creator)) filter.creator  = Optional.of(this.creator);
+            if (!Strings.isNullOrEmpty(this.purposeFilter.purpose)) filter.purpose  = Optional.of(this.purposeFilter.purpose);
+            if (!Strings.isNullOrEmpty(this.purposeFilter.typeFilter.type)) filter.type     = Optional.of(this.purposeFilter.typeFilter.type);
             return filter;
         }
     }

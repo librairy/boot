@@ -8,6 +8,7 @@
 package org.librairy.boot.storage.generator;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.librairy.boot.model.domain.relations.Relation;
 import org.librairy.boot.model.domain.resources.Resource;
@@ -46,8 +47,10 @@ public class URIGenerator implements Serializable{
     @Value("#{environment['LIBRAIRY_URI']?:'${librairy.uri}'}")
     String domainUri;
 
+    @Getter
     String base;
 
+    @Getter
     private static String baseUri = "";
 
     @PostConstruct

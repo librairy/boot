@@ -86,6 +86,9 @@ public class SaveResourceAction {
                             (Strings.isNullOrEmpty(resource.asSource().getName()))? TimeUtils.asISO() : resource.asSource()
                                     .getName());
                     break;
+                case LISTENER:
+                    uri = helper.getUriGenerator().from(resource.getResourceType(), resource.asListener().getRoute());
+                    break;
                 default:
                     uri = helper.getUriGenerator().newFor(resource.getResourceType());
             }

@@ -11,16 +11,17 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
 import org.librairy.boot.model.domain.resources.Annotation;
+import org.librairy.boot.model.domain.resources.Item;
 import org.librairy.boot.model.domain.resources.Listener;
+import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.storage.exception.DataNotFound;
+import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -76,5 +77,31 @@ public class ListenersDao extends AbstractDao {
         return Boolean.valueOf(this.dbSessionManager.getCommonSession().execute("truncate listeners;").wasApplied());
     }
 
+    public List<Listener> list(Long size, Optional<String> offset, Boolean inclusive) {
+        StringBuilder query = new StringBuilder().append("select uri, route, creationtime from listeners");
+
+        if (offset.isPresent()){
+            String operator = inclusive? ">=" : ">";
+            query.append(" where token(uri) "+operator+" token('" + URIGenerator.fromId(Resource.Type.LISTENER,offset.get()) + "')");
+        }
+
+        query.append(" limit " + size);
+
+        query.append(";");
+
+        Iterator<Row> it = super.iteratedQuery(query.toString());
+
+        List<Listener> listeners = new ArrayList<>();
+        while(it.hasNext()){
+            Row row = it.next();
+            Listener listener = new Listener();
+            listener.setUri(row.getString(0));
+            listener.setRoute(row.getString(1));
+            listener.setCreationTime(row.getString(2));
+            listeners.add(listener);
+        }
+
+        return listeners;
+    }
 
 }

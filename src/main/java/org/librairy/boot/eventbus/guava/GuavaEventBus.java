@@ -60,7 +60,18 @@ public class GuavaEventBus implements EventBus {
 	}
 
 	@Override
+	public void subscribe(EventBusSubscriber subscriber, BindingKey bindingKey, Boolean durable) {
+		subscribe(subscriber, bindingKey);
+	}
+
+	@Override
 	public void unsubscribe(EventBusSubscriber subscriber) {
+		LOG.debug("Unsubscribing " + subscriber);
+		this.bus.unregister(subscriber);
+	}
+
+	@Override
+	public void unsubscribe(EventBusSubscriber subscriber, Boolean delete) {
 		LOG.debug("Unsubscribing " + subscriber);
 		this.bus.unregister(subscriber);
 	}

@@ -14,6 +14,7 @@ import org.librairy.boot.model.domain.resources.Annotation;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.storage.UDM;
 import org.librairy.boot.storage.exception.DataNotFound;
+import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,16 +82,41 @@ public class AnnotationsDao extends AbstractDao {
     }
 
 
-    public Boolean removeByResource(String uri, Optional<AnnotationFilter> filter) throws DataNotFound {
+    public Boolean removeByResource(String resourceUri, Optional<AnnotationFilter> filter) throws DataNotFound {
 
         try{
-            getByResource(uri, filter).stream().forEach( annotation -> udm.delete(Resource.Type.ANNOTATION).byUri(annotation.getUri()));
+            getByResource(resourceUri, filter).stream().forEach( annotation -> udm.delete(Resource.Type.ANNOTATION).byUri(annotation.getUri()));
             return true;
         }catch (Exception e){
-            LOG.error("Error removing annotation by resource: " + uri,e);
+            LOG.error("Error removing annotation by resource: " + resourceUri,e);
             return false;
         }
     }
+
+    public Boolean removeByUri(String annotationUri) throws DataNotFound {
+
+        try{
+            Optional<Resource> annotation = udm.read(Resource.Type.ANNOTATION).byUri(annotationUri);
+
+            if (!annotation.isPresent()) {
+                LOG.warn("Annotation not found by id: '" + annotationUri + "'");
+                return false;
+            }
+
+            AnnotationFilter filter = AnnotationFilter
+                    .byType(annotation.get().asAnnotation().getType())
+                    .byPurpose(annotation.get().asAnnotation().getPurpose())
+                    .byCreator(annotation.get().asAnnotation().getCreator())
+                    .build();
+
+            removeByResource(annotation.get().asAnnotation().getResource(), Optional.of(filter));
+            return true;
+        }catch (Exception e){
+            LOG.error("Error removing annotation by id: " + annotationUri,e);
+            return false;
+        }
+    }
+
 
     public Boolean truncate(){
 

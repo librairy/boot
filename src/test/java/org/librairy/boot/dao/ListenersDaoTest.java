@@ -20,6 +20,8 @@ import org.librairy.boot.model.domain.resources.Part;
 import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.RoutingKey;
+import org.librairy.boot.model.utils.TimeUtils;
+import org.librairy.boot.storage.UDM;
 import org.librairy.boot.storage.dao.ItemsDao;
 import org.librairy.boot.storage.dao.ListenersDao;
 import org.librairy.boot.storage.dao.PartsDao;
@@ -49,8 +51,48 @@ public class ListenersDaoTest {
     ListenersDao dao;
 
 
+    @Autowired
+    UDM udm;
+
     @Test
     public void crudTest() throws DataNotFound {
+
+
+        Assert.assertTrue(dao.list(10l, Optional.empty(), false).isEmpty());
+
+        Assert.assertTrue(udm.find(Resource.Type.LISTENER).all().isEmpty());
+
+
+        Listener listener = new Listener();
+        listener.setRoute("items.created");
+        listener.setUri(URIGenerator.fromId(Resource.Type.LISTENER, listener.getRoute()));
+        listener.setCreationTime(TimeUtils.asISO());
+        udm.save(listener);
+
+        Assert.assertFalse(dao.list(10l, Optional.empty(), false).isEmpty());
+
+        Assert.assertFalse(udm.find(Resource.Type.LISTENER).all().isEmpty());
+
+        Optional<Resource> result = udm.read(Resource.Type.LISTENER).byUri(listener.getUri());
+
+
+        Assert.assertTrue(result.isPresent());
+
+        Assert.assertEquals(listener, result.get().asListener());
+
+        List<Listener> resultByRoute = dao.getByRoute(listener.getRoute());
+
+        Assert.assertFalse(resultByRoute.isEmpty());
+
+        Assert.assertTrue(resultByRoute.size() == 1);
+
+        Assert.assertEquals(listener, resultByRoute.get(0));
+
+        dao.removeByRoute(listener.getRoute());
+
+        Assert.assertTrue(dao.list(10l, Optional.empty(), false).isEmpty());
+
+        Assert.assertTrue(udm.find(Resource.Type.LISTENER).all().isEmpty());
 
 
     }

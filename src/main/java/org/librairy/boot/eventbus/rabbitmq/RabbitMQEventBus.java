@@ -98,7 +98,17 @@ public class RabbitMQEventBus implements EventBus {
     public void subscribe(EventBusSubscriber subscriber, BindingKey bindingKey) {
         try {
             LOG.debug("subscribing: " + subscriber + " to: " + bindingKey);
-            this.client.consume(EXCHANGE, bindingKey.getGroup(), bindingKey.getKey(), subscriber);
+            this.client.consume(EXCHANGE, bindingKey.getGroup(), bindingKey.getKey(), subscriber, true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void subscribe(EventBusSubscriber subscriber, BindingKey bindingKey, Boolean durable) {
+        try {
+            LOG.debug("subscribing: " + subscriber + " to durable queue: " + bindingKey);
+            this.client.consume(EXCHANGE, bindingKey.getGroup(), bindingKey.getKey(), subscriber, durable);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -106,9 +116,14 @@ public class RabbitMQEventBus implements EventBus {
 
     @Override
     public void unsubscribe(EventBusSubscriber subscriber) {
+        unsubscribe(subscriber, false);
+    }
+
+    @Override
+    public void unsubscribe(EventBusSubscriber subscriber, Boolean delete) {
         try {
             LOG.debug("unsubscribing: " + subscriber);
-            this.client.clean(subscriber);
+            this.client.clean(subscriber, delete);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {

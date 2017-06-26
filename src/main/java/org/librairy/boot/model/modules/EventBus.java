@@ -16,7 +16,11 @@ public interface EventBus {
 
 	void subscribe(EventBusSubscriber subscriber, BindingKey bindingKey);
 
+	void subscribe(EventBusSubscriber subscriber, BindingKey bindingKey, Boolean durable);
+
 	void unsubscribe(EventBusSubscriber subscriber);
+
+	void unsubscribe(EventBusSubscriber subscriber, Boolean delete);
 
 	void post(Event event, RoutingKey routingKey);
 

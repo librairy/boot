@@ -25,6 +25,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Listener  extends Resource{
 
+    @Override
+    public Resource.Type getResourceType() {return Type.LISTENER;}
+
     public static final String ROUTE="route";
     private String route;
 

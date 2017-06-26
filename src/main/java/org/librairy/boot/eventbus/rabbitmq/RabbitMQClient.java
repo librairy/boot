@@ -34,9 +34,13 @@ public class RabbitMQClient {
 
     private Map<String,Channel> channels;
 
+    private Map<String,String> queues;
+
 
     public RabbitMQClient(){
-        this.channels = new ConcurrentHashMap<>();
+
+        this.channels   = new ConcurrentHashMap<>();
+        this.queues     = new ConcurrentHashMap<>();
     }
 
     /**
@@ -169,7 +173,7 @@ public class RabbitMQClient {
     }
 
 
-    public void consume(String exchange, String queue, String bindingKey, final EventBusSubscriber subscriber) throws IOException {
+    public void consume(String exchange, String queue, String bindingKey, final EventBusSubscriber subscriber, boolean durable) throws IOException {
 
         Channel channel = newChannel(exchange);
 
@@ -177,9 +181,8 @@ public class RabbitMQClient {
         //a durable, non-exclusive, non-autodelete queue with a well-known name and a maximum length of 1000 messages
         Map<String, Object> args = new HashMap<>();
         args.put("x-max-length", 500000000); // x-max-length-bytes
-        boolean durable     = true;
         boolean exclusive   = false;
-        boolean autodelete  = false;
+        boolean autodelete  = !durable;
         channel.queueDeclare(queue, durable, exclusive, autodelete, args);
 
         channel.queueBind(queue, exchange, bindingKey);
@@ -210,15 +213,18 @@ public class RabbitMQClient {
         });
 
         channels.put(String.valueOf(subscriber.hashCode()), channel);
+        queues.put(String.valueOf(subscriber.hashCode()), queue);
     }
 
 
-    public void clean(EventBusSubscriber subscriber) throws IOException, TimeoutException {
+    public void clean(EventBusSubscriber subscriber, Boolean delete) throws IOException, TimeoutException {
         String key = String.valueOf(subscriber.hashCode());
         if (channels.containsKey(key)){
             Channel channel = channels.get(key);
+            if ((delete) && (queues.containsKey(key))) channel.queueDelete(queues.get(key));
             channel.close();
             channels.remove(key);
+            queues.remove(key);
         }
     }
 
