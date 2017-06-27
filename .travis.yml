@@ -21,4 +21,4 @@ branches:
 #  global:
 #    - JAVA_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
-script: mvn clean test
+script: mvn clean deploy
