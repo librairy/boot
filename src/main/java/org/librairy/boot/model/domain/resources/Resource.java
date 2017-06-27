@@ -20,19 +20,12 @@ public class Resource extends LinkableElement {
 	}
 
 	public enum Type{
-		SOURCE("source","sources"),
 		DOMAIN("domain","domains"),
-		DOCUMENT("document","documents"),
 		ITEM("item","items"),
 		PART("part","parts"),
-		WORD("word","words"),
-		ANALYSIS("analysis","analyses"),
 		TOPIC("topic","topics"),
-		SERIALIZED_OBJECT("object","objects"),
-		TERM("term","terms"),
 		FILTER("filter","filters"),
 		PATH("path","paths"),
-		FILE("file","files"),
 		LISTENER("listener","listeners"),
 		ANNOTATION("annotation","annotations"),
 		ANY("*","*"), ;
@@ -65,37 +58,16 @@ public class Resource extends LinkableElement {
 
 	public static Class classOf(Type type){
 		switch(type){
-			case ANALYSIS:return Analysis.class;
-			case DOCUMENT: return Document.class;
 			case DOMAIN: return Domain.class;
 			case ITEM: return Item.class;
 			case PART: return Part.class;
-			case SERIALIZED_OBJECT: return SerializedObject.class;
-			case SOURCE: return Source.class;
-			case TERM: return Term.class;
 			case TOPIC: return Topic.class;
-			case WORD: return Word.class;
 			case FILTER: return Filter.class;
 			case PATH: return Path.class;
 			case LISTENER: return Listener.class;
 			case ANNOTATION: return Annotation.class;
 			default: return Resource.class;
 		}
-	}
-
-	public static Analysis newAnalysis(){
-		return new Analysis();
-	}
-
-	public static Document newDocument(String title){
-		Document document = new Document();
-		document.setTitle(title);
-		return document;
-	}
-
-	public static Document newDocument(){
-		Document document = new Document();
-		return document;
 	}
 
 	public static Domain newDomain(String name){
@@ -118,18 +90,6 @@ public class Resource extends LinkableElement {
 		return part;
 	}
 
-	public static Source newSource(String name){
-		Source source = new Source();
-		source.setName(name);
-		return source;
-	}
-
-	public static Term newTerm(String content){
-		Term term =  new Term();
-		term.setContent(content);
-		return term;
-	}
-
 	public static Filter newFilter(String content){
 		Filter filter = new Filter();
 		filter.setContent(content);
@@ -149,12 +109,6 @@ public class Resource extends LinkableElement {
 		return topic;
 	}
 
-	public static Word newWord(String content){
-		Word word = new Word();
-		word.setContent(content);
-		return word;
-	}
-
 	public static Listener newListener(String route){
 		Listener listener = new Listener();
 		listener.setRoute(route);
@@ -169,14 +123,6 @@ public class Resource extends LinkableElement {
 	}
 
 
-	public Analysis asAnalysis(){
-		return Analysis.class.cast(this);
-	}
-
-	public Document asDocument(){
-		return Document.class.cast(this);
-	}
-
 	public Domain asDomain(){
 		return Domain.class.cast(this);
 	}
@@ -189,24 +135,8 @@ public class Resource extends LinkableElement {
 		return Part.class.cast(this);
 	}
 
-	public SerializedObject asSerializedObject(){
-		return SerializedObject.class.cast(this);
-	}
-
-	public Source asSource(){
-		return Source.class.cast(this);
-	}
-
-	public Term asTerm(){
-		return Term.class.cast(this);
-	}
-
 	public Topic asTopic(){
 		return Topic.class.cast(this);
-	}
-
-	public Word asWord(){
-		return Word.class.cast(this);
 	}
 
 	public Filter asFilter(){

@@ -8,8 +8,6 @@
 package org.librairy.boot.storage.system.column.repository;
 
 import org.librairy.boot.storage.system.column.domain.AnnotationColumn;
-import org.librairy.boot.storage.system.column.domain.PartColumn;
-import org.librairy.boot.storage.system.column.domain.WordColumn;
 import org.springframework.data.cassandra.repository.Query;
 
 /**

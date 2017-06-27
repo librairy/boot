@@ -34,7 +34,6 @@ public class SaveRelationAction {
         if (!relation.hasUri()) {
             switch (relation.getType()) {
                 // 1 to 1 relations
-                case CONTAINS_TO_DOCUMENT:
                 case CONTAINS_TO_ITEM:
                     helper.getCounterDao().increment(relation.getStartUri(), Resource.Type.ITEM.route());
                     break;
@@ -42,35 +41,15 @@ public class SaveRelationAction {
                     // increment counter
                     helper.getCounterDao().increment(relation.getStartUri(), Resource.Type.PART.route());
                     break;
-                case AGGREGATES:
-                case APPEARED_IN:
-                case BUNDLES:
-                case COMPOSES:
-                case DEALS_WITH_FROM_DOCUMENT:
                 case DEALS_WITH_FROM_ITEM:
                 case DEALS_WITH_FROM_PART:
                 case DESCRIBES:
-                case EMBEDDED_IN:
-                case EMERGES_IN:
-                case MENTIONS_FROM_TERM:
-                case MENTIONS_FROM_TOPIC:
-                case PROVIDES:
-                    break;
-                // n to n relations
-                case SIMILAR_TO_DOCUMENTS:
-                    contentBuilder.append(relation.asSimilarToDocuments().getDomain());
                     break;
                 case SIMILAR_TO_ITEMS:
                     contentBuilder.append(relation.asSimilarToItems().getDomain());
                     break;
                 case SIMILAR_TO_PARTS:
                     contentBuilder.append(relation.asSimilarToParts().getDomain());
-                    break;
-                case PAIRS_WITH:
-                    contentBuilder.append(relation.asPairsWith().getDomain());
-                    break;
-                case HYPERNYM_OF:
-                    contentBuilder.append(relation.asHypernymOf().getDomain());
                     break;
                 default:
                     LOG.warn("Relation not handled,  set default URI for: " + relation.getType());

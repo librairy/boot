@@ -222,7 +222,7 @@ public class RabbitMQClient {
         if (channels.containsKey(key)){
             Channel channel = channels.get(key);
             if ((delete) && (queues.containsKey(key))) channel.queueDelete(queues.get(key));
-            channel.close();
+//            channel.close();
             channels.remove(key);
             queues.remove(key);
         }

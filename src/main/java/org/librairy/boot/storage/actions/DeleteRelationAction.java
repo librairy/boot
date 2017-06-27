@@ -45,8 +45,8 @@ public class DeleteRelationAction {
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
             // delete all counters
-            helper.getCounterDao().remove();
-            helper.getCounterDao().initialize();
+            helper.getCounterDao().truncate();
+//            helper.getCounterDao().initialize();
 
             List<Relation.Type> types = (type.equals(Relation.Type.ANY)) ? Arrays.asList
                     (Relation.Type.values()) : Arrays.asList(new Relation.Type[]{type});

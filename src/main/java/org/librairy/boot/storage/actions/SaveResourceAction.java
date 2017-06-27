@@ -43,14 +43,6 @@ public class SaveResourceAction {
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asPath()
                             .getStart()+resource.asPath().getEnd());
                     break;
-                case WORD:
-                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asWord()
-                            .getContent());
-                    break;
-                case TERM:
-                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asTerm()
-                            .getContent());
-                    break;
                 case TOPIC:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asTopic()
                             .getContent());
@@ -61,11 +53,6 @@ public class SaveResourceAction {
                             .append(resource.asAnnotation().getType())
                             .append(resource.asAnnotation().getPurpose())
                             .toString());
-                    break;
-                case DOCUMENT:
-                    uri = (Strings.isNullOrEmpty(resource.asDocument().getTitle()))?
-                            helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asDocument().toString()) :
-                            helper.getUriGenerator().basedOnContent(resource.getResourceType(),resource.asDocument().getTitle());
                     break;
                 case ITEM:
                     uri = (Strings.isNullOrEmpty(resource.asItem().getContent()))?
@@ -80,11 +67,6 @@ public class SaveResourceAction {
                 case DOMAIN:
                     uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
                             (Strings.isNullOrEmpty(resource.asDomain().getName()))? TimeUtils.asISO() : resource.asDomain().getName());
-                    break;
-                case SOURCE:
-                    uri = helper.getUriGenerator().basedOnContent(resource.getResourceType(),
-                            (Strings.isNullOrEmpty(resource.asSource().getName()))? TimeUtils.asISO() : resource.asSource()
-                                    .getName());
                     break;
                 case LISTENER:
                     uri = helper.getUriGenerator().from(resource.getResourceType(), resource.asListener().getRoute());
@@ -115,12 +97,12 @@ public class SaveResourceAction {
 
             //TODO implement a factory
             if (resource.getResourceType().equals(Resource.Type.DOMAIN)){
-                helper.getKeyspaceDao().createKeyspace(resource.getUri());
-                helper.getCounterDao().initialize(resource.getUri());
+//                helper.getKeyspaceDao().createKeyspace(resource.getUri());
+//                helper.getCounterDao().initialize(resource.getUri());
                 helper.getParametersDao().initialize(resource.getUri());
-                helper.getItemsDao().initialize(resource.getUri());
-                helper.getPartsDao().initialize(resource.getUri());
-                helper.getSubdomainsDao().initialize(resource.getUri());
+//                helper.getItemsDao().initialize(resource.getUri());
+//                helper.getPartsDao().initialize(resource.getUri());
+//                helper.getSubdomainsDao().initialize(resource.getUri());
             }else if (resource.getResourceType().equals(Resource.Type.ANNOTATION)){
                 // Insert into annotations_by_resource
                 Annotation annotation = resource.asAnnotation();

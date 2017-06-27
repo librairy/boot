@@ -17,8 +17,8 @@ import org.junit.runner.RunWith;
 import org.librairy.boot.eventbus.EventBusConfig;
 import org.librairy.boot.eventbus.EventMessage;
 import org.librairy.boot.model.Event;
+import org.librairy.boot.model.domain.resources.Domain;
 import org.librairy.boot.model.domain.resources.Resource;
-import org.librairy.boot.model.domain.resources.Source;
 import org.librairy.boot.model.modules.BindingKey;
 import org.librairy.boot.model.modules.EventBus;
 import org.librairy.boot.model.modules.EventBusSubscriber;
@@ -83,7 +83,7 @@ public class EventBusTest implements EventBusSubscriber {
 
     @Test
     public void masiveCommunication(){
-        BindingKey bindingKey = BindingKey.of(RoutingKey.of(Resource.Type.SOURCE, Resource.State.CREATED), "test.boot.source.created");
+        BindingKey bindingKey = BindingKey.of(RoutingKey.of(Resource.Type.DOMAIN, Resource.State.CREATED), "test.boot.source.created");
         LOG.info("Trying to register as subscriber of '" + bindingKey + "' events ..");
         eventBus.subscribe(this,bindingKey );
         LOG.info("registered successfully");
@@ -96,11 +96,11 @@ public class EventBusTest implements EventBusSubscriber {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Source source = Resource.newSource("test");
-            source.setUri("http://librairy.org/source/test"+ i%5);
-            Event event = Event.from(source);
+            Domain domain = Resource.newDomain("test");
+            domain.setUri("http://librairy.org/domains/test"+ i%5);
+            Event event = Event.from(domain);
             LOG.info("Sending Event: "  + event);
-            eventBus.post(event, RoutingKey.of(Resource.Type.SOURCE, Resource.State.CREATED));
+            eventBus.post(event, RoutingKey.of(Resource.Type.DOMAIN, Resource.State.CREATED));
         }
 
         try {

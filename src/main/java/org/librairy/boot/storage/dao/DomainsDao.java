@@ -33,12 +33,7 @@ import java.util.*;
 @Component
 public class DomainsDao extends AbstractDao  {
 
-    private static final String DEFAULT_KEYSPACE = "research";
-
     private static final Logger LOG = LoggerFactory.getLogger(DomainsDao.class);
-
-    @Autowired
-    KeyspaceDao keyspaceDao;
 
     @Autowired
     UDM udm;
@@ -58,31 +53,26 @@ public class DomainsDao extends AbstractDao  {
     @Autowired
     AnnotationsDao annotationsDao;
 
+    public static final String TABLE_NAME = "resources_by_domain";
+
     public Boolean exists(String domainUri){
         return super.countQuery("select count(uri) from domains where uri='" + domainUri + "';");
     }
 
 
     public Boolean contains(String domainUri, String resourceUri){
-        String domainId = URIGenerator.retrieveId(domainUri);
-        String tableName    = URIGenerator.typeFrom(resourceUri).route();
-        return super.countQueryOn("select count(uri) from "+tableName+" where uri='" + resourceUri+ "' ;", domainId);
+        String type = URIGenerator.typeFrom(resourceUri).key();
+        return countQuery("select count(resource) from " + TABLE_NAME + " where domain='"+domainUri+"' and type='"+ type+ "' and resource='" + resourceUri + "';");
     }
 
 
-    public Domain get(String domainUri) throws DataNotFound {
+    public Optional<Domain> get(String domainUri)  {
 
-        Optional<Row> row = super.oneQuery("select name, description, creationtime from domains where uri='"+domainUri+"';");
+        Optional<Resource> domain = udm.read(Resource.Type.DOMAIN).byUri(domainUri);
 
-        if (!row.isPresent()) throw new DataNotFound("No domain found by '" + domainUri + "'");
+        if (!domain.isPresent()) return Optional.empty();
 
-        Domain domain = new Domain();
-        Row rowValue = row.get();
-        domain.setName(rowValue.getString(0));
-        domain.setDescription(rowValue.getString(1));
-        domain.setCreationTime(rowValue.getString(2));
-        domain.setUri(domainUri);
-        return domain;
+        return Optional.of(domain.get().asDomain());
 
     }
 
@@ -113,7 +103,7 @@ public class DomainsDao extends AbstractDao  {
 
     }
 
-    public List<Item> listDocuments(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) throws DataNotFound {
+    public List<Item> listDocuments(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) {
 
         Iterator<Row> it = listResources(domainUri, size, offset, Resource.Type.ITEM, inclusive);
 
@@ -124,13 +114,14 @@ public class DomainsDao extends AbstractDao  {
             Item item = new Item();
             item.setUri(row.getString(0));
             item.setCreationTime(row.getString(1));
+            item.setDescription(row.getString(2));
             items.add(item);
         }
 
         return items;
     }
 
-    public List<Part> listParts(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) throws DataNotFound {
+    public List<Part> listParts(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) {
 
         Iterator<Row> it = listResources(domainUri, size, offset, Resource.Type.PART, inclusive);
 
@@ -141,25 +132,43 @@ public class DomainsDao extends AbstractDao  {
             Part part = new Part();
             part.setUri(row.getString(0));
             part.setCreationTime(row.getString(1));
+            part.setSense(row.getString(2));
             parts.add(part);
         }
 
         return parts;
     }
 
-    private Iterator<Row> listResources(String domainUri, Integer size, Optional<String> offset, Resource.Type type, Boolean inclusive){
-        StringBuilder query = new StringBuilder().append("select uri, time from " + type.route() + " ");
+    public List<Domain> listSubdomains(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) {
+
+        Iterator<Row> it = listResources(domainUri, size, offset, Resource.Type.DOMAIN, inclusive);
+
+        List<Domain> domains = new ArrayList<>();
+
+        while(it.hasNext()){
+            Row row = it.next();
+            Domain domain = new Domain();
+            domain.setUri(row.getString(0));
+            domain.setCreationTime(row.getString(1));
+            domain.setName(row.getString(2));
+            domains.add(domain);
+        }
+
+        return domains;
+    }
+
+    public Iterator<Row> listResources(String domainUri, Integer size, Optional<String> offset, Resource.Type type, Boolean inclusive){
+        StringBuilder query = new StringBuilder().append("select resource, time, name from " + TABLE_NAME + " where domain='" + domainUri + "' and type='" + type.key() + "' ");
 
         if (offset.isPresent()){
             String operator = inclusive? ">=" : ">";
-            query.append(" where token(uri) "+operator+" token('" + URIGenerator.fromId(type, offset.get()) + "')");
+            query.append(" and resource "+operator+" '" + URIGenerator.fromId(type, offset.get()) + "'");
         }
 
         query.append(" limit " + size);
         query.append(";");
 
-        String domainId = URIGenerator.retrieveId(domainUri);
-        return super.iteratedQueryOn(query.toString(), domainId );
+        return iteratedQuery(query.toString());
     }
 
 
@@ -174,20 +183,19 @@ public class DomainsDao extends AbstractDao  {
     }
 
 
-    public void addDocument(String domainUri, String documentUri){
+    public Boolean addDocument(String domainUri, String documentUri){
+
+
+        Optional<Resource> document = udm.read(Resource.Type.ITEM).byUri(documentUri);
+
+        if (!document.isPresent()) return false;
 
         // add to contains document
         udm.save(Relation.newContains(domainUri, documentUri));
 
         // add to items document
-        StringBuilder insertItemQuery = new StringBuilder()
-                .append("insert into items (uri, time, tokens) values(")
-                .append("'").append(documentUri).append("',")
-                .append("'").append(TimeUtils.asISO()).append("',")
-                .append("'").append(retrieveDomainTokens(domainUri, documentUri)).append("'")
-                .append(") ;");
+        save(domainUri, documentUri, document.get().asItem().getDescription());
 
-        super.executeOn(insertItemQuery.toString(), URIGenerator.retrieveId(domainUri));
 
         // for each part
         Integer windowSize = 100;
@@ -210,34 +218,50 @@ public class DomainsDao extends AbstractDao  {
                 offset = Optional.of(URIGenerator.retrieveId(parts.get(windowSize-1).getUri()));
             }
         }
+        return true;
     }
 
-    public void addPart(String domainUri, String partUri){
+    public Boolean addPart(String domainUri, String partUri){
 
         // add to contains
 //        udm.save(Relation.newContains(domainUri, partUri));
 
-        StringBuilder insertPartQuery = new StringBuilder()
-                .append("insert into parts (uri, time, tokens) values(")
-                .append("'").append(partUri).append("',")
-                .append("'").append(TimeUtils.asISO()).append("',")
-                .append("'").append(retrieveDomainTokens(domainUri, partUri)).append("'")
-                .append(") ;");
+        Optional<Resource> part = udm.read(Resource.Type.PART).byUri(partUri);
 
-        super.executeOn(insertPartQuery.toString(), URIGenerator.retrieveId(domainUri));
+        if (!part.isPresent()) return false;
+
+        save(domainUri, partUri, part.get().asPart().getSense());
         counterDao.increment(domainUri, Resource.Type.PART.route());
+        return true;
+    }
+
+    public Boolean addSubdomain(String domainUri, String subdomainUri){
+
+        Optional<Resource> subdomain = udm.read(Resource.Type.DOMAIN).byUri(subdomainUri);
+
+        if (!subdomain.isPresent()) return false;
+
+        save(domainUri, subdomainUri, subdomain.get().asDomain().getName(), "");
+        counterDao.increment(domainUri, Resource.Type.DOMAIN.route());
+        eventBus.post(Event.from(Relation.newContains(domainUri, subdomainUri)), RoutingKey.of("subdomain.added"));
+        return true;
+    }
+
+    private Boolean save(String domainUri, String resourceUri, String name){
+        return save(domainUri, resourceUri, name, retrieveDomainTokens(domainUri, resourceUri));
+    }
+
+    private Boolean save(String domainUri, String resourceUri, String name, String tokens){
+        String type = URIGenerator.typeFrom(resourceUri).key();
+        return execute("insert into " + TABLE_NAME + " (domain, type, resource, time, name, tokens) values ('"+
+                domainUri+"', '"+ type+"', '" + resourceUri +"', '" + TimeUtils.asISO() + "','"+name+"','" + tokens+"');");
     }
 
     private String retrieveDomainTokens(String domainUri, String resourceUri){
         //add tokens from domain parameter
-        String tokenizerMode;
-        try {
-            tokenizerMode = parametersDao.get(domainUri, "tokenizer.mode");
-        } catch (DataNotFound dataNotFound) {
-            tokenizerMode = "lemma";
-        }
+        Optional<String>   tokenizerMode = parametersDao.get(domainUri, "tokenizer.mode");
 
-        StringTokenizer tokenizer = new StringTokenizer(tokenizerMode, "+", false);
+        StringTokenizer tokenizer = new StringTokenizer(tokenizerMode.isPresent()? tokenizerMode.get() : "lemma", "+", false);
         String tokens = "";
         while(tokenizer.hasMoreTokens()){
             String type = tokenizer.nextToken();
@@ -256,22 +280,11 @@ public class DomainsDao extends AbstractDao  {
         return Strings.isNullOrEmpty(tokens)? tokens : escaper.escape(tokens);
     }
 
-    public String getDomainTokens(String domainUri, String uri) throws DataNotFound {
-
-
-        try{
-            String domainId     = URIGenerator.retrieveId(domainUri);
-            String tableName    = URIGenerator.typeFrom(uri).route();
-            Optional<Row> row = super.oneQueryOn("select tokens from "+tableName+" where uri='"+uri+"';", domainId);
-
-            if (!row.isPresent()) throw new DataNotFound("Tokens from '"+uri+"' not found in '"+domainUri+"'");
-
-            return row.get().getString(0);
-        }catch (InvalidQueryException e){
-            LOG.warn("Error on query execution: " + e.getMessage());
-            throw new DataNotFound("Error getting Tokens from '"+uri+"' in '"+domainUri+"'");
-        }
-
+    public Optional<String> getDomainTokens(String domainUri, String uri)  {
+        String type    = URIGenerator.typeFrom(uri).key();
+        Optional<Row> tokens = oneQuery("select tokens from " + TABLE_NAME + " where domain='" + domainUri + "' and type='" + type + "' and resource='" + uri + "';");
+        if (!tokens.isPresent()) Optional.empty();
+        return Optional.of(tokens.get().getString(0));
     }
 
     public Boolean updateDomainTokens(String domainUri, String uri){
@@ -280,9 +293,7 @@ public class DomainsDao extends AbstractDao  {
 
     public Boolean updateDomainTokens(String domainUri, String uri, String tokens){
 
-        String domainId = URIGenerator.retrieveId(domainUri);
-        Resource.Type type = URIGenerator.typeFrom(uri);
-        if (super.executeOn("insert into "+type.route()+" (uri,time,tokens) values('"+uri+"', '"+ TimeUtils.asISO()+"', '"+ escaper.escape(tokens) +"');", domainId)){
+        if (save(domainUri, uri, tokens)){
             LOG.info("saved tokens of '"+uri+"' in '"+domainUri+"'");
 
             Domain resource = new Domain();
@@ -302,12 +313,15 @@ public class DomainsDao extends AbstractDao  {
             if (iterator != null){
                 while(iterator.hasNext()){
                     String relUri = iterator.next().getString(0);
-                    udm.delete(Relation.Type.CONTAINS_TO_DOCUMENT).byUri(relUri);
+                    udm.delete(Relation.Type.CONTAINS_TO_ITEM).byUri(relUri);
                 }
             }
 
             // delete from domains
             udm.delete(Resource.Type.DOMAIN).byUri(uri);
+
+            // delete from resources_by_domain
+            execute("delete from " + TABLE_NAME + " where domain='" + uri +"';");
 
         }catch (InvalidQueryException e){
             LOG.warn("Error on query execution: " + e.getMessage());
@@ -338,23 +352,28 @@ public class DomainsDao extends AbstractDao  {
             offset = Optional.of(URIGenerator.retrieveId(parts.get(parts.size()-1).getUri()));
         }
 
-        udm.delete(Relation.Type.CONTAINS_TO_DOCUMENT).byUri(row.get().getString(0));
+        udm.delete(Relation.Type.CONTAINS_TO_ITEM).byUri(row.get().getString(0));
 
-        // Remove from items
-        super.executeOn("delete from items where uri='"+documentUri+"';", URIGenerator.retrieveId(domainUri));
-        counterDao.decrement(domainUri, Resource.Type.ITEM.route());
-
-
+        // Remove from resources_by_domain
+        delete(domainUri, documentUri);
         LOG.info("Deleted "+ documentUri + " from " + domainUri);
 
     }
 
     public boolean removePart(String domainUri, String partUri){
-        if (super.executeOn("delete from parts where uri='"+partUri+"';", URIGenerator.retrieveId(domainUri))){
-            counterDao.decrement(domainUri, Resource.Type.PART.route());
-            return true;
-        }
-        return false;
+        return delete(domainUri, partUri);
+    }
+
+    public boolean removeSubdomain(String domainUri, String subdomainUri){
+        Boolean result = delete(domainUri, subdomainUri);
+        eventBus.post(Event.from(Relation.newContains(domainUri, subdomainUri)), RoutingKey.of("subdomain.deleted"));
+        return result;
+    }
+
+    private Boolean delete(String domainUri, String resourceUri){
+        Resource.Type type = URIGenerator.typeFrom(resourceUri);
+        execute("delete from "+ TABLE_NAME + " where domain='"+ domainUri+"' and type='"+type.key()+"' and resource='" + resourceUri+"';");
+        return counterDao.decrement(domainUri, type.route());
     }
 
     public void removeAllDocuments(String domainUri){
@@ -363,13 +382,11 @@ public class DomainsDao extends AbstractDao  {
         Iterator<Row> it = super.iteratedQuery("select uri from contains where starturi='" + domainUri + "';");
 
         while(it.hasNext()){
-            udm.delete(Relation.Type.CONTAINS_TO_DOCUMENT).byUri(it.next().getString(0));
+            udm.delete(Relation.Type.CONTAINS_TO_ITEM).byUri(it.next().getString(0));
         }
-        String domainId = URIGenerator.retrieveId(domainUri);
 
         // Remove Items
-        super.executeOn("drop table if exists items;", domainId);
-        counterDao.reset(domainUri, Resource.Type.ITEM.route());
+        delete(domainUri, Resource.Type.ITEM);
 
         // Remove Parts
         removeAllParts(domainUri);
@@ -377,10 +394,19 @@ public class DomainsDao extends AbstractDao  {
     }
 
     public void removeAllParts(String domainUri){
-        String domainId = URIGenerator.retrieveId(domainUri);
-        if (super.executeOn("drop table if exists parts;", domainId)){
-            counterDao.reset(domainUri, Resource.Type.PART.route());
+        delete(domainUri, Resource.Type.PART);
+    }
+
+    public void removeAllSubdomains(String domainUri){
+        delete(domainUri, Resource.Type.DOMAIN);
+    }
+
+    public Boolean delete(String domainUri, Resource.Type type){
+        if (execute("delete from " + TABLE_NAME + " where domain='" + domainUri+"' and type='" + type.key() + "';")){
+            counterDao.reset(domainUri, type.route());
+            return true;
         }
+        return false;
     }
 
 }

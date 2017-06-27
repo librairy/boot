@@ -45,9 +45,7 @@ public class DeleteResourceAction {
             UnifiedTransaction transaction = helper.getSession().beginTransaction();
 
             // delete all counters
-            helper.getCounterDao().remove();
-            helper.getCounterDao().initialize();
-
+            helper.getCounterDao().truncate();
             List<Resource.Type> types = (type.equals(Resource.Type.ANY)) ? Arrays.asList(Resource.Type.values()) : Arrays.asList(new Resource.Type[]{type});
 
             LOG.info("Ready to delete the following resource types: " + types);
@@ -88,7 +86,8 @@ public class DeleteResourceAction {
             switch (type){
                 case DOMAIN:
                     try{
-                        helper.getKeyspaceDao().removeKeyspace(uri);
+//                        helper.getKeyspaceDao().removeKeyspace(uri);
+                        helper.getParametersDao().remove(uri);
                     }catch (Exception e){
                         LOG.warn("Unexpected error trying to delete keyspace from '" + uri + "'",e);
                     }

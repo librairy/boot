@@ -51,9 +51,6 @@ public class Helper {
     @Autowired
     PartsDao partsDao;
 
-    @Autowired
-    SubdomainsDao subdomainsDao;
-
     @Autowired 
     CounterDao counterDao;
 

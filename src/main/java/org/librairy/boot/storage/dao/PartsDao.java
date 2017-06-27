@@ -47,11 +47,6 @@ public class PartsDao extends AbstractDao {
     @Autowired
     AnnotationsDao annotationsDao;
 
-    public Boolean initialize(String domainUri){
-        String domainId = URIGenerator.retrieveId(domainUri);
-        return super.executeOn("create table if not exists parts(uri varchar, time text, tokens text, primary key(uri));", domainId);
-    }
-
     public boolean save(Part part){
         try{
             udm.save(part);
@@ -123,7 +118,7 @@ public class PartsDao extends AbstractDao {
         return super.countQuery("select count(uri) from parts where uri='" + partUri + "';");
     }
 
-    public Part get(String uri, Boolean content) throws DataNotFound {
+    public Optional<Part> get(String uri, Boolean content) {
         StringBuilder query = new StringBuilder().append("select creationtime, sense ");
 
         if (content){
@@ -134,7 +129,7 @@ public class PartsDao extends AbstractDao {
 
         Optional<Row> row = super.oneQuery(query.toString());
 
-        if (!row.isPresent()) throw new DataNotFound("No part found by uri: " + uri);
+        if (!row.isPresent()) return Optional.empty();
 
         Row rowValue = row.get();
         Part part = new Part();
@@ -146,7 +141,7 @@ public class PartsDao extends AbstractDao {
             part.setContent(rowValue.getString(2));
         }
 
-        return part;
+        return Optional.of(part);
     }
 
 

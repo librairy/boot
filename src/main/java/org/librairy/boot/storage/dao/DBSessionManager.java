@@ -11,6 +11,7 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import org.librairy.boot.storage.generator.URIGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,9 @@ public class DBSessionManager {
 
     ConcurrentHashMap<String,Session> sessions;
 
+    @Value("#{environment['LIBRAIRY_COLUMNDB_KEYSPACE']?:'${librairy.columndb.keyspace}'}")
+    String defaultKeyspace;
+
     private Cluster cluster;
 
     private Session controlSession;
@@ -39,18 +43,18 @@ public class DBSessionManager {
     }
 
 
-    public Session getSessionByUri(String domainUri){
-        return getDomainSession(URIGenerator.retrieveId(domainUri));
-    }
+//    public Session getSessionByUri(String domainUri){
+//        return getDomainSession(URIGenerator.retrieveId(domainUri));
+//    }
 
 
     public Session getCommonSession(){
         return getSession(getCommonKeyspaceId());
     }
 
-    public Session getDomainSession(String domainId){
-        return getSession(getDomainKeyspaceId(domainId));
-    }
+//    public Session getDomainSession(String domainId){
+//        return getSession(getDomainKeyspaceId(domainId));
+//    }
 
     public Session getSpecificSession(String scope, String domainId){
         return getSession(getSpecificKeyspaceId(scope, domainId));
@@ -74,13 +78,13 @@ public class DBSessionManager {
         return controlSession;
     }
 
-    public void closeSessionByUri(String uri){
-        closeDomainSessionById(URIGenerator.retrieveId(uri));
-    }
+//    public void closeSessionByUri(String uri){
+//        closeDomainSessionById(URIGenerator.retrieveId(uri));
+//    }
 
-    public void closeDomainSessionById(String id){
-        closeSession(getDomainKeyspaceId(id));
-    }
+//    public void closeDomainSessionById(String id){
+//        closeSession(getDomainKeyspaceId(id));
+//    }
 
     public void closeSpecificSessionById(String scope, String id){
         closeSession(getSpecificKeyspaceId(scope,id));
@@ -101,18 +105,18 @@ public class DBSessionManager {
         }
     }
 
-    public static String getKeyspaceFromUri(String uri){
-        return getDomainKeyspaceId(URIGenerator.retrieveId(uri));
-    }
+//    public static String getKeyspaceFromUri(String uri){
+//        return getDomainKeyspaceId(URIGenerator.retrieveId(uri));
+//    }
 
 
     public static String getCommonKeyspaceId(){
-        return "research";
+        return "librairy";
     }
 
-    public static String getDomainKeyspaceId(String domainId){
-        return "d" + domainId.toLowerCase();
-    }
+//    public static String getDomainKeyspaceId(String domainId){
+//        return "d" + domainId.toLowerCase();
+//    }
 
     public static String getSpecificKeyspaceId(String scope,String domainId){
         return scope.toLowerCase() +"_" + domainId.toLowerCase();

@@ -44,10 +44,6 @@ public class ItemsDao extends AbstractDao {
     @Autowired
     AnnotationsDao annotationsDao;
 
-    public Boolean initialize(String domainUri){
-        String domainId = URIGenerator.retrieveId(domainUri);
-        return super.executeOn("create table if not exists items(uri varchar, time text, tokens text, primary key(uri));",domainId);
-    }
 
     public boolean save(Item item){
         try{
@@ -154,7 +150,7 @@ public class ItemsDao extends AbstractDao {
 
 
 
-    public Item get(String uri, Boolean content) throws DataNotFound {
+    public Optional<Item> get(String uri, Boolean content) {
 
         StringBuilder query = new StringBuilder().append("select description, creationtime, language, format");
 
@@ -172,7 +168,7 @@ public class ItemsDao extends AbstractDao {
 
 
 
-        if (!row.isPresent()) throw new DataNotFound("Document not found: '"+ uri + "'");
+        if (!row.isPresent()) return Optional.empty();
 
         Row rowValue = row.get();
         Item item = new Item();
@@ -186,7 +182,7 @@ public class ItemsDao extends AbstractDao {
             item.setContent(rowValue.getString(4));
         }
 
-        return item;
+        return Optional.of(item);
 
     }
 

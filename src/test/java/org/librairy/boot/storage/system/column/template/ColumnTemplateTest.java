@@ -34,7 +34,7 @@ public class ColumnTemplateTest {
     @Test
     public void deleteSimilars(){
         String domainUri = "http://librairy.org/domains/default";
-        columnTemplate.execute("delete from research.similarto where domain = '"+domainUri+"';");
+        columnTemplate.execute("delete from librairy.similarto where domain = '"+domainUri+"';");
     }
 
 }

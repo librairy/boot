@@ -57,9 +57,9 @@ public class RabbitMQEventBusTest {
 
 
         Contains contains = Relation.newContains("http://drinventor.eu/domains/4f56ab24bb6d815a48b8968a3b157470",
-                "http://drinventor.eu/documents/39d9c4c0bb38b5fd740be63ad4cbb82c");
+                "http://drinventor.eu/items/39d9c4c0bb38b5fd740be63ad4cbb82c");
 
-        this.eventBus.post(Event.from(contains), RoutingKey.of(Relation.Type.CONTAINS_TO_DOCUMENT, Relation.State.CREATED));
+        this.eventBus.post(Event.from(contains), RoutingKey.of(Relation.Type.CONTAINS_TO_ITEM, Relation.State.CREATED));
 
     }
 
@@ -71,9 +71,9 @@ public class RabbitMQEventBusTest {
         this.eventBus.subscribe(event -> {
             LOG.info("New event received: " + event.to(String.class));
             received.incrementAndGet();
-        }, BindingKey.of(RoutingKey.of(Resource.Type.DOCUMENT, Resource.State.UPDATED),"test1"));
+        }, BindingKey.of(RoutingKey.of(Resource.Type.ITEM, Resource.State.UPDATED),"test1"));
 
-        this.eventBus.post(Event.from("test-message"), RoutingKey.of(Resource.Type.DOCUMENT, Resource.State.UPDATED));
+        this.eventBus.post(Event.from("test-message"), RoutingKey.of(Resource.Type.ITEM, Resource.State.UPDATED));
 
         Thread.sleep(500);
 
@@ -89,14 +89,14 @@ public class RabbitMQEventBusTest {
         this.eventBus.subscribe(event -> {
             LOG.info("[1] New event received: " + event.to(String.class));
             received.incrementAndGet();
-        }, BindingKey.of(RoutingKey.of(Resource.Type.SOURCE, Resource.State.UPDATED),"test2"));
+        }, BindingKey.of(RoutingKey.of(Resource.Type.DOMAIN, Resource.State.UPDATED),"test2"));
 
         this.eventBus.subscribe(event -> {
             LOG.info("[2] New event received: " + event.to(String.class));
             received.incrementAndGet();
-        }, BindingKey.of(RoutingKey.of(Resource.Type.SOURCE, Resource.State.UPDATED),"test2"));
+        }, BindingKey.of(RoutingKey.of(Resource.Type.DOMAIN, Resource.State.UPDATED),"test2"));
 
-        this.eventBus.post(Event.from("test-message"), RoutingKey.of(Resource.Type.SOURCE, Resource.State.UPDATED));
+        this.eventBus.post(Event.from("test-message"), RoutingKey.of(Resource.Type.DOMAIN, Resource.State.UPDATED));
 
         Thread.sleep(500);
 
@@ -111,14 +111,14 @@ public class RabbitMQEventBusTest {
         this.eventBus.subscribe(event -> {
             LOG.info("[1] New event received: " + event.to(String.class));
             received.incrementAndGet();
-        }, BindingKey.of(RoutingKey.of(Resource.Type.SOURCE, Resource.State.UPDATED),"test3.1"));
+        }, BindingKey.of(RoutingKey.of(Resource.Type.DOMAIN, Resource.State.UPDATED),"test3.1"));
 
         this.eventBus.subscribe(event -> {
             LOG.info("[2] New event received: " + event.to(String.class));
             received.incrementAndGet();
-        }, BindingKey.of(RoutingKey.of(Resource.Type.SOURCE, Resource.State.UPDATED),"test3.2"));
+        }, BindingKey.of(RoutingKey.of(Resource.Type.DOMAIN, Resource.State.UPDATED),"test3.2"));
 
-        this.eventBus.post(Event.from("test-message"), RoutingKey.of(Resource.Type.SOURCE, Resource.State.UPDATED));
+        this.eventBus.post(Event.from("test-message"), RoutingKey.of(Resource.Type.DOMAIN, Resource.State.UPDATED));
 
         Thread.sleep(500);
 
@@ -151,9 +151,9 @@ public class RabbitMQEventBusTest {
 
         final AtomicInteger received = new AtomicInteger(0);
 
-        final URI uri    = URI.create("http://librairy.org/source/1213-1213");
+        final URI uri    = URI.create("http://librairy.org/domains/1213-1213");
 
-        this.eventBus.post(Event.from(uri), RoutingKey.of(Resource.Type.SOURCE, Resource.State.CREATED));
+        this.eventBus.post(Event.from(uri), RoutingKey.of(Resource.Type.DOMAIN, Resource.State.CREATED));
 
         Thread.sleep(500);
 
@@ -162,7 +162,7 @@ public class RabbitMQEventBusTest {
             LOG.info(" New event received: " + eventURI);
             Assert.assertEquals(uri, eventURI);
             received.incrementAndGet();
-        }, BindingKey.of(RoutingKey.of(Resource.Type.SOURCE, Resource.State.CREATED), "test6"));
+        }, BindingKey.of(RoutingKey.of(Resource.Type.DOMAIN, Resource.State.CREATED), "test6"));
 
         Thread.sleep(500);
 
@@ -176,7 +176,7 @@ public class RabbitMQEventBusTest {
 
         final Double value = new Double("23.30");
 
-        this.eventBus.post(Event.from(value), RoutingKey.of(Resource.Type.DOCUMENT, Resource.State.UPDATED));
+        this.eventBus.post(Event.from(value), RoutingKey.of(Resource.Type.DOMAIN, Resource.State.UPDATED));
 
         Thread.sleep(500);
 
@@ -186,7 +186,7 @@ public class RabbitMQEventBusTest {
             LOG.info(" New event received: " + eventDouble);
             Assert.assertEquals(value, eventDouble);
             received.incrementAndGet();
-        }, BindingKey.of(RoutingKey.of(Resource.Type.DOCUMENT, Resource.State.UPDATED), "test7"));
+        }, BindingKey.of(RoutingKey.of(Resource.Type.DOMAIN, Resource.State.UPDATED), "test7"));
 
         Thread.sleep(500);
 

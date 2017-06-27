@@ -131,12 +131,12 @@ public class ItemsDaoTest {
 
                 LOG.info("checking '" + item.getUri() + " '");
 
-                Item book = itemsDao.get(item.getUri(), true);
-                if (Strings.isNullOrEmpty(book.getContent())) {
-                    LOG.error("Book empty: " + book.getUri());
+                Optional<Item> book = itemsDao.get(item.getUri(), true);
+                if ((book.isPresent()) || (Strings.isNullOrEmpty(book.get().asItem().getContent()))) {
+                    LOG.error("Book empty: " + book);
                     continue;
                 }
-                int bookWords = book.getContent().split(" ").length;
+                int bookWords = book.get().asItem().getContent().split(" ").length;
 
                 // words per item
                 if (wordsPerItem == 0.0){
@@ -162,12 +162,12 @@ public class ItemsDaoTest {
                         LOG.debug("checking '" + uri + " '");
 
 
-                        Part part = partsDao.get(uri.getUri(), true);
-                        if (Strings.isNullOrEmpty(part.getContent())) {
+                        Optional<Part> part = partsDao.get(uri.getUri(), true);
+                        if  ((!part.isPresent()) || (Strings.isNullOrEmpty(part.get().asPart().getContent()))) {
                             LOG.error("Part empty: " + uri);
                             continue;
                         }
-                        int chapterWords = part.getContent().split(" ").length;
+                        int chapterWords = part.get().asPart().getContent().split(" ").length;
 
                         // words per part
                         if (wordsPerPart == 0.0){

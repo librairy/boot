@@ -8,12 +8,12 @@
 package org.librairy.boot.storage.system.column;
 
 import es.cbadenes.lab.test.IntegrationTest;
-import org.librairy.boot.model.domain.resources.*;
-import org.librairy.boot.storage.system.column.repository.UnifiedColumnRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.librairy.boot.model.domain.resources.*;
+import org.librairy.boot.storage.system.column.repository.UnifiedColumnRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,17 +41,6 @@ public class UnifiedColumnRepositoryTest {
 
 
     @Test
-    public void source(){
-
-        Source source = Resource.newSource
-                ("s1");
-        source.setUri("sources/01");
-        source.setName("test01");
-        source.setDescription("testing purposes");
-        test(source, Resource.Type.SOURCE);
-    }
-
-    @Test
     public void domain(){
 
         Domain domain = Resource.newDomain
@@ -60,18 +49,6 @@ public class UnifiedColumnRepositoryTest {
         domain.setName("test01");
         domain.setDescription("testing purposes");
         test(domain, Resource.Type.DOMAIN);
-    }
-
-    @Test
-    public void document() {
-
-        Document document = Resource
-                .newDocument("d1");
-        document.setUri("documents/01");
-        document.setAuthoredBy("me");
-        document.setAuthoredOn("20151210");
-        document.setDescription("testing purposes");
-        test(document, Resource.Type.DOCUMENT);
     }
 
     @Test
@@ -106,15 +83,6 @@ public class UnifiedColumnRepositoryTest {
         test(resource, Resource.Type.TOPIC);
     }
 
-    @Test
-    public void word() {
-
-        Word resource = Resource.newWord("w1");
-        resource.setUri("items/01");
-        resource.setContent("house");
-        test(resource, Resource.Type.WORD);
-    }
-
 
     private void test(Resource resource, Resource.Type type){
 
@@ -139,19 +107,4 @@ public class UnifiedColumnRepositoryTest {
         Assert.assertFalse(unifiedColumnRepository.exists(type,resource.getUri()));
     }
 
-
-    @Test
-    public void findBy(){
-
-        unifiedColumnRepository.deleteAll(Resource.Type.DOCUMENT);
-
-        Document document = new Document();
-        document.setUri("documents/01");
-        document.setTitle("This is a title");
-        unifiedColumnRepository.save(document);
-
-        Iterable<Resource> documents = unifiedColumnRepository.findBy(Resource.Type.DOCUMENT, "title", document.getTitle());
-        System.out.println("Documents: " + documents);
-
-    }
 }

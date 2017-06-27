@@ -65,28 +65,15 @@ public class Relation extends LinkableElement {
     }
 
     public enum Type{
-        AGGREGATES("aggregates","aggregations"),
-        PROVIDES("provides","provisions"),
-        COMPOSES("composes","compositions"),
-        CONTAINS_TO_DOCUMENT("contains","contains"),
         CONTAINS_TO_DOMAIN("contains","contains"),
         CONTAINS_TO_ITEM("contains","contains"),
         CONTAINS_TO_PART("contains","contains"),
-        BUNDLES("bundles","bundles"),
-        SIMILAR_TO_DOCUMENTS("similarTo","similarities"),
         SIMILAR_TO_ITEMS("similarTo","similarities"),
         SIMILAR_TO_PARTS("similarTo","similarities"),
-        DEALS_WITH_FROM_DOCUMENT("dealsWith","deals"),
         DEALS_WITH_FROM_ITEM("dealsWith","deals"),
         DEALS_WITH_FROM_PART("dealsWith","deals"),
         DESCRIBES("describes","descriptions"),
         EMERGES_IN("emergesIn","emerges"),
-        MENTIONS_FROM_TOPIC("mentions","mentions"),
-        MENTIONS_FROM_TERM("mentions","mentions"),
-        PAIRS_WITH("pairsWith","pairs"),
-        EMBEDDED_IN("embeddedIn","embeddings"),
-        APPEARED_IN("appearedIn","appearances"),
-        HYPERNYM_OF("hypernymOf","hypernyms"),
         ANY("*","*");
 
         private final String route;
@@ -119,61 +106,27 @@ public class Relation extends LinkableElement {
 
     public static Class classOf(Type type){
         switch (type){
-            case AGGREGATES: return Aggregates.class;
-            case APPEARED_IN: return AppearedIn.class;
-            case BUNDLES: return Bundles.class;
-            case COMPOSES: return Composes.class;
-            case CONTAINS_TO_DOCUMENT: return ContainsDoc.class;
             case CONTAINS_TO_ITEM: return ContainsItem.class;
             case CONTAINS_TO_PART: return ContainsPart.class;
-            case DEALS_WITH_FROM_DOCUMENT: return DealsWithFromDocument.class;
             case DEALS_WITH_FROM_ITEM: return DealsWithFromItem.class;
             case DEALS_WITH_FROM_PART: return DealsWithFromPart.class;
             case DESCRIBES: return Describes.class;
-            case EMBEDDED_IN: return EmbeddedIn.class;
             case EMERGES_IN: return EmergesIn.class;
-            case HYPERNYM_OF: return HypernymOf.class;
-            case MENTIONS_FROM_TERM: return MentionsFromTerm.class;
-            case MENTIONS_FROM_TOPIC: return MentionsFromTopic.class;
-            case PAIRS_WITH: return PairsWith.class;
-            case PROVIDES: return Provides.class;
-            case SIMILAR_TO_DOCUMENTS: return SimilarToDocuments.class;
             case SIMILAR_TO_ITEMS: return SimilarToItems.class;
             case SIMILAR_TO_PARTS: return SimilarToParts.class;
             default: return Relation.class;
         }
     }
 
-    public static Aggregates newAggregates(String startUri, String endUri){
-        return newRelation(Aggregates.class,startUri,endUri);
-    }
-
-    public static AppearedIn newAppearedIn(String startUri, String endUri){
-        return newRelation(AppearedIn.class,startUri,endUri);
-    }
-
-    public static Bundles newBundles(String startUri, String endUri){
-        return newRelation(Bundles.class,startUri,endUri);
-    }
-
-    public static Composes newComposes(String startUri, String endUri){
-        return newRelation(Composes.class,startUri,endUri);
-    }
-
     public static Contains newContains(String startUri, String endUri){
 
         switch(URIGenerator.typeFrom(endUri)){
-            case DOCUMENT: return newRelation(ContainsDoc.class,startUri,endUri);
             case ITEM: return newRelation(ContainsItem.class,startUri,endUri);
             case PART: return newRelation(ContainsPart.class,startUri,endUri);
             case DOMAIN: return newRelation(ContainsDomain.class,startUri,endUri);
             default: throw new RuntimeException("Invalid start uri for CONTAINS relation: " + startUri);
         }
 
-    }
-
-    public static DealsWithFromDocument newDealsWithFromDocument(String startUri, String endUri){
-        return newRelation(DealsWithFromDocument.class,startUri,endUri);
     }
 
     public static DealsWithFromItem newDealsWithFromItem(String startUri, String endUri){
@@ -188,42 +141,8 @@ public class Relation extends LinkableElement {
         return newRelation(Describes.class,startUri,endUri);
     }
 
-    public static EmbeddedIn newEmbeddedIn(String startUri, String endUri){
-        return newRelation(EmbeddedIn.class,startUri,endUri);
-    }
-
     public static EmergesIn newEmergesIn(String startUri, String endUri){
         return newRelation(EmergesIn.class,startUri,endUri);
-    }
-
-    public static HypernymOf newHypernymOf(String startUri, String endUri, String domainUri){
-        HypernymOf rel = newRelation(HypernymOf.class, startUri, endUri);
-        rel.setDomain(domainUri);
-        return rel;
-    }
-
-    public static MentionsFromTerm newMentionsFromTerm(String startUri, String endUri){
-        return newRelation(MentionsFromTerm.class,startUri,endUri);
-    }
-
-    public static MentionsFromTopic newMentionsFromTopic(String startUri, String endUri){
-        return newRelation(MentionsFromTopic.class,startUri,endUri);
-    }
-
-    public static PairsWith newPairsWith(String startUri, String endUri, String domainUri){
-        PairsWith rel = newRelation(PairsWith.class, startUri, endUri);
-        rel.setDomain(domainUri);
-        return rel;
-    }
-
-    public static Provides newProvides(String startUri, String endUri){
-        return newRelation(Provides.class,startUri,endUri);
-    }
-
-    public static SimilarToDocuments newSimilarToDocuments(String startUri, String endUri, String domainUri){
-        SimilarToDocuments rel = newRelation(SimilarToDocuments.class, startUri, endUri);
-        rel.setDomain(domainUri);
-        return rel;
     }
 
     public static SimilarToItems newSimilarToItems(String startUri, String endUri, String domainUri){
@@ -250,29 +169,10 @@ public class Relation extends LinkableElement {
         return instance;
     }
 
-    public Aggregates asAggregates(){
-        return Aggregates.class.cast(this);
-    }
-
-    public AppearedIn asAppearedIn(){
-        return AppearedIn.class.cast(this);
-    }
-
-    public Bundles asBundles(){
-        return Bundles.class.cast(this);
-    }
-
-    public Composes asComposes(){
-        return Composes.class.cast(this);
-    }
-
     public Contains asContains(){
         return Contains.class.cast(this);
     }
 
-    public DealsWithFromDocument asDealsWithFromDocument(){
-        return DealsWithFromDocument.class.cast(this);
-    }
 
     public DealsWithFromItem asDealsWithFromItem(){
         return DealsWithFromItem.class.cast(this);
@@ -286,37 +186,10 @@ public class Relation extends LinkableElement {
         return Describes.class.cast(this);
     }
 
-    public EmbeddedIn asEmbeddedIn(){
-        return EmbeddedIn.class.cast(this);
-    }
-
     public EmergesIn asEmergesIn(){
         return EmergesIn.class.cast(this);
     }
 
-    public HypernymOf asHypernymOf(){
-        return HypernymOf.class.cast(this);
-    }
-
-    public MentionsFromTerm asMentionsFromTerm(){
-        return MentionsFromTerm.class.cast(this);
-    }
-
-    public MentionsFromTopic asMentionsFromTopic(){
-        return MentionsFromTopic.class.cast(this);
-    }
-
-    public PairsWith asPairsWith(){
-        return PairsWith.class.cast(this);
-    }
-
-    public Provides asProvides(){
-        return Provides.class.cast(this);
-    }
-
-    public SimilarToDocuments asSimilarToDocuments(){
-        return SimilarToDocuments.class.cast(this);
-    }
 
     public SimilarToItems asSimilarToItems(){
         return SimilarToItems.class.cast(this);

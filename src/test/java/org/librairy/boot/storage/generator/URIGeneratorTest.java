@@ -40,7 +40,7 @@ public class URIGeneratorTest {
         Assert.assertEquals("librairy.org", uriGenerator.domainUri);
         Assert.assertEquals("http://librairy.org/", uriGenerator.base);
 
-        Assert.assertEquals("http://librairy.org/documents/123", uriGenerator.from(Resource.Type.DOCUMENT,"123"));
+        Assert.assertEquals("http://librairy.org/items/123", uriGenerator.from(Resource.Type.ITEM,"123"));
 
     }
 
@@ -49,7 +49,7 @@ public class URIGeneratorTest {
         Assert.assertEquals("drinventor.eu", uriGenerator.domainUri);
         Assert.assertEquals("http://drinventor.eu/", uriGenerator.base);
 
-        Assert.assertEquals("http://drinventor.eu/documents/123", uriGenerator.from(Resource.Type.DOCUMENT,"123"));
+        Assert.assertEquals("http://drinventor.eu/items/123", uriGenerator.from(Resource.Type.ITEM,"123"));
 
     }
 

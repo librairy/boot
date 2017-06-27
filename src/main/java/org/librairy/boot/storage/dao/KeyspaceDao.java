@@ -27,21 +27,21 @@ public class KeyspaceDao {
     DBSessionManager dbSessionManager;
 
 
-    public Boolean createKeyspace(String uri){
-        String id = DBSessionManager.getKeyspaceFromUri(uri);
-        String query = "create keyspace if not exists "+id+" with replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1} and DURABLE_WRITES = false;";
-//        String query = "create keyspace if not exists "+id+" with replication = { 'class' : 'NetworkTopologyStrategy', 'datacenter1' : 3 } and DURABLE_WRITES = false;";
-        LOG.debug("Executing query: " + query);
-        ResultSet result = dbSessionManager.getSession().execute(query);
-        return result.wasApplied();
-    }
-
-    public Boolean removeKeyspace(String uri){
-        String id = DBSessionManager.getKeyspaceFromUri(uri);
-        String query = "drop keyspace if exists "+id+";";
-        LOG.debug("Executing query: " + query);
-        ResultSet result = dbSessionManager.getSession().execute(query);
-        return result.wasApplied();
-    }
+//    public Boolean createKeyspace(String uri){
+//        String id = DBSessionManager.getKeyspaceFromUri(uri);
+//        String query = "create keyspace if not exists "+id+" with replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1} and DURABLE_WRITES = false;";
+////        String query = "create keyspace if not exists "+id+" with replication = { 'class' : 'NetworkTopologyStrategy', 'datacenter1' : 3 } and DURABLE_WRITES = false;";
+//        LOG.debug("Executing query: " + query);
+//        ResultSet result = dbSessionManager.getSession().execute(query);
+//        return result.wasApplied();
+//    }
+//
+//    public Boolean removeKeyspace(String uri){
+//        String id = DBSessionManager.getKeyspaceFromUri(uri);
+//        String query = "drop keyspace if exists "+id+";";
+//        LOG.debug("Executing query: " + query);
+//        ResultSet result = dbSessionManager.getSession().execute(query);
+//        return result.wasApplied();
+//    }
 
 }
