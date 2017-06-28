@@ -103,7 +103,7 @@ public class DomainsDao extends AbstractDao  {
 
     }
 
-    public List<Item> listDocuments(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) {
+    public List<Item> listItems(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) {
 
         Iterator<Row> it = listResources(domainUri, size, offset, Resource.Type.ITEM, inclusive);
 
@@ -183,18 +183,18 @@ public class DomainsDao extends AbstractDao  {
     }
 
 
-    public Boolean addDocument(String domainUri, String documentUri){
+    public Boolean addItem(String domainUri, String itemUri){
 
 
-        Optional<Resource> document = udm.read(Resource.Type.ITEM).byUri(documentUri);
+        Optional<Resource> item = udm.read(Resource.Type.ITEM).byUri(itemUri);
 
-        if (!document.isPresent()) return false;
+        if (!item.isPresent()) return false;
 
-        // add to contains document
-        udm.save(Relation.newContains(domainUri, documentUri));
+        // add to contains item
+        udm.save(Relation.newContains(domainUri, itemUri));
 
-        // add to items document
-        save(domainUri, documentUri, document.get().asItem().getDescription());
+        // add to items item
+        save(domainUri, itemUri, item.get().asItem().getDescription());
 
 
         // for each part
@@ -204,7 +204,7 @@ public class DomainsDao extends AbstractDao  {
 
         while(!finished){
 
-            List<Part> parts = itemsDao.listParts(documentUri, windowSize, offset, false);
+            List<Part> parts = itemsDao.listParts(itemUri, windowSize, offset, false);
 
             // add to parts
             for (Part part: parts){
@@ -329,9 +329,9 @@ public class DomainsDao extends AbstractDao  {
 
     }
 
-    public void removeDocument(String domainUri, String documentUri){
+    public void removeItem(String domainUri, String itemUri){
 
-        Optional<Row> row = super.oneQuery("select uri from contains where starturi='" + domainUri + "' and enduri='" + documentUri + "' ALLOW FILTERING;");
+        Optional<Row> row = super.oneQuery("select uri from contains where starturi='" + domainUri + "' and enduri='" + itemUri + "' ALLOW FILTERING;");
 
         if (!row.isPresent()) return;
 
@@ -341,7 +341,7 @@ public class DomainsDao extends AbstractDao  {
         Boolean completed = false;
         while(!completed){
 
-            List<Part> parts = itemsDao.listParts(documentUri,windowSize,offset, false);
+            List<Part> parts = itemsDao.listParts(itemUri,windowSize,offset, false);
 
             for (Part part : parts){
                 removePart(domainUri, part.getUri());
@@ -355,8 +355,8 @@ public class DomainsDao extends AbstractDao  {
         udm.delete(Relation.Type.CONTAINS_TO_ITEM).byUri(row.get().getString(0));
 
         // Remove from resources_by_domain
-        delete(domainUri, documentUri);
-        LOG.info("Deleted "+ documentUri + " from " + domainUri);
+        delete(domainUri, itemUri);
+        LOG.info("Deleted "+ itemUri + " from " + domainUri);
 
     }
 
@@ -376,7 +376,7 @@ public class DomainsDao extends AbstractDao  {
         return counterDao.decrement(domainUri, type.route());
     }
 
-    public void removeAllDocuments(String domainUri){
+    public void removeAllItems(String domainUri){
 
         // Remove from Contains
         Iterator<Row> it = super.iteratedQuery("select uri from contains where starturi='" + domainUri + "';");

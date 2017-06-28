@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -34,6 +35,7 @@ import java.util.concurrent.TimeoutException;
  */
 @Component
 @Conditional(RabbitMQCondition.class)
+@DependsOn("busChecker")
 public class RabbitMQEventBus implements EventBus {
 
     private static final Logger LOG = LoggerFactory.getLogger(RabbitMQEventBus.class);

@@ -67,7 +67,7 @@ public class ItemsDao extends AbstractDao {
                 List<Domain> domains = listDomains(itemUri, windowSize, offset, false);
 
                 for (Domain domain: domains){
-                    domainsDao.removeDocument(domain.getUri(), itemUri);
+                    domainsDao.removeItem(domain.getUri(), itemUri);
                 }
 
                 if (domains.size() < windowSize) break;

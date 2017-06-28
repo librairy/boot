@@ -72,7 +72,7 @@ public class DomainsDaoTest {
 
         Assert.assertFalse(dao.get(domainUri).isPresent());
         Assert.assertTrue(dao.list(100, Optional.empty(), false).isEmpty());
-        Assert.assertTrue(dao.listDocuments(domainUri, 100, Optional.empty(), false).isEmpty());
+        Assert.assertTrue(dao.listItems(domainUri, 100, Optional.empty(), false).isEmpty());
         Assert.assertTrue(dao.listParts(domainUri, 100, Optional.empty(), false).isEmpty());
         Assert.assertTrue(dao.listSubdomains(domainUri, 100, Optional.empty(), false).isEmpty());
 
@@ -91,7 +91,7 @@ public class DomainsDaoTest {
         Assert.assertFalse(domainList.isEmpty());
         Assert.assertEquals(1, domainList.size());
 
-        Assert.assertTrue(dao.listDocuments(domainUri, 100, Optional.empty(), false).isEmpty());
+        Assert.assertTrue(dao.listItems(domainUri, 100, Optional.empty(), false).isEmpty());
         Assert.assertTrue(dao.listParts(domainUri, 100, Optional.empty(), false).isEmpty());
         Assert.assertTrue(dao.listSubdomains(domainUri, 100, Optional.empty(), false).isEmpty());
 
@@ -105,14 +105,14 @@ public class DomainsDaoTest {
         Assert.assertFalse(dao.contains(domainUri, subdomainUri));
 
         // add document
-        Assert.assertFalse(dao.addDocument(domainUri, documentUri));
+        Assert.assertFalse(dao.addItem(domainUri, documentUri));
         Item document = new Item();
         document.setDescription("sample-document");
         document.setUri(documentUri);
         udm.save(document);
-        Assert.assertTrue(dao.addDocument(domainUri, documentUri));
+        Assert.assertTrue(dao.addItem(domainUri, documentUri));
 
-        List<Item> docList = dao.listDocuments(domainUri, 100, Optional.empty(), false);
+        List<Item> docList = dao.listItems(domainUri, 100, Optional.empty(), false);
         Assert.assertFalse(docList.isEmpty());
         Assert.assertEquals(1, docList.size());
 
@@ -151,8 +151,8 @@ public class DomainsDaoTest {
         Assert.assertTrue(dao.contains(domainUri, subdomainUri));
 
         // remove document
-        dao.removeDocument(domainUri, documentUri);
-        Assert.assertTrue(dao.listDocuments(domainUri, 100, Optional.empty(), false).isEmpty());
+        dao.removeItem(domainUri, documentUri);
+        Assert.assertTrue(dao.listItems(domainUri, 100, Optional.empty(), false).isEmpty());
         Assert.assertFalse(dao.contains(domainUri, documentUri));
 
         // remove part
@@ -174,10 +174,10 @@ public class DomainsDaoTest {
             i.setDescription("sample-document");
             i.setUri(URIGenerator.fromId(Resource.Type.ITEM, String.valueOf(index)));
             udm.save(i);
-            dao.addDocument(domainUri, URIGenerator.fromId(Resource.Type.ITEM, String.valueOf(index)));
+            dao.addItem(domainUri, URIGenerator.fromId(Resource.Type.ITEM, String.valueOf(index)));
         });
-        Assert.assertFalse(dao.listDocuments(domainUri, 100, Optional.empty(), false).isEmpty());
-        Assert.assertEquals(10, dao.listDocuments(domainUri, 100, Optional.empty(), false).size());
+        Assert.assertFalse(dao.listItems(domainUri, 100, Optional.empty(), false).isEmpty());
+        Assert.assertEquals(10, dao.listItems(domainUri, 100, Optional.empty(), false).size());
 
         // add multiple parts
         IntStream.range(0,10).forEach( index -> {
@@ -202,8 +202,8 @@ public class DomainsDaoTest {
         Assert.assertEquals(10, dao.listSubdomains(domainUri, 100, Optional.empty(), false).size());
 
         // remove all documents
-        dao.removeAllDocuments(domainUri);
-        Assert.assertTrue(dao.listDocuments(domainUri, 100, Optional.empty(), false).isEmpty());
+        dao.removeAllItems(domainUri);
+        Assert.assertTrue(dao.listItems(domainUri, 100, Optional.empty(), false).isEmpty());
 
         // remove all parts
         dao.removeAllParts(domainUri);

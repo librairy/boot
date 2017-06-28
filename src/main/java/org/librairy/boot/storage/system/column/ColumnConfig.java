@@ -7,32 +7,24 @@
 
 package org.librairy.boot.storage.system.column;
 
+import org.apache.commons.lang.StringUtils;
+import org.librairy.boot.utils.ResourceWaiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cassandra.core.keyspace.CreateKeyspaceSpecification;
-import org.springframework.cassandra.core.keyspace.KeyspaceOption;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean;
-import org.springframework.data.cassandra.config.CassandraSessionFactoryBean;
-import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.config.java.AbstractCassandraConfiguration;
-import org.springframework.data.cassandra.convert.CassandraConverter;
-import org.springframework.data.cassandra.convert.MappingCassandraConverter;
-import org.springframework.data.cassandra.core.CassandraOperations;
-import org.springframework.data.cassandra.core.CassandraTemplate;
-import org.springframework.data.cassandra.mapping.BasicCassandraMappingContext;
-import org.springframework.data.cassandra.mapping.CassandraMappingContext;
-import org.springframework.data.cassandra.mapping.SimpleUserTypeResolver;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -56,6 +48,7 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
     Integer port;
 
     @Bean
+    @DependsOn("dbChecker")
     public CassandraClusterFactoryBean cluster(){
         CassandraClusterFactoryBean cluster = new CassandraClusterFactoryBean();
         try{
@@ -79,6 +72,11 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
             LOG.error("Error configuring cassandra connection parameters: ",e);
         }
         return cluster;
+    }
+
+    @Bean("dbChecker")
+    public Boolean waitForService(){
+        return ResourceWaiter.waitFor(StringUtils.substringBefore(hosts,","), port);
     }
 
 

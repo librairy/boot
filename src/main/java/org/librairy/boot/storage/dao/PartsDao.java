@@ -175,7 +175,7 @@ public class PartsDao extends AbstractDao {
     }
 
 
-    public List<Item> listDocuments(String partUri, Integer size, Optional<String> offset, Boolean inclusive){
+    public List<Item> listItems(String partUri, Integer size, Optional<String> offset, Boolean inclusive){
 
         StringBuilder query = new StringBuilder().append("select enduri from describes where starturi='"+ partUri+"'");
 
@@ -217,7 +217,7 @@ public class PartsDao extends AbstractDao {
         List<Domain> domains = new ArrayList<>();
         while(!finished){
 
-            List<Item> items = listDocuments(partUri, windowSize, offsetItem, false);
+            List<Item> items = listItems(partUri, windowSize, offsetItem, false);
 
             for (Item item: items){
 
