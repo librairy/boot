@@ -8,11 +8,13 @@
 package org.librairy.boot.storage.dao;
 
 import com.datastax.driver.core.Row;
+import org.librairy.boot.model.domain.resources.Resource;
 import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -98,7 +100,13 @@ public class CounterDao extends AbstractDao {
     }
 
     public Boolean remove(String domainUri, String counter){
+        reset(domainUri, counter);
         return execute("delete from " + TABLE_NAME + " where domain='" + domainUri+"' and counter='" + counter+"';");
+    }
+
+    public Boolean removeAll(String domainUri){
+        Arrays.stream(Resource.Type.values()).parallel().forEach(type -> reset(domainUri, type.route()));
+        return execute("delete from " + TABLE_NAME + " where domain='" + domainUri+"' ;");
     }
 
     private Long get(String domainUri, String counter){

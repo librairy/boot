@@ -105,7 +105,9 @@ public class DomainsDao extends AbstractDao  {
 
     public List<Item> listItems(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) {
 
-        Iterator<Row> it = listResources(domainUri, size, offset, Resource.Type.ITEM, inclusive);
+        Optional<String> uri = (offset.isPresent() && !offset.get().startsWith("http://"))? Optional.of(URIGenerator.fromContent(Resource.Type.ITEM, offset.get())) : offset;
+
+        Iterator<Row> it = listResources(domainUri, size, uri, Resource.Type.ITEM, inclusive);
 
         List<Item> items = new ArrayList<>();
 
@@ -123,7 +125,9 @@ public class DomainsDao extends AbstractDao  {
 
     public List<Part> listParts(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) {
 
-        Iterator<Row> it = listResources(domainUri, size, offset, Resource.Type.PART, inclusive);
+        Optional<String> uri = (offset.isPresent() && !offset.get().startsWith("http://"))? Optional.of(URIGenerator.fromContent(Resource.Type.PART, offset.get())) : offset;
+
+        Iterator<Row> it = listResources(domainUri, size, uri, Resource.Type.PART, inclusive);
 
         List<Part> parts = new ArrayList<>();
 
@@ -141,7 +145,9 @@ public class DomainsDao extends AbstractDao  {
 
     public List<Domain> listSubdomains(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) {
 
-        Iterator<Row> it = listResources(domainUri, size, offset, Resource.Type.DOMAIN, inclusive);
+        Optional<String> uri = (offset.isPresent() && !offset.get().startsWith("http://"))? Optional.of(URIGenerator.fromContent(Resource.Type.DOMAIN, offset.get())) : offset;
+
+        Iterator<Row> it = listResources(domainUri, size, uri, Resource.Type.DOMAIN, inclusive);
 
         List<Domain> domains = new ArrayList<>();
 
@@ -162,7 +168,7 @@ public class DomainsDao extends AbstractDao  {
 
         if (offset.isPresent()){
             String operator = inclusive? ">=" : ">";
-            query.append(" and resource "+operator+" '" + URIGenerator.fromId(type, offset.get()) + "'");
+            query.append(" and resource "+operator+" '" + offset.get() + "'");
         }
 
         query.append(" limit " + size);
@@ -321,7 +327,10 @@ public class DomainsDao extends AbstractDao  {
             udm.delete(Resource.Type.DOMAIN).byUri(uri);
 
             // delete from resources_by_domain
-            execute("delete from " + TABLE_NAME + " where domain='" + uri +"';");
+            Arrays.stream(Resource.Type.values()).parallel().forEach(type -> execute("delete from " + TABLE_NAME + " where domain='" + uri +"' and type='"+type.key()+"';"));
+
+            // delete counters
+            counterDao.removeAll(uri);
 
         }catch (InvalidQueryException e){
             LOG.warn("Error on query execution: " + e.getMessage());

@@ -71,7 +71,9 @@ public class AnnotationsDao extends AbstractDao {
             if ((rows == null) || rows.isEmpty()) return Collections.emptyList();
 
             return rows.stream()
-                    .map( row -> udm.read(Resource.Type.ANNOTATION).byUri(row.getString(0)).get().asAnnotation())
+                    .map( row -> udm.read(Resource.Type.ANNOTATION).byUri(row.getString(0)))
+                    .filter(data -> data.isPresent())
+                    .map(data -> data.get().asAnnotation())
                     .collect(Collectors.toList());
 
         } catch (InvalidQueryException e) {

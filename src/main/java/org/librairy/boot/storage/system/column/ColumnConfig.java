@@ -196,7 +196,7 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
         schemaScripts.add("create table if not exists librairy.annotations_by_resource(resource text, type text, creator text, purpose text, uri text, primary key((resource),type,purpose,creator));");
 
         schemaScripts.add("create table if not exists librairy.parameters_by_domain(domain text, parameter text, value text, primary key((domain),parameter));");
-        schemaScripts.add("create table if not exists librairy.resources_by_domain(domain text, type text, resource text, name text, time text, tokens text, primary key((domain,type),resource));");
+        schemaScripts.add("create table if not exists librairy.resources_by_domain(domain text, type text, resource text, name text, time text, tokens text, primary key(domain,type,resource));");
         schemaScripts.add("create table if not exists librairy.counters_by_domain(domain text, counter text, value counter, primary key((domain),counter));");
 
         return schemaScripts;

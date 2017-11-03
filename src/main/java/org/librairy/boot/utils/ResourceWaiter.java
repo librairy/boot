@@ -26,6 +26,13 @@ public class ResourceWaiter {
 
         Random random = new Random();
         while(true){
+            int delay = random.nextInt(100) * 450;
+            LOG.info("Waiting " + delay + "msecs for '" + host+":"+port +"' ...");
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                break;
+            }
             try{
                 Socket ServerSok = new Socket(host,port);
                 LOG.debug("Port in use: " + port + " at " + host );
@@ -37,13 +44,6 @@ public class ResourceWaiter {
                 LOG.debug("Connection error to host: " + host + ":" + port, e);
             }
 
-            int delay = random.nextInt(10) * 1000;
-            LOG.info("Waiting for '" + host+":"+port +"' ...");
-            try {
-                Thread.sleep(delay);
-            } catch (InterruptedException e) {
-                break;
-            }
         }
         return true;
     }

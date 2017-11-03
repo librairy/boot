@@ -57,10 +57,26 @@ public class ItemsDao extends AbstractDao {
 
     public boolean delete(String itemUri){
         try{
-            // Delete from domains
+
+            // delete parts
             Integer windowSize = 100;
             Optional<String> offset = Optional.empty();
             Boolean finished = false;
+            while(!finished){
+                List<Part> parts = listParts(itemUri, windowSize, offset, false);
+
+                for(Part part: parts){
+                    removePart(itemUri, part.getUri());
+                }
+
+                if (parts.size() < windowSize) break;
+
+                offset = Optional.of(URIGenerator.retrieveId(parts.get(windowSize-1).getUri()));
+            }
+
+            // Delete from domains
+            offset = Optional.empty();
+            finished = false;
 
             while(!finished){
 
@@ -77,22 +93,6 @@ public class ItemsDao extends AbstractDao {
 
             // delete annotations
             annotationsDao.removeByResource(itemUri, Optional.empty());
-
-
-            // delete parts
-            offset = Optional.empty();
-            finished = false;
-            while(!finished){
-                List<Part> parts = listParts(itemUri, windowSize, offset, false);
-
-                for(Part part: parts){
-                    removePart(itemUri, part.getUri());
-                }
-
-                if (parts.size() < windowSize) break;
-
-                offset = Optional.of(URIGenerator.retrieveId(parts.get(windowSize-1).getUri()));
-            }
 
             // Delete item
             udm.delete(Resource.Type.ITEM).byUri(itemUri);
@@ -115,32 +115,25 @@ public class ItemsDao extends AbstractDao {
 
     public boolean removePart(String itemUri, String partUri){
         try{
+            // remove from domains
+            Integer windowSize = 100;
+            Optional<String> offset = Optional.empty();
+            Boolean finished = false;
 
-            Optional<Row> row = super.oneQuery("select uri from describes where starturi='" + partUri + "' and enduri='" + itemUri + "' ALLOW FILTERING;");
-            if (row.isPresent()){
-                String uri = row.get().getString(0);
+            while(!finished){
+                List<Domain> domains = listDomains(itemUri, windowSize, offset, false);
 
-                // remove from domains
-                Integer windowSize = 100;
-                Optional<String> offset = Optional.empty();
-                Boolean finished = false;
-
-                while(!finished){
-                    List<Domain> domains = listDomains(itemUri, windowSize, offset, false);
-
-                    for (Domain domain: domains){
-                        domainsDao.removePart(domain.getUri(), partUri);
-                    }
-
-                    if (domains.size() < windowSize) break;
-
-                    offset = Optional.of(URIGenerator.retrieveId(domains.get(windowSize-1).getUri()));
+                for (Domain domain: domains){
+                    domainsDao.removePart(domain.getUri(), partUri);
                 }
 
-                // Delete part
-                partsDao.delete(uri);
+                if (domains.size() < windowSize) break;
 
+                offset = Optional.of(URIGenerator.retrieveId(domains.get(windowSize-1).getUri()));
             }
+
+            // Delete part
+            partsDao.delete(partUri);
         }catch (Exception e){
             LOG.error("Unexpected error relating part: " + partUri + " to item: " + itemUri, e);
             return false;
