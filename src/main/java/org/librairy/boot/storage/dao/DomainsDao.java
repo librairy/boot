@@ -7,7 +7,9 @@
 
 package org.librairy.boot.storage.dao;
 
+import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.google.common.base.Strings;
@@ -259,8 +261,22 @@ public class DomainsDao extends AbstractDao  {
 
     private Boolean save(String domainUri, String resourceUri, String name, String tokens){
         String type = URIGenerator.typeFrom(resourceUri).key();
-        return execute("insert into " + TABLE_NAME + " (domain, type, resource, time, name, tokens) values ('"+
-                domainUri+"', '"+ type+"', '" + resourceUri +"', '" + TimeUtils.asISO() + "','"+name+"','" + tokens+"');");
+//        return execute("insert into " + TABLE_NAME + " (domain, type, resource, time, name, tokens) values ('"+
+//                domainUri+"', '"+ type+"', '" + resourceUri +"', '" + TimeUtils.asISO() + "','"+name+"','" + tokens+"');");
+
+
+        PreparedStatement statement = dbSessionManager.getCommonSession().prepare("insert into "+TABLE_NAME+" (domain, type, resource, time, name, tokens) values (?, ?, ?, ?, ?, ?)");
+        dbSessionManager.getCommonSession().executeAsync(statement.bind(
+                domainUri,
+                type,
+                resourceUri,
+                TimeUtils.asISO(),
+                name,
+                tokens));
+        return true;
+
+
+
     }
 
     private String retrieveDomainTokens(String domainUri, String resourceUri){
@@ -293,13 +309,13 @@ public class DomainsDao extends AbstractDao  {
         return Optional.of(tokens.get().getString(0));
     }
 
-    public Boolean updateDomainTokens(String domainUri, String uri){
-        return updateDomainTokens(domainUri, uri, retrieveDomainTokens(domainUri, uri));
+    public Boolean updateDomainTokens(String domainUri, String uri, String name){
+        return updateDomainTokens(domainUri, uri, name, retrieveDomainTokens(domainUri, uri));
     }
 
-    public Boolean updateDomainTokens(String domainUri, String uri, String tokens){
+    public Boolean updateDomainTokens(String domainUri, String uri, String name, String tokens){
 
-        if (save(domainUri, uri, tokens)){
+        if (save(domainUri, uri, name, tokens)){
             LOG.info("saved tokens of '"+uri+"' in '"+domainUri+"'");
 
             Domain resource = new Domain();

@@ -7,11 +7,14 @@
 
 package org.librairy.boot.storage.dao;
 
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
+import com.datastax.driver.core.*;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
+import com.google.common.base.Strings;
+import org.librairy.boot.model.Event;
 import org.librairy.boot.model.domain.resources.Annotation;
 import org.librairy.boot.model.domain.resources.Resource;
+import org.librairy.boot.model.modules.EventBus;
+import org.librairy.boot.model.modules.RoutingKey;
 import org.librairy.boot.storage.UDM;
 import org.librairy.boot.storage.exception.DataNotFound;
 import org.librairy.boot.storage.generator.URIGenerator;
@@ -20,10 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +39,9 @@ public class AnnotationsDao extends AbstractDao {
 
     @Autowired
     UDM udm;
+
+    @Autowired
+    EventBus eventBus;
 
     public List<Annotation> getByResource(String uri, Optional<AnnotationFilter> filter) throws DataNotFound {
         String query = "select "+Annotation.URI +
@@ -127,5 +130,56 @@ public class AnnotationsDao extends AbstractDao {
                 .reduce((a,b) -> a&b).get();
     }
 
+
+    public List<ResultSetFuture> save(Annotation annotation){
+
+        List<ResultSetFuture> results = new ArrayList<>();
+
+        Session session = dbSessionManager.getCommonSession();
+//        String uri = URIGenerator.fromContent(Resource.Type.ANNOTATION, new StringBuilder()
+//                .append(annotation.getResource())
+//                .append(annotation.getType())
+//                .append(annotation.getPurpose())
+//                .toString());
+        String uri = URIGenerator.fromId(Resource.Type.ANNOTATION, annotation.getType());
+        annotation.setUri(uri);
+        PreparedStatement statement = session.prepare("insert into annotations (purpose, type, resource, creator, value, score, format, language, uri) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        ResultSetFuture result = session.executeAsync(statement.bind(
+                annotation.getPurpose(),
+                annotation.getType(),
+                annotation.getResource(),
+                annotation.getCreator(),
+                annotation.getValue(),
+                annotation.getScore(),
+                annotation.getFormat(),
+                annotation.getLanguage(),
+                annotation.getUri()));
+        results.add(result);
+        results.add(saveOnAnnotationByResource(annotation));
+        publishEvent(annotation);
+        return results;
+    }
+
+
+    private ResultSetFuture saveOnAnnotationByResource(Annotation annotation){
+
+        Session session = dbSessionManager.getCommonSession();
+        PreparedStatement statement = session.prepare("insert into annotations_by_resource (resource,type,creator,purpose,uri) values (?, ?, ?, ?, ?)");
+        return session.executeAsync(statement.bind(annotation.getResource(), annotation.getType(), annotation.getCreator(), annotation.getPurpose(), annotation.getUri()));
+
+    }
+
+    private void publishEvent(Annotation annotation){
+        String uri = annotation.getResource();
+        try{
+            Resource.Type typeFrom = URIGenerator.typeFrom(uri);
+            Resource relatedResource = new Resource();
+            relatedResource.setUri(uri);
+            eventBus.post(Event.from(relatedResource), RoutingKey.of(typeFrom, Resource.State.UPDATED));
+        }catch (RuntimeException e){
+            //no typeFilter found from related resource uri
+            LOG.warn("No typeFilter found from related resource uri: '" + uri + "'");
+        }
+    }
 
 }

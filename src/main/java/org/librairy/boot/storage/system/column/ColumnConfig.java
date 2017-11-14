@@ -124,33 +124,33 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
 
         List<String> schemaScripts = new ArrayList<>();
 
-        schemaScripts.add("create table if not exists librairy.contains(id bigint, uri text, creationTime text, startUri text, endUri text, weight double, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.contains(id bigint, uri text, creationTime text, startUri text, endUri text, weight double, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.contains (startUri);");
         schemaScripts.add("create index if not exists on librairy.contains (endUri);");
 
-        schemaScripts.add("create table if not exists librairy.similarTo(id bigint, uri text, creationTime text, domain text, startUri text, endUri text, weight double, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.similarTo(id bigint, uri text, creationTime text, domain text, startUri text, endUri text, weight double, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.similarTo (startUri);");
         schemaScripts.add("create index if not exists on librairy.similarTo (endUri);");
         schemaScripts.add("create index if not exists on librairy.similarTo (domain);");
 
-        schemaScripts.add("create table if not exists librairy.dealsWith(id bigint, uri text, creationTime text, startUri text, endUri text, weight double, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.dealsWith(id bigint, uri text, creationTime text, startUri text, endUri text, weight double, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.dealsWith (startUri);");
         schemaScripts.add("create index if not exists on librairy.dealsWith (endUri);");
 
-        schemaScripts.add("create table if not exists librairy.emergesIn(id bigint, uri text, creationTime text, analysis text, startUri text, endUri text, weight double, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.emergesIn(id bigint, uri text, creationTime text, analysis text, startUri text, endUri text, weight double, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.emergesIn (startUri);");
         schemaScripts.add("create index if not exists on librairy.emergesIn (endUri);");
         schemaScripts.add("create index if not exists on librairy.emergesIn (analysis);");
 
-        schemaScripts.add("create table if not exists librairy.describes(id bigint, uri text, creationTime text, startUri text, endUri text, weight double, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.describes(id bigint, uri text, creationTime text, startUri text, endUri text, weight double, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.describes (startUri);");
         schemaScripts.add("create index if not exists on librairy.describes (endUri);");
 
-        schemaScripts.add("create table if not exists librairy.domains(uri text, creationTime text, name text, description text, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.domains(uri text, creationTime text, name text, description text, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.domains (creationTime);");
         schemaScripts.add("create index if not exists on librairy.domains (name);");
 
-        schemaScripts.add("create table if not exists librairy.items(uri text, creationTime text, authoredOn text, authoredBy text, contributedBy text, format text, language text, title text, subject text, description text, url text, type text, content text, tokens text, annotated text, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.items(uri text, creationTime text, authoredOn text, authoredBy text, contributedBy text, format text, language text, title text, subject text, description text, url text, type text, content text, tokens text, annotated text, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.items (creationTime);");
         schemaScripts.add("create index if not exists on librairy.items (authoredOn);");
         schemaScripts.add("create index if not exists on librairy.items (authoredBy);");
@@ -162,28 +162,28 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
         schemaScripts.add("create index if not exists on librairy.items (url);");
         schemaScripts.add("create index if not exists on librairy.items (type);");
 
-        schemaScripts.add("create table if not exists librairy.parts(uri text, creationTime text, sense text, content text, tokens text, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.parts(uri text, creationTime text, sense text, content text, tokens text, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.parts (creationTime);");
         schemaScripts.add("create index if not exists on librairy.parts (sense);");
 
-        schemaScripts.add("create table if not exists librairy.topics(uri text, creationTime text, content text, analysis text, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.topics(uri text, creationTime text, content text, analysis text, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.topics (creationTime);");
         schemaScripts.add("create index if not exists on librairy.topics (analysis);");
 
-        schemaScripts.add("create table if not exists librairy.filters(uri text, creationTime text, content text, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.filters(uri text, creationTime text, content text, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.filters (creationTime);");
         schemaScripts.add("create index if not exists on librairy.filters (content);");
 
-        schemaScripts.add("create table if not exists librairy.paths(uri text, creationTime text, start text, end text, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.paths(uri text, creationTime text, start text, end text, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.paths (creationTime);");
         schemaScripts.add("create index if not exists on librairy.paths (start);");
         schemaScripts.add("create index if not exists on librairy.paths (end);");
 
-        schemaScripts.add("create table if not exists librairy.listeners(uri text, creationTime text, route text, primary key (uri));");
+        schemaScripts.add("create table if not exists librairy.listeners(uri text, creationTime text, route text, primary key (uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.listeners (creationTime);");
         schemaScripts.add("create index if not exists on librairy.listeners (route);");
 
-        schemaScripts.add("create table if not exists librairy.annotations(uri text, resource text, type text, creationTime text, creator text, format text, language text, value map<text,text>, description text, purpose text, score double, selection map<text,text>, primary key(uri));");
+        schemaScripts.add("create table if not exists librairy.annotations(uri text, resource text, type text, creationTime text, creator text, format text, language text, value map<text,text>, description text, purpose text, score double, selection map<text,text>, primary key(uri)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
         schemaScripts.add("create index if not exists on librairy.annotations (resource);");
         schemaScripts.add("create index if not exists on librairy.annotations (type);");
         schemaScripts.add("create index if not exists on librairy.annotations (creationTime);");
@@ -193,11 +193,11 @@ public class ColumnConfig extends AbstractCassandraConfiguration{
         // code=2200 [Invalid query] message="Cannot include more than one non-primary key column 'typeFilter' in materialized view primary key"
         //schemaScripts.add("CREATE MATERIALIZED VIEW librairy.annotations_by_resource AS SELECT resource, typeFilter, creator, purposeFilter, uri FROM librairy.annotations WHERE resource IS NOT NULL AND uri IS NOT NULL PRIMARY KEY ((resource), typeFilter, creator, purposeFilter);");
 
-        schemaScripts.add("create table if not exists librairy.annotations_by_resource(resource text, type text, creator text, purpose text, uri text, primary key((resource),type,purpose,creator));");
+        schemaScripts.add("create table if not exists librairy.annotations_by_resource(resource text, type text, creator text, purpose text, uri text, primary key((resource),type,purpose,creator)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
 
-        schemaScripts.add("create table if not exists librairy.parameters_by_domain(domain text, parameter text, value text, primary key((domain),parameter));");
-        schemaScripts.add("create table if not exists librairy.resources_by_domain(domain text, type text, resource text, name text, time text, tokens text, primary key(domain,type,resource));");
-        schemaScripts.add("create table if not exists librairy.counters_by_domain(domain text, counter text, value counter, primary key((domain),counter));");
+        schemaScripts.add("create table if not exists librairy.parameters_by_domain(domain text, parameter text, value text, primary key((domain),parameter)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
+        schemaScripts.add("create table if not exists librairy.resources_by_domain(domain text, type text, resource text, name text, time text, tokens text, primary key((domain,type),resource)) WITH CLUSTERING ORDER BY (resource ASC) and gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
+        schemaScripts.add("create table if not exists librairy.counters_by_domain(domain text, counter text, value counter, primary key((domain),counter)) WITH gc_grace_seconds = '3600' and compaction = { 'class' :  'LeveledCompactionStrategy'  } and compression = { 'sstable_compression' : '' } and caching = { 'keys' : 'ALL', 'rows_per_partition' : '120' };");
 
         return schemaScripts;
     }

@@ -28,13 +28,23 @@ public class ParallelExecutor {
 
     public ParallelExecutor(){
         int cpus = Runtime.getRuntime().availableProcessors();
-        int maxThreads = cpus;//cpus * 2;
+        int maxThreads = cpus-1;//cpus * 2;
         pool = new ThreadPoolExecutor(
                 maxThreads, // core thread pool size
                 maxThreads, // maximum thread pool size
                 1, // time to wait before resizing pool
                 TimeUnit.MINUTES,
                 new ArrayBlockingQueue<Runnable>(maxThreads, true),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+    }
+
+    public ParallelExecutor(int size){
+        pool = new ThreadPoolExecutor(
+                size, // core thread pool size
+                size, // maximum thread pool size
+                1, // time to wait before resizing pool
+                TimeUnit.MINUTES,
+                new ArrayBlockingQueue<Runnable>(size, true),
                 new ThreadPoolExecutor.CallerRunsPolicy());
     }
 

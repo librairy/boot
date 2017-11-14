@@ -92,7 +92,6 @@ public class RabbitMQClient {
         factory.setSharedExecutor(pool);
 
 
-
         LOG.info("trying to connect to: " + host +":" + port + " ..");
         this.connection = factory.newConnection();
         LOG.info("connected to: " + host+":"+port);
