@@ -46,6 +46,7 @@ public class ParametersDao extends AbstractDao {
             saveOrUpdate(domainUri,"lda.topics","-1");
             saveOrUpdate(domainUri,"lda.alpha","-1");
             saveOrUpdate(domainUri,"lda.beta","-1");
+            saveOrUpdate(domainUri,"lda.stopwords","figure,section,example,table");
             saveOrUpdate(domainUri,"w2v.delay","300000");
             saveOrUpdate(domainUri,"w2v.dim","100");
             saveOrUpdate(domainUri,"w2v.max.iterations","20");

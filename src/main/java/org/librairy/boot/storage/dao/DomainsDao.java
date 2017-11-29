@@ -12,6 +12,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.InvalidQueryException;
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import org.librairy.boot.model.Event;
 import org.librairy.boot.model.domain.relations.Relation;
@@ -54,6 +55,9 @@ public class DomainsDao extends AbstractDao  {
 
     @Autowired
     AnnotationsDao annotationsDao;
+
+
+
 
     public static final String TABLE_NAME = "resources_by_domain";
 
@@ -127,7 +131,7 @@ public class DomainsDao extends AbstractDao  {
 
     public List<Part> listParts(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) {
 
-        Optional<String> uri = (offset.isPresent() && !offset.get().startsWith("http://"))? Optional.of(URIGenerator.fromContent(Resource.Type.PART, offset.get())) : offset;
+        Optional<String> uri = (offset.isPresent() && !offset.get().startsWith("http://"))? Optional.of(URIGenerator.fromId(Resource.Type.PART, offset.get())) : offset;
 
         Iterator<Row> it = listResources(domainUri, size, uri, Resource.Type.PART, inclusive);
 
@@ -147,7 +151,7 @@ public class DomainsDao extends AbstractDao  {
 
     public List<Domain> listSubdomains(String domainUri, Integer size, Optional<String> offset, Boolean inclusive) {
 
-        Optional<String> uri = (offset.isPresent() && !offset.get().startsWith("http://"))? Optional.of(URIGenerator.fromContent(Resource.Type.DOMAIN, offset.get())) : offset;
+        Optional<String> uri = (offset.isPresent() && !offset.get().startsWith("http://"))? Optional.of(URIGenerator.fromId(Resource.Type.DOMAIN, offset.get())) : offset;
 
         Iterator<Row> it = listResources(domainUri, size, uri, Resource.Type.DOMAIN, inclusive);
 
@@ -182,6 +186,11 @@ public class DomainsDao extends AbstractDao  {
 
     public boolean save(Domain domain){
         try{
+            String regex = "^[a-zA-Z0-9_]+$";
+            if (!domain.getName().matches(regex)) {
+             LOG.warn("Invalid domain name: " + domain.getName());
+                return false;
+            }
             udm.save(domain);
             return true;
         }catch (Exception e){
@@ -198,12 +207,11 @@ public class DomainsDao extends AbstractDao  {
 
         if (!item.isPresent()) return false;
 
-        // add to contains item
-        udm.save(Relation.newContains(domainUri, itemUri));
-
         // add to items item
         save(domainUri, itemUri, item.get().asItem().getDescription());
 
+        // add to contains item
+        udm.save(Relation.newContains(domainUri, itemUri));
 
         // for each part
         Integer windowSize = 100;
@@ -249,30 +257,23 @@ public class DomainsDao extends AbstractDao  {
 
         if (!subdomain.isPresent()) return false;
 
-        save(domainUri, subdomainUri, subdomain.get().asDomain().getName(), "");
+        save(domainUri, subdomainUri, subdomain.get().asDomain().getName());
         counterDao.increment(domainUri, Resource.Type.DOMAIN.route());
         eventBus.post(Event.from(Relation.newContains(domainUri, subdomainUri)), RoutingKey.of("subdomain.added"));
         return true;
     }
 
     private Boolean save(String domainUri, String resourceUri, String name){
-        return save(domainUri, resourceUri, name, retrieveDomainTokens(domainUri, resourceUri));
-    }
 
-    private Boolean save(String domainUri, String resourceUri, String name, String tokens){
         String type = URIGenerator.typeFrom(resourceUri).key();
-//        return execute("insert into " + TABLE_NAME + " (domain, type, resource, time, name, tokens) values ('"+
-//                domainUri+"', '"+ type+"', '" + resourceUri +"', '" + TimeUtils.asISO() + "','"+name+"','" + tokens+"');");
-
-
-        PreparedStatement statement = dbSessionManager.getCommonSession().prepare("insert into "+TABLE_NAME+" (domain, type, resource, time, name, tokens) values (?, ?, ?, ?, ?, ?)");
+        PreparedStatement statement = dbSessionManager.getCommonSession().prepare("insert into "+TABLE_NAME+" (domain, type, resource, time, name) values (?, ?, ?, ?, ?)");
         dbSessionManager.getCommonSession().executeAsync(statement.bind(
                 domainUri,
                 type,
                 resourceUri,
                 TimeUtils.asISO(),
-                name,
-                tokens));
+                name));
+        LOG.info("saved resource '"+resourceUri+"' in '"+domainUri+"'");
         return true;
 
 
@@ -315,15 +316,22 @@ public class DomainsDao extends AbstractDao  {
 
     public Boolean updateDomainTokens(String domainUri, String uri, String name, String tokens){
 
-        if (save(domainUri, uri, name, tokens)){
-            LOG.info("saved tokens of '"+uri+"' in '"+domainUri+"'");
+        if (Strings.isNullOrEmpty(tokens)) return true;
 
-            Domain resource = new Domain();
-            resource.setUri(domainUri);
-            eventBus.post(Event.from(resource), RoutingKey.of(resource.getResourceType(), Resource.State.UPDATED));
-            return true;
-        }
-        return false;
+
+        String type = URIGenerator.typeFrom(uri).key();
+        PreparedStatement statement = dbSessionManager.getCommonSession().prepare("insert into "+TABLE_NAME+" (domain, type, resource, tokens) values (?, ?, ?, ?)");
+        dbSessionManager.getCommonSession().executeAsync(statement.bind(
+                domainUri,
+                type,
+                uri,
+                tokens));
+
+        LOG.info("saved " + tokens.length() + " tokens of '"+uri+"' in '"+domainUri+"'");
+        Domain resource = new Domain();
+        resource.setUri(domainUri);
+        eventBus.post(Event.from(resource), RoutingKey.of(resource.getResourceType(), Resource.State.UPDATED));
+        return true;
     }
 
     public void delete(String uri){

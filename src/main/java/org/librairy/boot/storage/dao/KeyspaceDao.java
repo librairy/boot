@@ -7,8 +7,7 @@
 
 package org.librairy.boot.storage.dao;
 
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
+import com.datastax.driver.core.exceptions.InvalidQueryException;
 import org.librairy.boot.storage.generator.URIGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,24 +23,26 @@ public class KeyspaceDao {
     private static final Logger LOG = LoggerFactory.getLogger(KeyspaceDao.class);
 
     @Autowired
-    DBSessionManager dbSessionManager;
+    DBSessionManager sessionManager;
 
 
-//    public Boolean createKeyspace(String uri){
-//        String id = DBSessionManager.getKeyspaceFromUri(uri);
-//        String query = "create keyspace if not exists "+id+" with replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1} and DURABLE_WRITES = false;";
-////        String query = "create keyspace if not exists "+id+" with replication = { 'class' : 'NetworkTopologyStrategy', 'datacenter1' : 3 } and DURABLE_WRITES = false;";
-//        LOG.debug("Executing query: " + query);
-//        ResultSet result = dbSessionManager.getSession().execute(query);
-//        return result.wasApplied();
-//    }
-//
-//    public Boolean removeKeyspace(String uri){
-//        String id = DBSessionManager.getKeyspaceFromUri(uri);
-//        String query = "drop keyspace if exists "+id+";";
-//        LOG.debug("Executing query: " + query);
-//        ResultSet result = dbSessionManager.getSession().execute(query);
-//        return result.wasApplied();
-//    }
+    public void initialize(String domainId, String scope){
+        LOG.info("creating a new workspace for domain: " + domainId);
+        try{
+            sessionManager.getSession().execute("create keyspace if not exists "+DBSessionManager.getSpecificKeyspaceId(scope, domainId)+
+                    " with replication = {'class' : 'SimpleStrategy', 'replication_factor' : 1} and DURABLE_WRITES = true;");
+        }catch (InvalidQueryException e){
+            LOG.warn(e.getMessage());
+        }
+    }
+
+    public void destroy(String domainId, String scope){
+        LOG.info("dropping existing workspace for domain: " + domainId);
+        try{
+            sessionManager.getSession().execute("drop keyspace if exists " + DBSessionManager.getSpecificKeyspaceId(scope, domainId)+ " ;");
+        }catch (InvalidQueryException e){
+            LOG.warn(e.getMessage());
+        }
+    }
 
 }

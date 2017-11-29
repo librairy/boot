@@ -43,6 +43,9 @@ public class AnnotationsDao extends AbstractDao {
     @Autowired
     EventBus eventBus;
 
+    @Autowired
+    DomainsDao domainsDao;
+
     public List<Annotation> getByResource(String uri, Optional<AnnotationFilter> filter) throws DataNotFound {
         String query = "select "+Annotation.URI +
                 " from annotations_by_resource where " + Annotation.RESOURCE + "='" + uri + "' ";
@@ -141,10 +144,13 @@ public class AnnotationsDao extends AbstractDao {
 //                .append(annotation.getType())
 //                .append(annotation.getPurpose())
 //                .toString());
-        String uri = URIGenerator.fromId(Resource.Type.ANNOTATION, annotation.getType());
+
+        Resource.Type resourceType = URIGenerator.typeFrom(annotation.getResource());
+        String resourceId = URIGenerator.retrieveId(annotation.getResource());
+        String uri = URIGenerator.compositeFromId(resourceType,resourceId, Resource.Type.ANNOTATION, annotation.getType());
         annotation.setUri(uri);
         PreparedStatement statement = session.prepare("insert into annotations (purpose, type, resource, creator, value, score, format, language, uri) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        ResultSetFuture result = session.executeAsync(statement.bind(
+        session.executeAsync(statement.bind(
                 annotation.getPurpose(),
                 annotation.getType(),
                 annotation.getResource(),
@@ -154,7 +160,6 @@ public class AnnotationsDao extends AbstractDao {
                 annotation.getFormat(),
                 annotation.getLanguage(),
                 annotation.getUri()));
-        results.add(result);
         results.add(saveOnAnnotationByResource(annotation));
         publishEvent(annotation);
         return results;

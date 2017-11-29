@@ -142,6 +142,42 @@ public class ItemsDao extends AbstractDao {
     }
 
 
+    public void deleteAll(){
+        LOG.info("Deleting all elements from librAIry..");
+
+        // Deleting domains
+        ResultSet resDomains = dbSessionManager.getCommonSession().execute("select uri from domains;");
+
+        if (resDomains != null && resDomains.iterator() != null){
+            Iterator<Row> itDomains = resDomains.iterator();
+            while(itDomains.hasNext()){
+                String domUri = itDomains.next().getString(0);
+                domainsDao.delete(domUri);
+            }
+        }
+
+        // truncate tables
+        dbSessionManager.getCommonSession().executeAsync("truncate paths;");
+        dbSessionManager.getCommonSession().executeAsync("truncate emergesin;");
+        dbSessionManager.getCommonSession().executeAsync("truncate items;");
+        dbSessionManager.getCommonSession().executeAsync("truncate filters;");
+        dbSessionManager.getCommonSession().executeAsync("truncate contains;");
+        dbSessionManager.getCommonSession().executeAsync("truncate parts;");
+        dbSessionManager.getCommonSession().executeAsync("truncate topics;");
+        dbSessionManager.getCommonSession().executeAsync("truncate similarto;");
+        dbSessionManager.getCommonSession().executeAsync("truncate listeners;");
+        dbSessionManager.getCommonSession().executeAsync("truncate describes;");
+        dbSessionManager.getCommonSession().executeAsync("truncate dealswith;");
+        dbSessionManager.getCommonSession().executeAsync("truncate annotations_by_resource;");
+        dbSessionManager.getCommonSession().executeAsync("truncate parameters_by_domain;");
+        dbSessionManager.getCommonSession().executeAsync("truncate domains;");
+        dbSessionManager.getCommonSession().executeAsync("truncate annotations;");
+        dbSessionManager.getCommonSession().executeAsync("truncate counters_by_domain;");
+        dbSessionManager.getCommonSession().executeAsync("truncate resources_by_domain;");
+
+        LOG.info("All elements deleted!");
+    }
+
 
     public Optional<Item> get(String uri, Boolean content) {
 
